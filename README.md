@@ -47,14 +47,14 @@ Implementation details
 ####Notebook
 
 field       |type
--           |-
+---         |---
 **id**      |`id`
 title   |`string`
 
 ####Note
 
 field       |type
--           |-
+---         |---
 **id**      |`id`
 notebook_id |`foreign_key`
 title   |`string`
@@ -68,7 +68,7 @@ Future versions:
 ####Tag
 
 field       |type
--           |-
+---         |---
 **tag_id**  |`id`
 note_id   |`foreign_key`
 tag     |`string`
@@ -364,7 +364,7 @@ Consider the following note, contained in the notebook with id  `1`:
 
 To move it to the notebook with id `2`, Execute the following Request:
 
-/notebooks/:2/notes/1 `PUT`
+/notebooks/2/notes/1 `PUT`
 
 HTTP Request Headers:
 `Content-Type: application/json`
