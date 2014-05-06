@@ -5,6 +5,14 @@ Class NoteHelper {
 	const TYPE_TEXT = 'Text';
 	const TYPE_HTML = 'HTML';
 
+	public static function getNoteList() {
+		// @TODO: Add paging to all lists
+		return ORM::for_table('note')
+			->select_many('id', 'notebook_id', 'title', 'created', 'updated', 'url')
+			->find_array();
+	}
+
+
 	public static function getNoteListForNoteBook($notebook) {
 		return ORM::for_table('note')
 			->select_many('id', 'notebook_id', 'title', 'created', 'updated', 'url')
@@ -51,6 +59,10 @@ Class NoteHelper {
 	}
 
 }
+
+$app->get('/notes(/)', function() {
+	outputJson(NoteHelper::getNoteList());
+});
 
 $app->get('/notebooks/:id/notes(/)', function($id) use ($app) {
 
