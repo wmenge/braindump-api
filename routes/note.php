@@ -7,7 +7,6 @@ Class NoteHelper {
 
 	public static function getNoteListForNoteBook($notebook) {
 		return ORM::for_table('note')
-			//->select_expr('"/notes/" || note.id', 'url')
 			->select_many('id', 'notebook_id', 'title', 'created', 'updated', 'url')
 			->where_equal('notebook_id', $notebook->id)
 			->find_array();
@@ -15,7 +14,6 @@ Class NoteHelper {
 
 	public static function getNoteForId($id) {
 		return ORM::for_table('note')
-			//->select_expr('"/notes/" || note.id', 'url')
 			->select('*')
 			->where_equal('id', $id)
 			->find_one();
@@ -86,6 +84,9 @@ $app->get('/(notebooks/:notebook_id/)notes/:note_id(/)', function($notebook_id, 
 
 $app->post('/notebooks/:id/notes(/)', function($id) use ($app) {
 
+	header("Access-Control-Allow-Origin: *");
+	
+
 	//Check if notebook exists, return 400 if it doesn't
 	$notebook = ORM::for_table('notebook')->find_one($id);
     
@@ -115,6 +116,8 @@ $app->post('/notebooks/:id/notes(/)', function($id) use ($app) {
 });
 
 $app->put('/(notebooks/:notebook_id/)notes/:note_id(/)', function($notebook_id, $note_id) use ($app) {
+
+	header("Access-Control-Allow-Origin: *");
 	
 	// Check if notebook exists (if supplied)
 	if ($notebook_id != null) {
