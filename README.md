@@ -40,7 +40,7 @@ Implementation details
 * [Composer](https://getcomposer.org) for dependancy management
 * [SQLite](http://www.sqlite.org)
 * [Slim PHP Framework](http://www.slimframework.com)
-* [Idiorm/Paris](http://j4mie.github.io/idiormandparis/) for object/relational mapping
+* [Idiorm](http://j4mie.github.io/idiormandparis/) for object/relational mapping
 
 ###Data Model
 
