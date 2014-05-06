@@ -34,6 +34,9 @@ Class NotebookHelper {
 
 	public static function createSampleData() {
 
+		// Start a transaction
+		ORM::get_db()->beginTransaction();
+
 		$notebook = ORM::for_table('notebook')->create();
 		$notebook->title = 'Your first notebook';
 		$notebook->save();
@@ -41,18 +44,19 @@ Class NotebookHelper {
 		$note = ORM::for_table('note')->create();
 		$note->notebook_id = $notebook->id();
 		$note->title = 'This is a Note';
-		$note->url = 'http://braindump-client.local';
+		$note->url = 'https://github.com/wmenge/braindump-api';
+		$note->type = NoteHelper::TYPE_TEXT;
 		$note->content = 'Your very first note';
 		if ($note->created == null) $note->created = time();
 		$note->updated = time();
 		$note->save();
+
+		// Commit a transaction
+		ORM::get_db()->commit();
 	}
 }
 
-
-
 $app->get('/(notebooks)(/)', function() {
-	//@TODO: If Notebook list is empty, create sample data
 	$list = NotebookHelper::getNoteBookList();
 
 	if (empty($list)) {

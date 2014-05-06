@@ -61,6 +61,7 @@ title   |`string`
 created   |`timestamp`
 updated   |`timestamp`
 url |`url`
+type | 'HTML' or 'Text'
 content   |`string`
 
 Future versions:
@@ -90,6 +91,7 @@ Url | Operation | Description
 /notebooks |`POST`|Creates a new notebook
 /notebooks/`:id` |`PUT`|Updates notebook with given `:id`
 /notebooks/`:id` |`DELETE`|Deletes notebook with given `:id`
+/notes |`GET`|Retrieve list of all available notes
 /notebooks/`:id`/notes |`GET`|Retrieve list of notes in Notebook with `:id`    (without content)
 /notebooks/`:notebook_id`/notes/`:note_id` |`GET`|Get details of note with `:note_id` (with content)
 /notes/`:note_id` |`GET`|Alias of /notebooks/:notebook_id/notes/:note_id
@@ -200,6 +202,11 @@ Example Response:
   contained in this notebook
 
 ---
+### /notes `GET`
+
+Retrieve list of all available notes
+
+---
 ### /notebooks/:id/notes `GET`
 
   Retrieves a list of Notes contained in given notebook, without the
@@ -215,6 +222,7 @@ Example Response:
         "created": "1398979024",
         "updated": "1398979024",
         "url": "http:\/\/www.google.com",
+        "type": "Text",
         "content": "This is a note"
     },
     {
@@ -224,6 +232,7 @@ Example Response:
         "created": "1398979024",
         "updated": "1398979024",
         "url": "http:\/\/www.google.com",
+        "type": "Text",
         "content": "This is a note"
     }
 ]
@@ -239,7 +248,6 @@ Example Response:
   **Note:** redirects to url with correct notebook_id if the note
   exists in a different notebook.
 
-
 Example Response:
 ````
 {
@@ -249,6 +257,7 @@ Example Response:
     "created": "1398979024",
     "updated": "1398979024",
     "url": "http:\/\/www.google.com",
+    "type": "Text",
     "content": "This is a note"
 }
 ````
@@ -274,6 +283,7 @@ HTTP Request Headers:
 {
     "title": "Test Note from SQLite",
     "url": "http:\/\/www.google.com",
+    "type": "Text",
     "content": "This is a note"
 }
 ````
@@ -286,6 +296,7 @@ Example Response:
     "created": "1398979024",
     "updated": "1398979024",
     "url": "http:\/\/www.google.com",
+    "type": "Text",
     "content": "This is a note"}
 }
 ````
@@ -307,6 +318,7 @@ HTTP Request Headers:
 {
     "title": "Modified Title",
     "url": "http:\/\/www.google.com",
+    "type": "Text",
     "content": "This is some modified content"
 }
 ````
@@ -319,6 +331,7 @@ Example Response:
     "created": "1398979024",
     "updated": "1398979034",
     "url": "http:\/\/www.google.com",
+    "type": "Text",
     "content": "This is some modified content"}
 }
 ````
@@ -358,6 +371,7 @@ Consider the following note, contained in the notebook with id  `1`:
     "created": "0",
     "updated": "0",
     "url": "http:\/\/www.google.com",
+    "type": "Text",
     "content": "This is a note"
 }
 ````
@@ -377,6 +391,7 @@ HTTP Request Headers:
     "created": "0",
     "updated": "0",
     "url": "http:\/\/www.google.com",
+    "type": "Text",
     "content": "This is a note"
 }
 ````
@@ -389,4 +404,7 @@ A list of Todos
 Links & References
 ------------------
 
-A list of links
+* Parsing large xml documents: http://stackoverflow.com/questions/911663/parsing-huge-xml-files-in-php
+  (for evernote import)
+
+* http://dev.evernote.com/doc/articles/enml.php for evenrote html format

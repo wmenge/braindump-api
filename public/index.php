@@ -27,7 +27,7 @@ $app->options('/:wildcard+', function() {
             
 });
 
-require_once('../routes/notebook.php');
 require_once('../routes/note.php');
+require_once('../routes/notebook.php');
 
 $app->run();

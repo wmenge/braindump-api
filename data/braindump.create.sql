@@ -24,6 +24,7 @@ CREATE TABLE "note" (
 	 "created" integer NOT NULL,
 	 "updated" integer NOT NULL,
 	 "url" text,
+	 "type" text NOT NULL CHECK (type IN ('HTML', 'Text')),
 	 "content" text,
 	CONSTRAINT "notebook_id" FOREIGN KEY ("notebook_id") REFERENCES "notebook" ("notebook_id") ON DELETE CASCADE ON UPDATE CASCADE
 );

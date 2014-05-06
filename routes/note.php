@@ -2,6 +2,9 @@
 
 Class NoteHelper {
 
+	const TYPE_TEXT = 'Text';
+	const TYPE_HTML = 'HTML';
+
 	public static function getNoteListForNoteBook($notebook) {
 		return ORM::for_table('note')
 			//->select_expr('"/notes/" || note.id', 'url')
@@ -21,7 +24,10 @@ Class NoteHelper {
 	public static function isValid($data) {
 
 		// Check minimum required fields
-		return is_object($data) && !empty($data->title);
+		return
+			is_object($data) && 
+			!empty($data->title) && 
+			in_array($data->type, array(NoteHelper::TYPE_TEXT, NoteHelper::TYPE_HTML));
 	//		($inpuxtData->content_url == null || !(filter_var($inputData->content_url, FILTER_VALIDATE_URL) === false);
 	}
 
@@ -34,7 +40,14 @@ Class NoteHelper {
 		}
 		$note->title = htmlentities($data->title);
 		$note->url = htmlentities($data->url);
-		$note->content = htmlentities($data->content);
+		$note->type = htmlentities($data->type);
+		if ($note->type == NoteHelper::TYPE_HTML) {
+			// @TODO: filter html
+			// check http://dev.evernote.com/doc/articles/enml.php for evenrote html format
+			$note->content = $data->content;
+		} elseif ($note->type == NoteHelper::TYPE_TEXT) {
+			$note->content = htmlentities($data->content);
+		}
 		if ($note->created == null) $note->created = time();
 		$note->updated = time();
 	}
