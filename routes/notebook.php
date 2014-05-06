@@ -4,8 +4,6 @@ Class NotebookHelper {
 
 	public static function getNoteBookList() {
 		return ORM::for_table('notebook')
-			//->select_expr('"/notebooks/" || notebook.id', 'url')
-			->select_expr('"/notebooks/" || notebook.id || "/notes"', 'notes_url')
 			->select('*')
 			->select_expr('(SELECT COUNT(*) FROM note WHERE notebook_id = notebook.id)', 'noteCount')
 			->find_array();
@@ -13,7 +11,6 @@ Class NotebookHelper {
 
 	public static function getNotebookForId($id) {
 		return ORM::for_table('notebook')
-			//q->select_expr('"/notebooks/" || notebook.id', 'url')
 			->select_expr('"/notebooks/" || notebook.id || "/notes"', 'notes_url')
 			->select('*')
 			->select_expr('(SELECT COUNT(*) FROM note WHERE notebook_id = notebook.id)', 'noteCount')
