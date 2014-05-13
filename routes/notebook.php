@@ -72,10 +72,6 @@ $app->get('/notebooks/:id(/)', function($id) use ($app) {
 });
 
 $app->post('/notebooks(/)', function() use ($app) {
-
-	header("Access-Control-Allow-Origin: *");
-	
-
 	// @TODO Notebook Title should be unique (for user)
 	// @TODO After creation, set url in header, 
 	// check http://stackoverflow.com/questions/11159449
@@ -129,8 +125,6 @@ $app->put('/notebooks/:id(/)', function($id) use ($app) {
 });
 
 $app->delete('/notebooks/:id(/)', function($id) use ($app) {
-	//@TODO: Put in some sort of middleware
-	header("Access-Control-Allow-Origin: *");
 	$notebook = ORM::for_table('notebook')->find_one($id);
     	
     if ($notebook == null) return $app->notFound();

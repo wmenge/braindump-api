@@ -1,15 +1,14 @@
 <?php 
 require '../vendor/autoload.php';
+require '../middleware/attach_headers.php';
 
 $app = new \Slim\Slim();
+$app->add(new AttachHeaders());
 
 // Move to slim configuration place
 ORM::configure('sqlite:../data/braindump.sqlite');
 
 function outputJson($data) {
-	// Todo: Correct header on all requests using middleware
-	header("Content-Type: application/json");
-	header("Access-Control-Allow-Origin: *");
 	echo json_encode($data, JSON_PRETTY_PRINT);
 }
 
@@ -18,13 +17,8 @@ function outputJson($data) {
 // http://stackoverflow.com/questions/12111936/angularjs-performs-an-options-http-request-for-a-cross-origin-resource
 // By returning a CORS header on the pre-flight Request everybody is happy
 $app->options('/:wildcard+', function() {
-	// TODO: Restrict to some configurable domain
-	//header("Content-Type: application/json");
-	//header("Accept: application/json");
-	header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
-	header("Access-Control-Allow-Origin: *");
-	header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS, DELETE');
-            
+	header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS, DELETE');            
+});
 });
 
 require_once('../routes/note.php');

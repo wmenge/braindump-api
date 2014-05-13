@@ -98,9 +98,6 @@ $app->get('/(notebooks/:notebook_id/)notes/:note_id(/)', function($notebook_id, 
 
 $app->post('/notebooks/:id/notes(/)', function($id) use ($app) {
 
-	header("Access-Control-Allow-Origin: *");
-	
-
 	//Check if notebook exists, return 400 if it doesn't
 	$notebook = ORM::for_table('notebook')->find_one($id);
     
@@ -131,8 +128,6 @@ $app->post('/notebooks/:id/notes(/)', function($id) use ($app) {
 
 $app->put('/(notebooks/:notebook_id/)notes/:note_id(/)', function($notebook_id, $note_id) use ($app) {
 
-	header("Access-Control-Allow-Origin: *");
-	
 	// Check if notebook exists (if supplied)
 	if ($notebook_id != null) {
 
@@ -187,8 +182,6 @@ $app->put('/(notebooks/:notebook_id/)notes/:note_id(/)', function($notebook_id, 
 });
 
 $app->delete('(/notebooks/:notebook_id/)notes/:note_id(/)', function($notebook_id, $note_id) use ($app) {
-	
-	header("Access-Control-Allow-Origin: *");
 	
 	$note = ORM::for_table('note')->find_one($note_id);
 	    
