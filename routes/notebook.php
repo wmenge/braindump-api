@@ -24,9 +24,8 @@ Class NotebookHelper {
 
 	public static function map($notebook, $data) {
 		// Explicitly map parameters, be paranoid of your input
-		// check https://phpbestpractices.org 
-		// and http://stackoverflow.com/questions/129677
-		$notebook->title = htmlentities($data->title);
+		// https://phpbestpractices.org 
+		$notebook->title = htmlentities($data->title, ENT_QUOTES, 'UTF-8');
 	}
 
 	public static function createSampleData() {

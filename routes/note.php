@@ -44,15 +44,17 @@ Class NoteHelper {
 		if (!empty($notebook)) {
 			$note->notebook_id = $notebook->id;
 		}
-		$note->title = htmlentities($data->title);
-		$note->url = htmlentities($data->url);
-		$note->type = htmlentities($data->type);
+		$note->title = htmlentities($data->title, ENT_QUOTES, 'UTF-8');
+		$note->url = htmlentities($data->url, ENT_QUOTES, 'UTF-8');
+		$note->type = htmlentities($data->type, ENT_QUOTES, 'UTF-8');
 		if ($note->type == NoteHelper::TYPE_HTML) {
-			// @TODO: filter html
 			// check http://dev.evernote.com/doc/articles/enml.php for evenrote html format
-			$note->content = $data->content;
+			// @TODO Check which tags to allow/disallow
+			// @TODO Allow images with base64 content
+			$purifier = new HTMLPurifier(HTMLPurifier_Config::createDefault());
+ 			$note->content = $purifier->purify($data->content);
 		} elseif ($note->type == NoteHelper::TYPE_TEXT) {
-			$note->content = htmlentities($data->content);
+			$note->content = htmlentities($data->content, ENT_QUOTES, 'UTF-8');
 		}
 		if ($note->created == null) $note->created = time();
 		$note->updated = time();
