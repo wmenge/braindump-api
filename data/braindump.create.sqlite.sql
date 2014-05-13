@@ -33,7 +33,7 @@ CREATE TABLE "note" (
 --  Table structure for "notebook"
 -- ----------------------------
 DROP TABLE IF EXISTS "notebook";
-CREATE TABLE "notebook" (
+CREATE TABLE IF NOT EXISTS "notebook" (
 	 "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
 	 "title" text NOT NULL
 );

@@ -10,6 +10,24 @@ $app->braindumpConfig = (require '../config/braindump-config.php');
 
 ORM::configure($app->idiormConfig);
 
+function createDatabase($app) {
+	
+	$db = ORM::get_db();
+
+	// Fetch initial SQL script and subsequent migration scripts
+	$scripts = $app->braindumpConfig['databases_setup_scripts'];
+
+	// For initial setup, just run all scripts
+	// TODO: Migration scenarios
+	foreach ($scripts as $version => $script) {
+		echo sprintf('Execute script for version %s<br />', $version);
+		$sql = file_get_contents($script);
+    	$db->exec($sql);	
+	}
+
+	echo 'Setup performed';
+}
+
 function outputJson($data) {
 	echo json_encode($data, JSON_PRETTY_PRINT);
 }
@@ -21,6 +39,9 @@ function outputJson($data) {
 $app->options('/:wildcard+', function() {
 	header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS, DELETE');            
 });
+
+$app->get('/setup', function() use ($app) {
+	createDatabase($app);
 });
 
 require_once('../routes/note.php');
