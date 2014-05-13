@@ -11,7 +11,6 @@ Class NotebookHelper {
 
 	public static function getNotebookForId($id) {
 		return ORM::for_table('notebook')
-			->select_expr('"/notebooks/" || notebook.id || "/notes"', 'notes_url')
 			->select('*')
 			->select_expr('(SELECT COUNT(*) FROM note WHERE notebook_id = notebook.id)', 'noteCount')
 			->where_equal('id', $id)
@@ -96,7 +95,6 @@ $app->post('/notebooks(/)', function() use ($app) {
 });
 
 $app->put('/notebooks/:id(/)', function($id) use ($app) {
-
 	// Todo: Notebook Title should be unique (for user)
 	// Todo: After creation, set url in header, 
 	// check http://stackoverflow.com/questions/11159449
