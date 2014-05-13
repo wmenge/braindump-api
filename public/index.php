@@ -5,8 +5,10 @@ require '../middleware/attach_headers.php';
 $app = new \Slim\Slim();
 $app->add(new AttachHeaders());
 
-// Move to slim configuration place
-ORM::configure('sqlite:../data/braindump.sqlite');
+$app->idiormConfig = (require '../config/idiorm-config.php');
+$app->braindumpConfig = (require '../config/braindump-config.php');
+
+ORM::configure($app->idiormConfig);
 
 function outputJson($data) {
 	echo json_encode($data, JSON_PRETTY_PRINT);
