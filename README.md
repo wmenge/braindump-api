@@ -10,6 +10,8 @@ This project contains the backend and API part of the project.
 It aims to provide a simple REST-style API to to store and retrieve 
 notes. These notes will be stored in a server side database.
 
+Created by Wilco Menge (wilcomenge@gmail.com), the code is hosted at [github](https://github.com/wmenge/braindump-api) for the REST based backend API.
+
 See [Braindump Client](https://github.com/wmenge/braindump-client) for a HTML/Javascript based client.
 
 Roadmap
@@ -399,7 +401,12 @@ HTTP Request Headers:
 Todo
 ----
 
-A list of Todos
+* Exand README into:
+
+README
+FAQ
+INSTALL
+CHANGE_LOG (for every release)
 
 Links & References
 ------------------
