@@ -5,19 +5,33 @@ Class NoteHelper {
 	const TYPE_TEXT = 'Text';
 	const TYPE_HTML = 'HTML';
 
-	public static function getNoteList() {
+	public static function getNoteList($query = null) {
+		
 		// @TODO: Add paging to all lists
-		return ORM::for_table('note')
-			->select_many('id', 'notebook_id', 'title', 'created', 'updated', 'url')
-			->find_array();
+		$queryObject = ORM::for_table('note')->select_many('id', 'notebook_id', 'title', 'created', 'updated', 'url');
+		
+		if (!empty($query)) {
+			$queryObject = $queryObject->where_raw(
+				'(`title` LIKE ? OR `content` LIKE ?)', 
+				array(sprintf('%%%s%%', $query), sprintf('%%%s%%', $query)));
+		}
+
+		return $queryObject->find_array();
 	}
 
-
-	public static function getNoteListForNoteBook($notebook) {
-		return ORM::for_table('note')
+	public static function getNoteListForNoteBook($notebook, $query = null) {
+		
+		$queryObject = ORM::for_table('note')
 			->select_many('id', 'notebook_id', 'title', 'created', 'updated', 'url')
-			->where_equal('notebook_id', $notebook->id)
-			->find_array();
+			->where_equal('notebook_id', $notebook->id);
+
+		if (!empty($query)) {
+			$queryObject = $queryObject->where_raw(
+				'(`title` LIKE ? OR `content` LIKE ?)', 
+				array(sprintf('%%%s%%', $query), sprintf('%%%s%%', $query)));
+		}
+		
+		return $queryObject->find_array();
 	}
 
 	public static function getNoteForId($id) {
@@ -62,8 +76,9 @@ Class NoteHelper {
 
 }
 
-$app->get('/notes(/)', function() {
-	outputJson(NoteHelper::getNoteList());
+$app->get('/notes(/)', function() use ($app) {
+	$req = $app->request();
+	outputJson(NoteHelper::getNoteList($req->get('query')));
 });
 
 $app->get('/notebooks/:id/notes(/)', function($id) use ($app) {
@@ -72,7 +87,9 @@ $app->get('/notebooks/:id/notes(/)', function($id) use ($app) {
 	$notebook = ORM::for_table('notebook')->find_one($id);
     if ($notebook == null) return $app->notFound();
 
-	outputJson(NoteHelper::getNoteListForNoteBook($notebook));
+	$req = $app->request();
+	
+	outputJson(NoteHelper::getNoteListForNoteBook($notebook, $req->get('query')));
 });
 
 $app->get('/(notebooks/:notebook_id/)notes/:note_id(/)', function($notebook_id, $note_id) use ($app) {

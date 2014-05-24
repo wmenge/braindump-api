@@ -204,15 +204,18 @@ Example Response:
   contained in this notebook
 
 ---
-### /notes `GET`
+### /notes?query=:query `GET`
 
-Retrieve list of all available notes
+Retrieve list of all available notes. If :query is supplied, only results
+with matching title or content are returned.
 
 ---
-### /notebooks/:id/notes `GET`
+### /notebooks/:id/notes?query=:query `GET`
 
   Retrieves a list of Notes contained in given notebook, without the
-  actual content of the notes
+  actual content of the notes. If :query is supplied, only results
+with matching title or content are returned.
+
 
 Example Response:
 ````
