@@ -40,8 +40,8 @@ Class NotebookHelper {
 		$note->notebook_id = $notebook->id();
 		$note->title = 'This is a Note';
 		$note->url = 'https://github.com/wmenge/braindump-api';
-		$note->type = NoteHelper::TYPE_TEXT;
-		$note->content = 'Your very first note';
+		$note->type = NoteHelper::TYPE_HTML;
+		$note->content = '<div>Your very first note</div>';
 		if ($note->created == null) $note->created = time();
 		$note->updated = time();
 		$note->save();
