@@ -78,7 +78,7 @@ Class NoteHelper {
 
 $app->get('/notes(/)', function() use ($app) {
 	$req = $app->request();
-	outputJson(NoteHelper::getNoteList($req->get('query')));
+	outputJson(NoteHelper::getNoteList($req->get('q')));
 });
 
 $app->get('/notebooks/:id/notes(/)', function($id) use ($app) {
@@ -94,9 +94,7 @@ $app->get('/notebooks/:id/notes(/)', function($id) use ($app) {
 	$notebook = ORM::for_table('notebook')->find_one($id);
     if ($notebook == null) return $app->notFound();
 
-	$req = $app->request();
-	
-	outputJson(NoteHelper::getNoteListForNoteBook($notebook, $req->get('query')));
+	outputJson(NoteHelper::getNoteListForNoteBook($notebook, $req->get('q')));
 });
 
 $app->get('/(notebooks/:notebook_id/)notes/:note_id(/)', function($notebook_id, $note_id) use ($app) {
