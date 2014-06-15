@@ -83,6 +83,13 @@ $app->get('/notes(/)', function() use ($app) {
 
 $app->get('/notebooks/:id/notes(/)', function($id) use ($app) {
 
+	$req = $app->request();
+	
+	if ($id == NotebookHelper::MAGIC_BOOK_ALL_NOTES) {
+		outputJson(NoteHelper::getNoteList($req->get('q')));
+		return;
+	}
+
 	// Check if notebook exists, return 404 if it doesn't
 	$notebook = ORM::for_table('notebook')->find_one($id);
     if ($notebook == null) return $app->notFound();
