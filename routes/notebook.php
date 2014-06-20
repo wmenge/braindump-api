@@ -21,7 +21,9 @@ Class NotebookHelper {
 			->select_expr('(SELECT COUNT(*) FROM note WHERE notebook_id = notebook.id)', 'noteCount')
 			->find_array();
 
-		array_unshift($list, NotebookHelper::getMagicNotebookAllNotes());
+		if (!empty($list)) {
+			array_unshift($list, NotebookHelper::getMagicNotebookAllNotes());
+		}
 
 		return $list;
 	}
@@ -140,9 +142,24 @@ $app->put('/notebooks/:id(/)', function($id) use ($app) {
 });
 
 $app->delete('/notebooks/:id(/)', function($id) use ($app) {
+
+	// Check if notebook exists
 	$notebook = ORM::for_table('notebook')->find_one($id);
     	
     if ($notebook == null) return $app->notFound();
 
+	// Start a transaction
+	ORM::get_db()->beginTransaction();
+
+    // First, delete all notes in notebook
+	ORM::for_table('note')
+		->where_equal('notebook_id', $notebook->id)
+		->delete_many();
+
+	// Finally, delete notebook
     $notebook->delete();
+
+    // Commit a transaction
+	ORM::get_db()->commit();
+
 });
