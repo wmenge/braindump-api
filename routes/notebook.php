@@ -2,30 +2,12 @@
 
 Class NotebookHelper {
 
-	const MAGIC_BOOK_ALL_NOTES = 'MAGIC_BOOK_ALL_NOTES';
-
-	private static function getMagicNotebookAllNotes() {
-		// A 'magic' notebook that represents a list of all notebooks
-		$magicNotebook = new stdClass;
-		$magicNotebook->magic = true;
-		$magicNotebook->id = MAGIC_BOOK_ALL_NOTES;
-		$magicNotebook->title = 'All notes';
-		$magicNotebook->noteCount = ORM::for_table('note')->count();
-		return $magicNotebook;
-	}
-	
 	public static function getNoteBookList() {
 
-		$list = ORM::for_table('notebook')
+		return ORM::for_table('notebook')
 			->select('*')
 			->select_expr('(SELECT COUNT(*) FROM note WHERE notebook_id = notebook.id)', 'noteCount')
 			->find_array();
-
-		if (!empty($list)) {
-			array_unshift($list, NotebookHelper::getMagicNotebookAllNotes());
-		}
-
-		return $list;
 	}
 
 	public static function getNotebookForId($id) {

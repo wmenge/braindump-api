@@ -73,28 +73,20 @@ Class NoteHelper {
 		if ($note->created == null) $note->created = time();
 		$note->updated = time();
 	}
-
 }
 
-$app->get('/notes(/)', function() use ($app) {
-	$req = $app->request();
-	outputJson(NoteHelper::getNoteList($req->get('q')));
-});
-
-$app->get('/notebooks/:id/notes(/)', function($id) use ($app) {
+$app->get('/(notebooks/:id/)notes(/)', function($id = null) use ($app) {
 
 	$req = $app->request();
 	
-	if ($id == NotebookHelper::MAGIC_BOOK_ALL_NOTES) {
+	if (empty($id)) {
 		outputJson(NoteHelper::getNoteList($req->get('q')));
-		return;
+	} else {
+		// Check if notebook exists, return 404 if it doesn't
+		$notebook = ORM::for_table('notebook')->find_one($id);
+    	if ($notebook == null) return $app->notFound();
+		outputJson(NoteHelper::getNoteListForNoteBook($notebook, $req->get('q')));
 	}
-
-	// Check if notebook exists, return 404 if it doesn't
-	$notebook = ORM::for_table('notebook')->find_one($id);
-    if ($notebook == null) return $app->notFound();
-
-	outputJson(NoteHelper::getNoteListForNoteBook($notebook, $req->get('q')));
 });
 
 $app->get('/(notebooks/:notebook_id/)notes/:note_id(/)', function($notebook_id, $note_id) use ($app) {
