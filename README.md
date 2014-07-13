@@ -119,19 +119,19 @@ Example Response:
 ````
 [
     {
-        "id": "1",
+        "id": 1,
         "title": "Test Notebook",
-        "noteCount": "1"
+        "noteCount": 1
     },
     {
-        "id": "2",
+        "id": 2,
         "title": "Another Notebook",
-        "noteCount": "1"
+        "noteCount": 1
     },
     {
-        "id": "3",
+        "id": 3,
         "title": "Empty Notebook",
-        "noteCount": "0"
+        "noteCount": 0
     }
 ]
 ````
@@ -144,9 +144,9 @@ Example Response:
 Example Response:
 ````
 {
-    "id": "1",
+    "id": 1,
     "title": "Test Notebook",
-    "noteCount": "1"
+    "noteCount": 1
 }
 ````
 
@@ -167,9 +167,9 @@ HTTP Request Headers:
 Example Response:
 ````
 {
-    "id": "1",
+    "id": 1,
     "title": "New Notebook",
-    "noteCount": "0"
+    "noteCount": 0
 }
 ````
 
@@ -184,16 +184,16 @@ HTTP Request Headers:
 `Content-Type: application/json`
 ````
 {
-    "id": "1",
+    "id": 1,
     "title": "Modified title"
 }
 ````
 Example Response:
 ````
 {
-    "id": "1",
+    "id": 1,
     "title": "Modified title",
-    "noteCount": "0"
+    "noteCount": 0
 }
 ````
 
@@ -221,21 +221,21 @@ Example Response:
 ````
 [
     {
-        "id": "1",
-        "notebook_id": "1",
+        "id": 1,
+        "notebook_id": 1,
         "title": "Test Note from SQLite",
-        "created": "1398979024",
-        "updated": "1398979024",
+        "created": 1398979024,
+        "updated": 1398979024,
         "url": "http:\/\/www.google.com",
         "type": "Text",
         "content": "This is a note"
     },
     {
-        "id": "2",
-        "notebook_id": "1",
+        "id": 2,
+        "notebook_id": 1,
         "title": "Another test note",
-        "created": "1398979024",
-        "updated": "1398979024",
+        "created": 1398979024,
+        "updated": 1398979024,
         "url": "http:\/\/www.google.com",
         "type": "Text",
         "content": "This is a note"
@@ -256,11 +256,11 @@ Example Response:
 Example Response:
 ````
 {
-    "id": "1",
-    "notebook_id": "1",
+    "id": 1,
+    "notebook_id": 1,
     "title": "Test Note from SQLite",
-    "created": "1398979024",
-    "updated": "1398979024",
+    "created": 1398979024,
+    "updated": 1398979024,
     "url": "http:\/\/www.google.com",
     "type": "Text",
     "content": "This is a note"
@@ -295,11 +295,11 @@ HTTP Request Headers:
 Example Response:
 ````
 {
-    "id": "1",
-    "notebook_id": "1",
+    "id": 1,
+    "notebook_id": 1,
     "title": "Test Note from SQLite",
-    "created": "1398979024",
-    "updated": "1398979024",
+    "created": 1398979024,
+    "updated": 1398979024,
     "url": "http:\/\/www.google.com",
     "type": "Text",
     "content": "This is a note"}
@@ -330,11 +330,11 @@ HTTP Request Headers:
 Example Response:
 ````
 {
-    "id": "1",
-    "notebook_id": "1",
+    "id": 1,
+    "notebook_id": 1,
     "title": "Modified Title",
-    "created": "1398979024",
-    "updated": "1398979034",
+    "created": 1398979024,
+    "updated": 1398979034,
     "url": "http:\/\/www.google.com",
     "type": "Text",
     "content": "This is some modified content"}
@@ -370,11 +370,11 @@ Example:
 Consider the following note, contained in the notebook with id  `1`:
 ````
 {
-    "id": "1",
-    "notebook_id": "1",
+    "id": 1,
+    "notebook_id": 1,
     "title": "Test Note from SQLite",
-    "created": "0",
-    "updated": "0",
+    "created": 0,
+    "updated": 0,
     "url": "http:\/\/www.google.com",
     "type": "Text",
     "content": "This is a note"
@@ -390,11 +390,11 @@ HTTP Request Headers:
 
 ````
 {
-    "id": "1",
-    "notebook_id": "1",
+    "id": 1,
+    "notebook_id": 1,
     "title": "Test Note from SQLite",
-    "created": "0",
-    "updated": "0",
+    "created": 0,
+    "updated": 0,
     "url": "http:\/\/www.google.com",
     "type": "Text",
     "content": "This is a note"
