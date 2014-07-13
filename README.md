@@ -38,7 +38,7 @@ Braindump can serve as a reasonable alternative to Evernote.
 Implementation details
 ----------------------
 
-* PHP 5
+* PHP 5.3.3 (or higher) is required
 * [Composer](https://getcomposer.org) for dependancy management
 * [SQLite](http://www.sqlite.org)
 * [Slim PHP Framework](http://www.slimframework.com)
