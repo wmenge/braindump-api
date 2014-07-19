@@ -2,15 +2,24 @@
 
 Class NotebookHelper {
 
-	public static function getNoteBookList() {
+	private $dbHelper;
 
-		return ORM::for_table('notebook')
-			->select('*')
-			->select_expr('(SELECT COUNT(*) FROM note WHERE notebook_id = notebook.id)', 'noteCount')
-			->find_array();
+	public function __construct($dbHelper) {
+		$this->dbHelper = $dbHelper;
 	}
 
-	public static function getNotebookForId($id) {
+	public function getNoteBookList() {
+
+		$query = ORM::for_table('notebook')
+			->select('*')
+			->select_expr('(SELECT COUNT(*) FROM note WHERE notebook_id = notebook.id)', 'noteCount');
+			
+		$query = $this->dbHelper->addSortExpression($query);
+
+		return $query->find_array();
+	}
+
+	public function getNotebookForId($id) {
 		return ORM::for_table('notebook')
 			->select('*')
 			->select_expr('(SELECT COUNT(*) FROM note WHERE notebook_id = notebook.id)', 'noteCount')
@@ -18,17 +27,17 @@ Class NotebookHelper {
 	    	->find_one();
 	}
 
-	public static function isValid($data) {
+	public function isValid($data) {
 		return is_object($data) && !empty($data->title);
 	}
 
-	public static function map($notebook, $data) {
+	public function map($notebook, $data) {
 		// Explicitly map parameters, be paranoid of your input
 		// https://phpbestpractices.org 
 		$notebook->title = htmlentities($data->title, ENT_QUOTES, 'UTF-8');
 	}
 
-	public static function createSampleData() {
+	public function createSampleData() {
 
 		// Start a transaction
 		ORM::get_db()->beginTransaction();
@@ -52,8 +61,11 @@ Class NotebookHelper {
 	}
 }
 
-$app->get('/(notebooks)(/)', function() {
-	$list = NotebookHelper::getNoteBookList();
+$notebookHelper = new NotebookHelper(new DatabaseHelper($app));
+
+$app->get('/(notebooks)(/)', function() use ($notebookHelper) {
+
+	$list = $notebookHelper->getNoteBookList();
 
 	if (empty($list)) {
 		NotebookHelper::createSampleData();
@@ -63,45 +75,46 @@ $app->get('/(notebooks)(/)', function() {
 	outputJson($list);
 });
 
-$app->get('/notebooks/:id(/)', function($id) use ($app) {
-	$notebook = NotebookHelper::getNotebookForId($id);
+$app->get('/notebooks/:id(/)', function($id) use ($app, $notebookHelper) {
+
+	$notebook = $notebookHelper->getNotebookForId($id);
     	
     if ($notebook == null) return $app->notFound();
 
     outputJson($notebook->as_array());
 });
 
-$app->post('/notebooks(/)', function() use ($app) {
+$app->post('/notebooks(/)', function() use ($app, $notebookHelper) {
 	// @TODO Notebook Title should be unique (for user)
 	// @TODO After creation, set url in header, 
 	// check http://stackoverflow.com/questions/11159449
 	
 	$input = json_decode($app->request->getBody());
 
-	if (!NotebookHelper::isValid($input)) {
+	if (!$notebookHelper->isValid($input)) {
 		$app->response->setStatus(400);
 		echo 'Invalid input:' . $app->request->getBody();
 		return;
 	}
 
 	$notebook = ORM::for_table('notebook')->create();
-	NotebookHelper::map($notebook, $input);
+	$notebookHelper->map($notebook, $input);
 	$notebook->save();
 
-	$notebook = NotebookHelper::getNotebookForId($notebook->id());
+	$notebook = $notebookHelper->getNotebookForId($notebook->id());
     	
 	if ($notebook == null) return $app->notFound();
 
     outputJson($notebook->as_array());
 });
 
-$app->put('/notebooks/:id(/)', function($id) use ($app) {
+$app->put('/notebooks/:id(/)', function($id) use ($app, $notebookHelper) {
 	// Todo: Notebook Title should be unique (for user)
 	// Todo: After creation, set url in header, 
 	// check http://stackoverflow.com/questions/11159449
 	$input = json_decode($app->request->getBody());
 
-	if (!NotebookHelper::isValid($input)) {
+	if (!$notebookHelper->isValid($input)) {
 		$app->response->setStatus(400);
 		echo 'Invalid input';
 		return;
@@ -113,10 +126,10 @@ $app->put('/notebooks/:id(/)', function($id) use ($app) {
     	$notebook = ORM::for_table('notebook')->create();
     }
 
-	NotebookHelper::map($notebook, $input);
+	$notebookHelper->map($notebook, $input);
 	$notebook->save();
 
-	$notebook = NotebookHelper::getNotebookForId($notebook->id());
+	$notebook = $notebookHelper->getNotebookForId($notebook->id());
     	
 	if ($notebook == null) return $app->notFound();
 

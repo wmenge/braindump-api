@@ -5,43 +5,53 @@ Class NoteHelper {
 	const TYPE_TEXT = 'Text';
 	const TYPE_HTML = 'HTML';
 
-	public static function getNoteList($query = null) {
+	private $dbHelper;
+
+	public function __construct($dbHelper) {
+		$this->dbHelper = $dbHelper;
+	}
+
+	public function getNoteList($query = null) {
 		
 		// @TODO: Add paging to all lists
-		$queryObject = ORM::for_table('note')->select_many('id', 'notebook_id', 'title', 'created', 'updated', 'url');
+		$queryObj = ORM::for_table('note')->select_many('id', 'notebook_id', 'title', 'created', 'updated', 'url');
 		
 		if (!empty($query)) {
-			$queryObject = $queryObject->where_raw(
+			$queryObj = $queryObj->where_raw(
 				'(`title` LIKE ? OR `content` LIKE ?)', 
 				array(sprintf('%%%s%%', $query), sprintf('%%%s%%', $query)));
 		}
 
-		return $queryObject->find_array();
+		$queryObj = $this->dbHelper->addSortExpression($queryObj);
+
+		return $queryObj->find_array();
 	}
 
-	public static function getNoteListForNoteBook($notebook, $query = null) {
+	public function getNoteListForNoteBook($notebook, $query = null) {
 		
-		$queryObject = ORM::for_table('note')
+		$queryObj = ORM::for_table('note')
 			->select_many('id', 'notebook_id', 'title', 'created', 'updated', 'url')
 			->where_equal('notebook_id', $notebook->id);
 
 		if (!empty($query)) {
-			$queryObject = $queryObject->where_raw(
+			$queryObj = $queryObj->where_raw(
 				'(`title` LIKE ? OR `content` LIKE ?)', 
 				array(sprintf('%%%s%%', $query), sprintf('%%%s%%', $query)));
 		}
 		
-		return $queryObject->find_array();
+		$queryObj = $this->dbHelper->addSortExpression($queryObj);
+
+		return $queryObj->find_array();
 	}
 
-	public static function getNoteForId($id) {
+	public function getNoteForId($id) {
 		return ORM::for_table('note')
 			->select('*')
 			->where_equal('id', $id)
 			->find_one();
 	}
 
-	public static function isValid($data) {
+	public function isValid($data) {
 
 		// Check minimum required fields
 		return
@@ -51,7 +61,7 @@ Class NoteHelper {
 	//		($inpuxtData->content_url == null || !(filter_var($inputData->content_url, FILTER_VALIDATE_URL) === false);
 	}
 
-	public static function map($note, $notebook, $data) {
+	public function map($note, $notebook, $data) {
 		// Explicitly map parameters, be paranoid of your input
 		// check https://phpbestpractices.org 
 		// and http://stackoverflow.com/questions/129677
@@ -75,21 +85,23 @@ Class NoteHelper {
 	}
 }
 
-$app->get('/(notebooks/:id/)notes(/)', function($id = null) use ($app) {
+$noteHelper = new NoteHelper(new DatabaseHelper($app));
+
+$app->get('/(notebooks/:id/)notes(/)', function($id = null) use ($app, $noteHelper) {
 
 	$req = $app->request();
 	
 	if (empty($id)) {
-		outputJson(NoteHelper::getNoteList($req->get('q')));
+		outputJson($noteHelper->getNoteList($req->get('q')));
 	} else {
 		// Check if notebook exists, return 404 if it doesn't
 		$notebook = ORM::for_table('notebook')->find_one($id);
     	if ($notebook == null) return $app->notFound();
-		outputJson(NoteHelper::getNoteListForNoteBook($notebook, $req->get('q')));
+		outputJson($noteHelper->getNoteListForNoteBook($notebook, $req->get('q')));
 	}
 });
 
-$app->get('/(notebooks/:notebook_id/)notes/:note_id(/)', function($notebook_id, $note_id) use ($app) {
+$app->get('/(notebooks/:notebook_id/)notes/:note_id(/)', function($notebook_id, $note_id) use ($app, $noteHelper) {
 	
 	//Check if notebook exists, return 404 if it doesn't
 	if ($notebook_id != null) {
@@ -97,7 +109,7 @@ $app->get('/(notebooks/:notebook_id/)notes/:note_id(/)', function($notebook_id, 
     	if ($notebook == null) return $app->notFound();
 	}
 	
-	$note = NoteHelper::getNoteForId($note_id);
+	$note = $noteHelper->getNoteForId($note_id);
 
 	// Return 404 for non-existent note	
     if ($note == null) return $app->notFound();
@@ -110,7 +122,7 @@ $app->get('/(notebooks/:notebook_id/)notes/:note_id(/)', function($notebook_id, 
     outputJson($note->as_array());
 });
 
-$app->post('/notebooks/:id/notes(/)', function($id) use ($app) {
+$app->post('/notebooks/:id/notes(/)', function($id) use ($app, $noteHelper) {
 
 	//Check if notebook exists, return 400 if it doesn't
 	$notebook = ORM::for_table('notebook')->find_one($id);
@@ -123,24 +135,24 @@ $app->post('/notebooks/:id/notes(/)', function($id) use ($app) {
 
     $input = json_decode($app->request->getBody());
 
-    if (!NoteHelper::isValid($input)) {
+    if (!$noteHelper->isValid($input)) {
 		$app->response->setStatus(400);
 		echo 'Invalid input';
 		return;
 	}
 
 	$note = ORM::for_table('note')->create();
-	NoteHelper::map($note, $notebook, $input);
+	$noteHelper->map($note, $notebook, $input);
 	$note->save();
 
-	$note = NoteHelper::getNoteForId($note->id());
+	$note = $noteHelper->getNoteForId($note->id());
 	
 	if ($note == null) return $app->notFound();
 
 	outputJson($note->as_array());
 });
 
-$app->put('/(notebooks/:notebook_id/)notes/:note_id(/)', function($notebook_id, $note_id) use ($app) {
+$app->put('/(notebooks/:notebook_id/)notes/:note_id(/)', function($notebook_id, $note_id) use ($app, $noteHelper) {
 
 	// Check if notebook exists (if supplied)
 	if ($notebook_id != null) {
@@ -156,14 +168,14 @@ $app->put('/(notebooks/:notebook_id/)notes/:note_id(/)', function($notebook_id, 
 
 	$input = json_decode($app->request->getBody());
 
-    if (!NoteHelper::isValid($input)) {
+    if (!$noteHelper->isValid($input)) {
 		$app->response->setStatus(400);
 		echo 'Invalid input';
 		return;
 	}
 
 	// Get note
-	$note = ORM::for_table('note')->find_one($note_id);
+	$note = ORM::for_table('note')->find_one($note_id, $noteHelper);
 
 	if ($note == null) {
 		// For a create scenario, a valid notebook id should 
@@ -184,10 +196,10 @@ $app->put('/(notebooks/:notebook_id/)notes/:note_id(/)', function($notebook_id, 
     	}*/
 	}
 
-	NoteHelper::map($note, $notebook, $input);
+	$noteHelper->map($note, $notebook, $input);
 	$note->save();
 
-	$note = NoteHelper::getNoteForId($note->id());
+	$note = $noteHelper->getNoteForId($note->id());
 	
 	if ($note == null) return $app->notFound();
 
@@ -195,7 +207,7 @@ $app->put('/(notebooks/:notebook_id/)notes/:note_id(/)', function($notebook_id, 
    
 });
 
-$app->delete('(/notebooks/:notebook_id/)notes/:note_id(/)', function($notebook_id, $note_id) use ($app) {
+$app->delete('(/notebooks/:notebook_id/)notes/:note_id(/)', function($notebook_id, $note_id) use ($app, $noteHelper) {
 	
 	$note = ORM::for_table('note')->find_one($note_id);
 	    

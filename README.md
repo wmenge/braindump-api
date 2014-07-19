@@ -93,8 +93,8 @@ Url | Operation | Description
 /notebooks |`POST`|Creates a new notebook
 /notebooks/`:id` |`PUT`|Updates notebook with given `:id`
 /notebooks/`:id` |`DELETE`|Deletes notebook with given `:id`
-/notes?q=:query |`GET`|Retrieve an optionally filtered list of all available notes
-/notebooks/`:id`/notes?q=:query |`GET`|Retrieve an optionally filtered list of notes in Notebook with `:id`    (without content)
+/notes?q=`:query` |`GET`|Retrieve an optionally filtered list of all available notes
+/notebooks/`:id`/notes?q=`:query` |`GET`|Retrieve an optionally filtered list of notes in Notebook with `:id`    (without content)
 /notebooks/`:notebook_id`/notes/`:note_id` |`GET`|Get details of note with `:note_id` (with content)
 /notes/`:note_id` |`GET`|Alias of /notebooks/:notebook_id/notes/:note_id
 /notebooks/`:id`/notes |`POST`|Creates a new note
@@ -113,7 +113,11 @@ Alias of /notebooks
 ---
 ### /notebooks `GET`
 
-  Retrieves a list of available Notebooks
+  Retrieves a list of available Notebooks.
+
+  Use query parameter `sort` to specify a list of fields to sort by:
+  `/notebooks?sort=title,-id' means: sort by `title`, then by `id` descending.
+
 
 Example Response:
 ````
@@ -206,16 +210,21 @@ Example Response:
 ---
 ### /notes?q=:query `GET`
 
-Retrieve list of all available notes. If :query is supplied, only results
+Retrieve list of all available notes. If `:query` is supplied, only results
 with matching title or content are returned.
+
+Use query parameter `sort` to specify a list of fields to sort by:
+`/notebooks?sort=title,-id' means: sort by `title`, then by `id` descending.
 
 ---
 ### /notebooks/:id/notes?q=:query `GET`
 
-  Retrieves a list of Notes contained in given notebook, without the
-  actual content of the notes. If :query is supplied, only results
+Retrieves a list of Notes contained in given notebook, without the
+actual content of the notes. If :query is supplied, only results
 with matching title or content are returned.
 
+Use query parameter `sort` to specify a list of fields to sort by:
+`/notebooks?sort=title,-id' means: sort by `title`, then by `id` descending.
 
 Example Response:
 ````
@@ -383,7 +392,7 @@ Consider the following note, contained in the notebook with id  `1`:
 
 To move it to the notebook with id `2`, Execute the following Request:
 
-/notebooks/2/notes/1 `PUT`
+`/notebooks/2/notes/1` `PUT`
 
 HTTP Request Headers:
 `Content-Type: application/json`
