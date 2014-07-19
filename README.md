@@ -16,13 +16,12 @@ See [Braindump Client](https://github.com/wmenge/braindump-client) for a HTML/Ja
 
 Roadmap
 -------
-Currently, storing and retrieving plain-text notes is supported. If this project works out well I'll be adding functionality so 
-Braindump can serve as a reasonable alternative to Evernote.
+Currently, storing and retrieving simple HTML notes is supported. If this project works out well I'll be adding functionality so Braindump can serve as a reasonable alternative to Evernote.
 
 **Currently supported features:**
 
 * Maintaining/retrieving Notebooks: A notebook contains a number of Notes
-* Maintaining/retrieving Notes: A note is a piece of plaintext contained in a Notebook
+* Maintaining/retrieving Notes: A note is a piece of plaintext or HTML contained in a Notebook
 
 **Planned features:**
 
@@ -31,7 +30,6 @@ Braindump can serve as a reasonable alternative to Evernote.
 * Import/export of notes
 * Multiple users
 * Search
-* HTML Notes
 * Paste images/attachments
 * Security (Encryption of notes)
 
@@ -116,7 +114,7 @@ Alias of /notebooks
   Retrieves a list of available Notebooks.
 
   Use query parameter `sort` to specify a list of fields to sort by:
-  `/notebooks?sort=title,-id' means: sort by `title`, then by `id` descending.
+  `/notebooks?sort=title,-id` means: sort by `title`, then by `id` descending.
 
 
 Example Response:
@@ -214,7 +212,7 @@ Retrieve list of all available notes. If `:query` is supplied, only results
 with matching title or content are returned.
 
 Use query parameter `sort` to specify a list of fields to sort by:
-`/notebooks?sort=title,-id' means: sort by `title`, then by `id` descending.
+`/notebooks?sort=title,-id` means: sort by `title`, then by `id` descending.
 
 ---
 ### /notebooks/:id/notes?q=:query `GET`
@@ -224,7 +222,7 @@ actual content of the notes. If :query is supplied, only results
 with matching title or content are returned.
 
 Use query parameter `sort` to specify a list of fields to sort by:
-`/notebooks?sort=title,-id' means: sort by `title`, then by `id` descending.
+`/notebooks?sort=title,-id` means: sort by `title`, then by `id` descending.
 
 Example Response:
 ````
