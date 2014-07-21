@@ -423,5 +423,6 @@ Links & References
 
 * Parsing large xml documents: http://stackoverflow.com/questions/911663/parsing-huge-xml-files-in-php
   (for evernote import)
-
 * http://dev.evernote.com/doc/articles/enml.php for evenrote html format
+* https://phpbestpractices.org
+* http://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api
