@@ -41,17 +41,17 @@ Class DatabaseHelper {
 	 */
 	private function parseSortExpression($sortString) {
 
-		$tokens = explode(',', $sortString);
-
+		$tokens = mb_split(',', $sortString);
+		
 		foreach ($tokens as $token) {
 			
 			$trimmedToken = trim($token);
-			$firstChar = substr($trimmedToken, 0, 1);
+			$firstChar = mb_substr($trimmedToken, 0, 1);
 
 			$expression = new stdClass();
 
 			if ($firstChar == '-') {
-				$expression->field = trim(substr($trimmedToken, 1));
+				$expression->field = trim(mb_substr($trimmedToken, 1));
 				$expression->order = SORT_DESC;
 			} else {
 				$expression->field = $trimmedToken;
