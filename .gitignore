@@ -1,4 +1,4 @@
-*.composer.phar
+composer.phar
 *.sqlite
 vendor
 *.sublime-project
