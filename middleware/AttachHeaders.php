@@ -1,4 +1,7 @@
 <?php
+
+namespace Braindump\Api\Middleware;
+
 class AttachHeaders extends \Slim\Middleware
 {
     public function call()
