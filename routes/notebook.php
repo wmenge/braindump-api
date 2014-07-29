@@ -11,13 +11,13 @@ class NotebookHelper
         $this->dbHelper = $dbHelper;
     }
 
-    public function getNoteBookList()
+    public function getNoteBookList($sortString)
     {
         $query = \ORM::for_table('notebook')
             ->select('*')
             ->select_expr('(SELECT COUNT(*) FROM note WHERE notebook_id = notebook.id)', 'noteCount');
 
-        $query = $this->dbHelper->addSortExpression($query);
+        $query = $this->dbHelper->addSortExpression($query, $sortString);
 
         return $query->find_array();
     }
@@ -69,15 +69,15 @@ class NotebookHelper
     }
 }
 
-$notebookHelper = new NotebookHelper(new \Braindump\Api\DatabaseHelper($app));
+$notebookHelper = new NotebookHelper(new \Braindump\Api\DatabaseHelper());
 
-$app->get('/(notebooks)(/)', function () use ($notebookHelper) {
+$app->get('/(notebooks)(/)', function () use ($notebookHelper, $app) {
 
-    $list = $notebookHelper->getNoteBookList();
+    $list = $notebookHelper->getNoteBookList($app->request()->get('sort'));
 
     if (empty($list)) {
-        NotebookHelper::createSampleData();
-        $list = NotebookHelper::getNoteBookList();
+        $notebookHelper->createSampleData();
+        $list = $notebookHelper->getNoteBookList($app->request()->get('sort'));
     }
 
     outputJson($list);

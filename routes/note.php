@@ -14,7 +14,7 @@ class NoteHelper
         $this->dbHelper = $dbHelper;
     }
 
-    public function getNoteList($query = null)
+    public function getNoteList($sortString, $queryString = null)
     {
         // @TODO: Add paging to all lists
         $queryObj = \ORM::for_table('note')->select_many('id', 'notebook_id', 'title', 'created', 'updated', 'url');
@@ -26,12 +26,12 @@ class NoteHelper
             );
         }
 
-        $queryObj = $this->dbHelper->addSortExpression($queryObj);
+        $queryObj = $this->dbHelper->addSortExpression($queryObj, $sortString);
 
         return $queryObj->find_array();
     }
 
-    public function getNoteListForNoteBook($notebook, $query = null)
+    public function getNoteListForNoteBook($notebook, $sortString, $query = null)
     {
         $queryObj = \ORM::for_table('note')
             ->select_many('id', 'notebook_id', 'title', 'created', 'updated', 'url')
@@ -44,7 +44,7 @@ class NoteHelper
             );
         }
 
-        $queryObj = $this->dbHelper->addSortExpression($queryObj);
+        $queryObj = $this->dbHelper->addSortExpression($queryObj, $sortString);
 
         return $queryObj->find_array();
     }
@@ -101,14 +101,14 @@ $app->get('/(notebooks/:id/)notes(/)', function ($id = null) use ($app, $noteHel
     $req = $app->request();
 
     if (empty($id)) {
-        outputJson($noteHelper->getNoteList($req->get('q')));
+        outputJson($noteHelper->getNoteList($req->get('sort'), $req->get('q')));
     } else {
         // Check if notebook exists, return 404 if it doesn't
         $notebook = \ORM::for_table('notebook')->find_one($id);
         if ($notebook == null) {
             return $app->notFound();
         }
-        outputJson($noteHelper->getNoteListForNoteBook($notebook, $req->get('q')));
+        outputJson($noteHelper->getNoteListForNoteBook($notebook, $req->get('sort'), $req->get('q')));
     }
 });
 

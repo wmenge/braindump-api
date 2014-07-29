@@ -27,9 +27,9 @@ $app->options('/:wildcard+', function () {
     header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS, DELETE');
 });
 
-$app->get('/setup', function () use ($app) {
-    $dbHelper = new DatabaseHelper($app);
-    $dbHelper->createDatabase();
+$app->post('/setup', function () use ($app) {
+    $dbHelper = new \Braindump\Api\DatabaseHelper();
+    $dbHelper->createDatabase(ORM::get_db(), $app->braindumpConfig['databases_setup_scripts']);
 });
 
 $app->get('/info', function () {
