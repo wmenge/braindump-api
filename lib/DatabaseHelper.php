@@ -4,20 +4,9 @@ namespace Braindump\Api;
 
 class DatabaseHelper
 {
-    private $app;
 
-    public function __construct($app)
+    public function createDatabase($db, $scripts)
     {
-        $this->app = $app;
-    }
-
-    public function createDatabase()
-    {
-        $db = ORM::get_db();
-
-        // Fetch initial SQL script and subsequent migration scripts
-        $scripts = $this->app->braindumpConfig['databases_setup_scripts'];
-
         // For initial setup, just run all scripts
         // TODO: Migration scenarios
         foreach ($scripts as $version => $script) {
@@ -42,8 +31,9 @@ class DatabaseHelper
 	 *
 	 * Does not check if fieldnames actually exist
 	 */
-    private function parseSortExpression($sortString)
+    public function parseSortExpression($sortString)
     {
+        $expressions = array();
         $tokens = mb_split(',', $sortString);
 
         foreach ($tokens as $token) {
@@ -69,10 +59,15 @@ class DatabaseHelper
         return $expressions;
     }
 
-    public function addSortExpression($query)
+    /***
+     *
+     * Adds sort expression to given $query object
+     *
+     */
+    public function addSortExpression($query, $sortString)
     {
-        $string = $this->app->request()->get('sort');
-        $sortList = $this->parseSortExpression($string);
+        //$string = $this->app->request()->get('sort');
+        $sortList = $this->parseSortExpression($sortString);
         if (empty($sortList)) {
             return $query;
         }

@@ -1,0 +1,7 @@
+<phpunit bootstrap="tests/bootstrap.php">
+    <testsuites>
+      <testsuite name="Braindump PHP Unit/Integration testing">
+        <directory>tests</directory>
+      </testsuite>
+    </testsuites>
+</phpunit>
