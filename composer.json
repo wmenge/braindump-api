@@ -1,7 +1,20 @@
 {
+    "name": "wmenge/braindumpa-pi",
+    "description": "Braindump Backend API",
+    "license": "MIT",
+    "version": "0.1.1",
+    "authors": [
+        {
+            "name": "Wilco Menge",
+            "email": "wilcomenge@gmail.com",
+            "role": "Developer"
+        }
+    ],
     "require": {
+        "php": ">=5.3",
         "slim/slim": "2.*",
+        "slim/extras": "2.*",
         "j4mie/idiorm": "1.*",
-        "ezyang/htmlpurifier": "v4.6.0"
+        "ezyang/htmlpurifier": "v4.6.0"   
     }
 }
