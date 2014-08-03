@@ -1,21 +1,37 @@
 <?php
 
-namespace Braindump\Api;
+namespace Braindump\Api\Lib;
 
 class DatabaseHelper
 {
-
-    public function createDatabase($db, $scripts)
+    // Todo: Replace with phinx: http://docs.phinx.org/en/latest/index.html
+    public function createDatabase(\PDO $db, $scripts)
     {
+        $results = array();
+
+        $db->beginTransaction();
+
         // For initial setup, just run all scripts
         // TODO: Migration scenarios
-        foreach ($scripts as $version => $script) {
-            echo sprintf('Execute script for version %s<br />', $version);
-            $sql = file_get_contents($script);
-            $db->exec($sql);
+        // TODO: Integration tests for each consecutive migration scenario
+
+        try {
+        
+            foreach ($scripts as $version => $script) {
+                // rethrow file not found warning to an exception
+                $sql = @file_get_contents($script);
+                if ($sql === false) {
+                    throw new \Exception("File not found", 1);
+                }
+                $db->exec($sql);
+            }
+            $db->commit();
+        
+        } catch (\PDOException $e) {
+            $db->rollback();
         }
 
-        echo 'Setup performed';
+        return $results;
     }
 
     /***
@@ -31,7 +47,7 @@ class DatabaseHelper
 	 *
 	 * Does not check if fieldnames actually exist
 	 */
-    public function parseSortExpression($sortString)
+    private function parseSortExpression($sortString)
     {
         $expressions = array();
         $tokens = mb_split(',', $sortString);
@@ -66,7 +82,6 @@ class DatabaseHelper
      */
     public function addSortExpression($query, $sortString)
     {
-        //$string = $this->app->request()->get('sort');
         $sortList = $this->parseSortExpression($sortString);
         if (empty($sortList)) {
             return $query;
