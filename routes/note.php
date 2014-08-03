@@ -94,7 +94,7 @@ class NoteHelper
     }
 }
 
-$noteHelper = new NoteHelper(new \Braindump\Api\DatabaseHelper($app));
+$noteHelper = new NoteHelper(new \Braindump\Api\Lib\DatabaseHelper($app));
 
 $app->get('/(notebooks/:id/)notes(/)', function ($id = null) use ($app, $noteHelper) {
 

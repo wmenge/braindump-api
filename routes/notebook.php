@@ -69,7 +69,7 @@ class NotebookHelper
     }
 }
 
-$notebookHelper = new NotebookHelper(new \Braindump\Api\DatabaseHelper());
+$notebookHelper = new \Braindump\Api\Model\NotebookHelper(new \Braindump\Api\Lib\DatabaseHelper());
 
 $app->get('/(notebooks)(/)', function () use ($notebookHelper, $app) {
 

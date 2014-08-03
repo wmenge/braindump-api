@@ -19,21 +19,17 @@ namespace Braindump\Api\Tests\Unit;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../../lib/DatabaseHelper.php';
-//require_once __DIR__ . '/MockPDOHelper.php';
 require_once __DIR__ . '/MockORMHelper.php';
 
 class DatabaseHelperTest extends \PHPUnit_Framework_TestCase
 {
     protected $helper;
-    //protected $pdo;
     protected $orm;
 
     protected function setUp()
     {
-        $this->helper = new \Braindump\Api\DatabaseHelper();
+        $this->helper = new \Braindump\Api\Lib\DatabaseHelper();
         
-        //$this->pdo = $this->getMock('MockPDOHelper');
-
         $this->orm = $this->getMock('\MockORMHelper', ['order_by_asc', 'order_by_desc']);
 
         $this->orm->method('order_by_asc')
