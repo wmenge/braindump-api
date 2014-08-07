@@ -1,26 +1,11 @@
 <?php
-namespace Braindump\Api;
-
-// mock function
-function file_get_contents($filename)
-{
-    switch ($filename) {
-        case './non_existing_file.sql':
-            return \file_get_contents($filename);
-            break;
-        
-        default:
-            return 'Dummy SQL script;';
-            break;
-    }
-}
-
-namespace Braindump\Api\Tests\Unit;
+namespace Braindump\Api\Test\Unit;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../../lib/DatabaseHelper.php';
 require_once __DIR__ . '/MockORMHelper.php';
-
+//PHPUnit_Extensions_Database_TestCase
+//PHPUnit_Extensions_Database_TestCase
 class DatabaseHelperTest extends \PHPUnit_Framework_TestCase
 {
     protected $helper;
