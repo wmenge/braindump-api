@@ -1,100 +1,8 @@
 <?php
 
-namespace Braindump\Api\Model;
+require_once('../model/NoteHelper.php');
 
-class NoteHelper
-{
-    const TYPE_TEXT = 'Text';
-    const TYPE_HTML = 'HTML';
-
-    private $dbHelper;
-
-    public function __construct($dbHelper)
-    {
-        $this->dbHelper = $dbHelper;
-    }
-
-    public function getNoteList($sortString, $queryString = null)
-    {
-        // @TODO: Add paging to all lists
-        $queryObj = \ORM::for_table('note')->select_many('id', 'notebook_id', 'title', 'created', 'updated', 'url');
-
-        if (!empty($query)) {
-            $queryObj = $queryObj->where_raw(
-                '(`title` LIKE ? OR `content` LIKE ?)',
-                array(sprintf('%%%s%%', $query), sprintf('%%%s%%', $query))
-            );
-        }
-
-        $queryObj = $this->dbHelper->addSortExpression($queryObj, $sortString);
-
-        return $queryObj->find_array();
-    }
-
-    public function getNoteListForNoteBook($notebook, $sortString, $query = null)
-    {
-        $queryObj = \ORM::for_table('note')
-            ->select_many('id', 'notebook_id', 'title', 'created', 'updated', 'url')
-            ->where_equal('notebook_id', $notebook->id);
-
-        if (!empty($query)) {
-            $queryObj = $queryObj->where_raw(
-                '(`title` LIKE ? OR `content` LIKE ?)',
-                array(sprintf('%%%s%%', $query), sprintf('%%%s%%', $query))
-            );
-        }
-
-        $queryObj = $this->dbHelper->addSortExpression($queryObj, $sortString);
-
-        return $queryObj->find_array();
-    }
-
-    public function getNoteForId($id)
-    {
-        return \ORM::for_table('note')
-            ->select('*')
-            ->where_equal('id', $id)
-            ->find_one();
-    }
-
-    public function isValid($data)
-    {
-        // Check minimum required fields
-        return
-            is_object($data) &&
-            !empty($data->title) &&
-            in_array($data->type, array(NoteHelper::TYPE_TEXT, NoteHelper::TYPE_HTML));
-    //		($inpuxtData->content_url == null || !(filter_var($inputData->content_url, FILTER_VALIDATE_URL) === false);
-    }
-
-    public function map($note, $notebook, $data)
-    {
-        // Explicitly map parameters, be paranoid of your input
-        // check https://phpbestpractices.org
-        // and http://stackoverflow.com/questions/129677
-        if (!empty($notebook)) {
-            $note->notebook_id = $notebook->id;
-        }
-        $note->title = htmlentities($data->title, ENT_QUOTES, 'UTF-8');
-        $note->url = htmlentities($data->url, ENT_QUOTES, 'UTF-8');
-        $note->type = htmlentities($data->type, ENT_QUOTES, 'UTF-8');
-        if ($note->type == NoteHelper::TYPE_HTML) {
-            // check http://dev.evernote.com/doc/articles/enml.php for evenrote html format
-            // @TODO Check which tags to allow/disallow
-            // @TODO Allow images with base64 content
-            $purifier = new \HTMLPurifier(\HTMLPurifier_Config::createDefault());
-            $note->content = $purifier->purify($data->content);
-        } elseif ($note->type == NoteHelper::TYPE_TEXT) {
-            $note->content = htmlentities($data->content, ENT_QUOTES, 'UTF-8');
-        }
-        if ($note->created == null) {
-            $note->created = time();
-        }
-        $note->updated = time();
-    }
-}
-
-$noteHelper = new NoteHelper(new \Braindump\Api\Lib\DatabaseHelper($app));
+$noteHelper = new \Braindump\Api\Model\NoteHelper(new \Braindump\Api\Lib\DatabaseHelper($app));
 
 $app->get('/(notebooks/:id/)notes(/)', function ($id = null) use ($app, $noteHelper) {
 
@@ -138,8 +46,6 @@ $app->get('/(notebooks/:notebook_id/)notes/:note_id(/)', function ($notebook_id,
 });
 
 $app->post('/notebooks/:id/notes(/)', function ($id) use ($app, $noteHelper) {
-
-    //sleep(3);
 
     //Check if notebook exists, return 400 if it doesn't
     $notebook = \ORM::for_table('notebook')->find_one($id);

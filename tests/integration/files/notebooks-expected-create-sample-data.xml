@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<dataset>
+    <notebook id="1" title="title 1" />
+    <notebook id="2" title="title 2" />
+    <notebook id="3" title="Your first notebook" />
+    <note 
+        id="1" 
+        notebook_id="3" 
+        title="This is a Note" 
+        created="0"
+        updated="0"
+        url="https://github.com/wmenge/braindump-api" 
+        type="HTML" 
+        content="&lt;div&gt;Your very first note&lt;/div&gt;" />
+    
+</dataset>

@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<dataset>
+    <notebook title="title 1" />
+    <notebook title="title 2" />
+    <note 
+        id="1" 
+        notebook_id="1" 
+        title="note 1" 
+        created="0"
+        updated="0"
+        type="Text" 
+        content="Note content" />
+    <note 
+        id="2" 
+        notebook_id="1" 
+        title="note 2" 
+        created="0"
+        updated="0"
+        type="Text" 
+        content="Second note content" />
+    <note 
+        id="3" 
+        notebook_id="2" 
+        title="note 3" 
+        created="0"
+        updated="0"
+        type="Text" 
+        content="Third note content" />
+</dataset>
