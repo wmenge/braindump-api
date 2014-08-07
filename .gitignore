@@ -1,5 +1,6 @@
 composer.phar
 *.sqlite
 vendor
+build
 *.sublime-project
 *.sublime-workspace

@@ -16,5 +16,9 @@
         "slim/extras": "2.*",
         "j4mie/idiorm": "1.*",
         "ezyang/htmlpurifier": "v4.6.0"   
+    },
+    "require-dev": {
+        "phpunit/phpunit": "@stable",
+        "phpunit/dbunit": "@stable"
     }
 }
