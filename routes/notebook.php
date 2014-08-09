@@ -1,20 +1,19 @@
 <?php
 namespace Braindump\Api;
 
-require_once('../model/NotebookHelper.php');
+require_once(__DIR__ . '/../model/NotebookHelper.php');
 
 $notebookHelper = new \Braindump\Api\Model\NotebookHelper(new \Braindump\Api\Lib\DatabaseHelper());
 
 $app->get('/(notebooks)(/)', function () use ($notebookHelper, $app) {
-
+   
     $list = $notebookHelper->getNoteBookList($app->request()->get('sort'));
-
     if (empty($list)) {
         $notebookHelper->createSampleData();
         $list = $notebookHelper->getNoteBookList($app->request()->get('sort'));
     }
 
-    outputJson($list);
+    outputJson($list, $app);
 });
 
 $app->get('/notebooks/:id(/)', function ($id) use ($app, $notebookHelper) {
@@ -25,7 +24,7 @@ $app->get('/notebooks/:id(/)', function ($id) use ($app, $notebookHelper) {
         return $app->notFound();
     }
 
-    outputJson($notebook->as_array());
+    outputJson($notebook->as_array(), $app);
 });
 
 $app->post('/notebooks(/)', function () use ($app, $notebookHelper) {
@@ -44,15 +43,12 @@ $app->post('/notebooks(/)', function () use ($app, $notebookHelper) {
 
     $notebook = \ORM::for_table('notebook')->create();
     $notebookHelper->map($notebook, $input);
+    // Todo: Check errors after db operations
     $notebook->save();
 
     $notebook = $notebookHelper->getNotebookForId($notebook->id());
 
-    if ($notebook == null) {
-        return $app->notFound();
-    }
-
-    outputJson($notebook->as_array());
+    outputJson($notebook->as_array(), $app);
 });
 
 $app->put('/notebooks/:id(/)', function ($id) use ($app, $notebookHelper) {
@@ -79,11 +75,7 @@ $app->put('/notebooks/:id(/)', function ($id) use ($app, $notebookHelper) {
 
     $notebook = $notebookHelper->getNotebookForId($notebook->id());
 
-    if ($notebook == null) {
-        return $app->notFound();
-    }
-
-    outputJson($notebook->as_array());
+    outputJson($notebook->as_array(), $app);
 });
 
 $app->delete('/notebooks/:id(/)', function ($id) use ($app) {

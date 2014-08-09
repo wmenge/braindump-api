@@ -1,4 +1,17 @@
 <?php
+namespace Braindump\Api;
+
+function outputJson($data, $app)
+{
+    // JSON_NUMERIC_CHECK is needed as PDO will return strings
+    // as default (even if DB schema defines numeric types).
+    // http://stackoverflow.com/questions/11128823/how-to-properly-format-pdo-results-numeric-results-returned-as-string
+    // todo: replace with proper rendering engine?
+    $app->response()->body(json_encode($data, JSON_PRETTY_PRINT | JSON_NUMERIC_CHECK));
+}
+
+namespace Braindump\Api\Test\Integration;
+
 //
 // Unit Test Bootstrap and Slim PHP Testing Framework
 // =============================================================================
@@ -13,9 +26,115 @@
 //
 // -----------------------------------------------------------------------------
 
+
 error_reporting(-1);
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 date_default_timezone_set('UTC');
 
 require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../lib/DatabaseHelper.php';
+
+abstract class AbstractDbTest extends \PHPUnit_Extensions_Database_TestCase
+{
+    // only instantiate PHPUnit_Extensions_Database_DB_IDatabaseConnection once per test
+    private static $conn = null;
+
+    protected function setUp()
+    {
+        $dbHelper = new \Braindump\Api\Lib\DatabaseHelper();
+        $dbHelper->createDatabase(\ORM::get_db(), [ '0.1' => __DIR__ . '/../data/braindump.create.sqlite.sql']);
+        
+        parent::setUp();
+    }
+
+    /**
+     * @return PHPUnit_Extensions_Database_DB_IDatabaseConnection
+     */
+    public function getConnection()
+    {
+        if (self::$conn === null) {
+            \ORM::configure([ 'connection_string' => 'sqlite::memory:' ]);
+            $dbHelper = new \Braindump\Api\Lib\DatabaseHelper();
+            self::$conn = $this->createDefaultDBConnection(\ORM::get_db(), ':memory:');
+        }
+        
+        return self::$conn;
+    }
+}
+
+abstract class Slim_Framework_TestCase extends AbstractDbTest
+{
+    // We support these methods for testing. These are available via
+    // `this->get()` and `$this->post()`. This is accomplished with the
+    // `__call()` magic method below.
+    private $testingMethods = array('get', 'post', 'patch', 'put', 'delete', 'head');
+
+    // Run for each unit test to setup our slim app environment
+    public function setup()
+    {
+        // Initialize our own copy of the slim application
+        $app = new \Slim\Slim(array(
+            'version'        => '0.0.0',
+            'debug'          => false,
+            'mode'           => 'testing',
+            'templates.path' => __DIR__ . '/../app/templates'
+        ));
+
+        // Include our core application file
+        //require __DIR__ . '/../app/app.php';
+        require __DIR__ . '/../routes/note.php';
+        require __DIR__ . '/../routes/notebook.php';
+
+        // Establish a local reference to the Slim app object
+        $this->app = $app;
+
+        parent::setUp();
+
+    }
+
+    // Abstract way to make a request to SlimPHP, this allows us to mock the
+    // slim environment
+    private function request($method, $path, $body, $optionalHeaders = array())
+    {
+        // Capture STDOUT
+        ob_start();
+
+        if (is_array($body)) {
+            $input = http_build_query($body);
+        } elseif (is_string($body)) {
+            $input = $body;
+        }
+
+        // Prepare a mock environment
+        \Slim\Environment::mock(array_merge(array(
+            'REQUEST_METHOD' => strtoupper($method),
+            'PATH_INFO'      => $path,
+            'SERVER_NAME'    => 'local.dev',
+            //'slim.input'     => http_build_query($formVars)
+            'slim.input'     => $input
+        ), $optionalHeaders));
+
+        // Establish some useful references to the slim app properties
+        $this->request  = $this->app->request();
+        $this->response = $this->app->response();
+
+        // Execute our app
+        $this->app->run();
+
+        // Return the application output. Also available in `response->body()`
+        return ob_get_clean();
+    }
+
+    // Implement our `get`, `post`, and other http operations
+    public function __call($method, $arguments)
+    {
+        if (in_array($method, $this->testingMethods)) {
+            list($path, $formVars, $headers) = array_pad($arguments, 3, array());
+            return $this->request($method, $path, $formVars, $headers);
+        }
+        throw new \BadMethodCallException(strtoupper($method) . ' is not supported');
+    }
+}
+
+/* End of file bootstrap.php */

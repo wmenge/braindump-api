@@ -1,6 +1,6 @@
 <?php
 
-require_once('../model/NoteHelper.php');
+require_once(__DIR__ . '/../model/NoteHelper.php');
 
 $noteHelper = new \Braindump\Api\Model\NoteHelper(new \Braindump\Api\Lib\DatabaseHelper($app));
 

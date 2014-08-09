@@ -11,12 +11,13 @@ $app->braindumpConfig = (require '../config/braindump-config.php');
 
 ORM::configure($app->idiormConfig);
 
-function outputJson($data)
+function outputJson($data, $app)
 {
     // JSON_NUMERIC_CHECK is needed as PDO will return strings
     // as default (even if DB schema defines numeric types).
     // http://stackoverflow.com/questions/11128823/how-to-properly-format-pdo-results-numeric-results-returned-as-string
-    echo json_encode($data, JSON_PRETTY_PRINT | JSON_NUMERIC_CHECK);
+    // todo: replace with proper rendering engine?
+    $app->response()->body(json_encode($data, JSON_PRETTY_PRINT | JSON_NUMERIC_CHECK));
 }
 
 // Angular JS will preflight Cross domain POST and PUT request
