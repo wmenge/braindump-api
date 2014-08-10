@@ -63,20 +63,36 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
         $requestBody = '{ "title": "New Notebook" }';
 
         $this->post('/notebooks', $requestBody);
+        
+        // Assert response
         $this->assertEquals(200, $this->response->status());
         $this->assertSame($expected, $this->response->body());
 
-        // Todo: Assert db content
+        // Assert db content
+        $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/post-notebooks-expected-1.xml');
+        $expectedNotebookContent = $dataset->getTable("notebook");
+        
+        $notebookTable = $this->getConnection()->createQueryTable('notebook', 'SELECT * FROM notebook');
+        
+        $this->assertTablesEqual($expectedNotebookContent, $notebookTable);
     }
 
     public function testPostInvalidNotebook()
     {
         $requestBody = '{ }';
 
+        // Assert response
         $this->post('/notebooks', $requestBody);
         $this->assertEquals(400, $this->response->status());
         // todo: assert message
-        // Todo: Assert db content
+    
+        // Assert db content
+        $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/post-notebooks-expected-2.xml');
+        $expectedNotebookContent = $dataset->getTable("notebook");
+        
+        $notebookTable = $this->getConnection()->createQueryTable('notebook', 'SELECT * FROM notebook');
+        
+        $this->assertTablesEqual($expectedNotebookContent, $notebookTable);
     }
 
     public function testPutNotebook()
@@ -86,10 +102,18 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
         $requestBody = '{ "title": "Updated title" }';
 
         $this->put('/notebooks/1', $requestBody);
+
+        // Assert response
         $this->assertEquals(200, $this->response->status());
         $this->assertSame($expected, $this->response->body());
 
-        // Todo: Assert db content
+        // Assert db content
+        $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/put-notebooks-expected-1.xml');
+        $expectedNotebookContent = $dataset->getTable("notebook");
+        
+        $notebookTable = $this->getConnection()->createQueryTable('notebook', 'SELECT * FROM notebook');
+        
+        $this->assertTablesEqual($expectedNotebookContent, $notebookTable);
     }
 
     public function testPutNewNotebook()
@@ -102,7 +126,13 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
         $this->assertEquals(200, $this->response->status());
         $this->assertSame($expected, $this->response->body());
 
-        // Todo: Assert db content
+        // Assert db content
+        $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/post-notebooks-expected-1.xml');
+        $expectedNotebookContent = $dataset->getTable("notebook");
+        
+        $notebookTable = $this->getConnection()->createQueryTable('notebook', 'SELECT * FROM notebook');
+        
+        $this->assertTablesEqual($expectedNotebookContent, $notebookTable);
     }
 
     public function testPutInvalidNotebook()
@@ -112,8 +142,13 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
         $this->put('/notebooks/1', $requestBody);
         $this->assertEquals(400, $this->response->status());
         
-        // todo: assert message
-        // Todo: Assert db content
+        // Assert db content
+        $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/post-notebooks-expected-2.xml');
+        $expectedNotebookContent = $dataset->getTable("notebook");
+        
+        $notebookTable = $this->getConnection()->createQueryTable('notebook', 'SELECT * FROM notebook');
+        
+        $this->assertTablesEqual($expectedNotebookContent, $notebookTable);
     }
 
     public function testDeleteNotebook()
@@ -121,16 +156,29 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
         $this->delete('/notebooks/1');
         $this->assertEquals(200, $this->response->status());
 
-        // Todo: Assert db content
         // test also with non-empty notebook
+
+        // Assert db content
+        $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/delete-notebooks-expected-1.xml');
+        $expectedNotebookContent = $dataset->getTable("notebook");
+        
+        $notebookTable = $this->getConnection()->createQueryTable('notebook', 'SELECT * FROM notebook');
+        
+        $this->assertTablesEqual($expectedNotebookContent, $notebookTable);
     }
 
     public function testDeleteUnknownNotebook()
     {
         $this->delete('/notebooks/3');
         $this->assertEquals(404, $this->response->status());
-
         // todo: assert message
-        // Todo: Assert db content
+        
+        // Assert db content
+        $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/post-notebooks-expected-2.xml');
+        $expectedNotebookContent = $dataset->getTable("notebook");
+        
+        $notebookTable = $this->getConnection()->createQueryTable('notebook', 'SELECT * FROM notebook');
+        
+        $this->assertTablesEqual($expectedNotebookContent, $notebookTable);
     }
 }
