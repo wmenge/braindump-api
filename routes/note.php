@@ -9,14 +9,14 @@ $app->get('/(notebooks/:id/)notes(/)', function ($id = null) use ($app, $noteHel
     $req = $app->request();
 
     if (empty($id)) {
-        outputJson($noteHelper->getNoteList($req->get('sort'), $req->get('q')));
+        outputJson($noteHelper->getNoteList($req->get('sort'), $req->get('q')), $app);
     } else {
         // Check if notebook exists, return 404 if it doesn't
         $notebook = \ORM::for_table('notebook')->find_one($id);
         if ($notebook == null) {
             return $app->notFound();
         }
-        outputJson($noteHelper->getNoteListForNoteBook($notebook, $req->get('sort'), $req->get('q')));
+        outputJson($noteHelper->getNoteListForNoteBook($notebook, $req->get('sort'), $req->get('q')), $app);
     }
 });
 
@@ -42,7 +42,7 @@ $app->get('/(notebooks/:notebook_id/)notes/:note_id(/)', function ($notebook_id,
         $app->redirect(sprintf('/notebooks/%s/notes/%s', $note->notebook_id, $note->id));
     }
 
-    outputJson($note->as_array());
+    outputJson($note->as_array(), $app);
 });
 
 $app->post('/notebooks/:id/notes(/)', function ($id) use ($app, $noteHelper) {
@@ -76,7 +76,7 @@ $app->post('/notebooks/:id/notes(/)', function ($id) use ($app, $noteHelper) {
         return $app->notFound();
     }
 
-    outputJson($note->as_array());
+    outputJson($note->as_array(), $app);
 });
 
 $app->put('/(notebooks/:notebook_id/)notes/:note_id(/)', function ($notebook_id, $note_id) use ($app, $noteHelper) {
@@ -138,7 +138,7 @@ $app->put('/(notebooks/:notebook_id/)notes/:note_id(/)', function ($notebook_id,
         return $app->notFound();
     }
 
-    outputJson($note->as_array());
+    outputJson($note->as_array(), $app);
 
 });
 
