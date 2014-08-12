@@ -46,16 +46,16 @@ class DatabaseHelperTest extends \PHPUnit_Framework_TestCase
         return [
 
           // Basic testcases with a few fields
-          ['title', 1, 0, ['title']],
-          ['title,modified', 2, 0, ['title','modified']],
-          ['-title', 0, 1, ['title']],
-          ['title,-modified', 1, 1, ['title','modified']],
+          ['title'           , 1, 0, ['title']],
+          ['title,modified'  , 2, 0, ['title','modified']],
+          ['-title'          , 0, 1, ['title']],
+          ['title,-modified' , 1, 1, ['title','modified']],
           ['-title,-modified', 0, 2, ['title','modified']],
 
           // Bad user input (leading, trailing spaces, should be corrected
-          ['title ', 1, 0, ['title']],
+          ['title '           , 1, 0, ['title']],
           [' title, modified ', 2, 0, ['title','modified']],
-          ['- title', 0, 1, ['title']],
+          ['- title'          , 0, 1, ['title']],
           ['title, - modified', 1, 1, ['title','modified']],
 
           // No input, should lead to empty output

@@ -15,14 +15,14 @@ class NotebookHelperTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider testIsValidProvider
+     * @dataProvider isValidProvider
      */
     public function testIsValid($model, $expectedValid)
     {
         $this->assertEquals($expectedValid, $this->helper->isValid($model));
     }
 
-    public function testIsValidProvider()
+    public function isValidProvider()
     {
         return [
             [null, false],
@@ -36,7 +36,7 @@ class NotebookHelperTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider testMapProvider
+     * @dataProvider mapProvider
      */
     public function testMap($input, $output)
     {
@@ -45,7 +45,7 @@ class NotebookHelperTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($output, $mockNotebook);
     }
 
-    public function testMapProvider()
+    public function mapProvider()
     {
         return [
             [null, (object)[]],
