@@ -95,24 +95,30 @@ abstract class Slim_Framework_TestCase extends AbstractDbTest
 
     // Abstract way to make a request to SlimPHP, this allows us to mock the
     // slim environment
-    private function request($method, $path, $body, $optionalHeaders = array())
+    private function request($method, $path, $formVars, $optionalHeaders = array())
     {
         // Capture STDOUT
         ob_start();
 
-        if (is_array($body)) {
-            $input = http_build_query($body);
-        } elseif (is_string($body)) {
-            $input = $body;
+        if (is_array($formVars)) {
+            $input = http_build_query($formVars);
+        } elseif (is_string($formVars)) {
+            $input = $formVars;
         }
 
+        // separate querystring from route
+        $querystring = '';
+        if (strpos($path, '?') !== false) {
+            list($path, $querystring) = explode("?", $path);
+        }
         // Prepare a mock environment
         \Slim\Environment::mock(array_merge(array(
             'REQUEST_METHOD' => strtoupper($method),
             'PATH_INFO'      => $path,
             'SERVER_NAME'    => 'local.dev',
             //'slim.input'     => http_build_query($formVars)
-            'slim.input'     => $input
+            'slim.input'     => $input,
+            'QUERY_STRING'   => $querystring
         ), $optionalHeaders));
 
         // Establish some useful references to the slim app properties
