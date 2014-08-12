@@ -1,4 +1,5 @@
 <?php
+namespace Braindump\Api;
 
 require_once(__DIR__ . '/../model/NoteHelper.php');
 
@@ -21,6 +22,8 @@ $app->get('/(notebooks/:id/)notes(/)', function ($id = null) use ($app, $noteHel
 });
 
 $app->get('/(notebooks/:notebook_id/)notes/:note_id(/)', function ($notebook_id, $note_id) use ($app, $noteHelper) {
+
+    $notebook = null;
 
     //Check if notebook exists, return 404 if it doesn't
     if ($notebook_id != null) {
@@ -47,14 +50,11 @@ $app->get('/(notebooks/:notebook_id/)notes/:note_id(/)', function ($notebook_id,
 
 $app->post('/notebooks/:id/notes(/)', function ($id) use ($app, $noteHelper) {
 
-    //Check if notebook exists, return 400 if it doesn't
+    //Check if notebook exists, return 404 if it doesn't
     $notebook = \ORM::for_table('notebook')->find_one($id);
 
     if ($notebook == null) {
-        $app->response->setStatus(400);
-        echo 'Invalid input';
-
-        return;
+        return $app->notFound();
     }
 
     $input = json_decode($app->request->getBody());
@@ -62,7 +62,6 @@ $app->post('/notebooks/:id/notes(/)', function ($id) use ($app, $noteHelper) {
     if (!$noteHelper->isValid($input)) {
         $app->response->setStatus(400);
         echo 'Invalid input';
-
         return;
     }
 
@@ -72,17 +71,10 @@ $app->post('/notebooks/:id/notes(/)', function ($id) use ($app, $noteHelper) {
 
     $note = $noteHelper->getNoteForId($note->id());
 
-    if ($note == null) {
-        return $app->notFound();
-    }
-
     outputJson($note->as_array(), $app);
 });
 
 $app->put('/(notebooks/:notebook_id/)notes/:note_id(/)', function ($notebook_id, $note_id) use ($app, $noteHelper) {
-
-
-    //sleep(3);
 
     // Check if notebook exists (if supplied)
     if ($notebook_id != null) {
@@ -90,10 +82,7 @@ $app->put('/(notebooks/:notebook_id/)notes/:note_id(/)', function ($notebook_id,
         $notebook = \ORM::for_table('notebook')->find_one($notebook_id);
 
         if ($notebook == null) {
-            $app->response->setStatus(400);
-            echo 'Invalid notebook';
-
-            return;
+            return $app->notFound();
         }
     }
 
@@ -111,11 +100,11 @@ $app->put('/(notebooks/:notebook_id/)notes/:note_id(/)', function ($notebook_id,
 
     if ($note == null) {
         // For a create scenario, a valid notebook id should
-        // have been supplied
-        if ($notebook == null) {
+        // have been supplied (return 400 instead of 404 to
+        // indicate error situation)
+        if (!isset($notebook)) {
             $app->response->setStatus(400);
-            echo 'Invalid notebook';
-
+            echo 'Invalid input';
             return;
         }
         $note = \ORM::for_table('note')->create();
@@ -134,23 +123,23 @@ $app->put('/(notebooks/:notebook_id/)notes/:note_id(/)', function ($notebook_id,
 
     $note = $noteHelper->getNoteForId($note->id());
 
-    if ($note == null) {
-        return $app->notFound();
-    }
-
     outputJson($note->as_array(), $app);
 
 });
 
-$app->delete('(/notebooks/:notebook_id/)notes/:note_id(/)', function ($notebook_id, $note_id) use ($app, $noteHelper) {
+$app->delete('/(notebooks/:notebook_id/)notes/:note_id(/)', function ($notebook_id, $note_id) use ($app, $noteHelper) {
+
+    if (!empty($notebook_id)) {
+        $notebook = \ORM::for_table('notebook')->find_one($notebook_id);
+        if ($notebook == null) {
+            return $app->notFound();
+        }
+    }
 
     $note = \ORM::for_table('note')->find_one($note_id);
 
     if ($note == null) {
-        $app->response->setStatus(400);
-        echo 'Invalid note';
-
-        return;
+        return $app->notFound();
     }
 
     $note->delete();
