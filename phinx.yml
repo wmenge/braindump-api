@@ -1,0 +1,21 @@
+paths:
+    migrations: %%PHINX_CONFIG_DIR%%/migrations
+
+environments:
+    default_migration_table: phinxlog
+    default_database: development
+    production:
+        adapter: sqlite
+        name: ./data/braindump-prod
+
+    new:
+        adapter: sqlite
+        name: ./data/braindump-new
+
+    development:
+        adapter: sqlite
+        name: ./data/braindump
+
+    testing:
+        adapter: sqlite
+        memory: true
