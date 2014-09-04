@@ -85,8 +85,7 @@ abstract class Slim_Framework_TestCase extends AbstractDbTest
         $app = new \Slim\Slim(array(
             'version'        => '0.0.0',
             'debug'          => false,
-            'mode'           => 'testing',
-            'templates.path' => __DIR__ . '/../app/templates'
+            'mode'           => 'testing'
         ));
 
         // Include our core application file

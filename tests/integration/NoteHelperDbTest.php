@@ -2,7 +2,6 @@
 
 namespace Braindump\Api\Test\Integration;
 
-//require_once __DIR__ . '/AbstractDbTest.php';
 require_once __DIR__ . '/../../model/NoteHelper.php';
 
 class NoteHelperDbTest extends AbstractDbTest
