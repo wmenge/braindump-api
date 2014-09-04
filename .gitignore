@@ -1,5 +1,5 @@
 composer.phar
-*.sqlite
+*.sqlite3
 vendor
 build
 *.sublime-project
