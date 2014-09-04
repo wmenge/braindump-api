@@ -43,7 +43,7 @@ abstract class AbstractDbTest extends \PHPUnit_Extensions_Database_TestCase
     protected function setUp()
     {
         $dbHelper = new \Braindump\Api\Lib\DatabaseHelper();
-        $dbHelper->createDatabase(\ORM::get_db(), [ '0.1' => __DIR__ . '/../data/braindump.create.sqlite.sql']);
+        $dbHelper->createDatabase(\ORM::get_db(), [ '0.1' => __DIR__ . '/../migrations/braindump-0.1-sqlite.sql']);
         
         parent::setUp();
     }
