@@ -3,8 +3,28 @@ require '../vendor/autoload.php';
 require '../middleware/AttachHeaders.php';
 require '../lib/DatabaseHelper.php';
 
-$app = new \Slim\Slim();
+$app = new \Slim\Slim(array(
+    'templates.path' => '../templates',
+));
+
+// Correct headers Used by REST API
+// Todo: make sure they are only used by REST Routes
 $app->add(new \Braindump\Api\Middleware\AttachHeaders());
+
+// Session used by admin routes
+// Todo: make sure its only used by Admin routes
+$app->add(new \Slim\Middleware\SessionCookie(array(
+    'expires' => '20 minutes',
+    'path' => '/',
+    'domain' => null,
+    'secure' => false,
+    'httponly' => false,
+    'name' => 'slim_session',
+    'secret' => 'BRAINDUMP_ADMIN',
+    'cipher' => MCRYPT_RIJNDAEL_256,
+    'cipher_mode' => MCRYPT_MODE_CBC
+)));
+
 
 $app->idiormConfig = (require '../config/idiorm-config.php');
 $app->braindumpConfig = (require '../config/braindump-config.php');
@@ -29,15 +49,7 @@ $app->options('/:wildcard+', function () {
     header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS, DELETE');
 });
 
-$app->post('/setup', function () use ($app) {
-    $dbHelper = new \Braindump\Api\DatabaseHelper();
-    $dbHelper->createDatabase(ORM::get_db(), $app->braindumpConfig['databases_setup_scripts']);
-});
-
-$app->get('/info', function () {
-    phpinfo();
-});
-
+require_once '../routes/admin.php';
 require_once '../routes/note.php';
 require_once '../routes/notebook.php';
 

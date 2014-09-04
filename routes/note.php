@@ -76,6 +76,8 @@ $app->post('/notebooks/:id/notes(/)', function ($id) use ($app, $noteHelper) {
 
 $app->put('/(notebooks/:notebook_id/)notes/:note_id(/)', function ($notebook_id, $note_id) use ($app, $noteHelper) {
 
+    $notebook = null;
+
     // Check if notebook exists (if supplied)
     if ($notebook_id != null) {
 

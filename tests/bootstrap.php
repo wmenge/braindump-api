@@ -88,8 +88,11 @@ abstract class Slim_Framework_TestCase extends AbstractDbTest
             'mode'           => 'testing'
         ));
 
+        $app->braindumpConfig = (require( __DIR__ . '/../config/braindump-config.php'));
+
         // Include our core application file
-        //require __DIR__ . '/../app/app.php';
+        //require __DIR__ . '/../public/index.php'
+        require __DIR__ . '/../routes/admin.php';
         require __DIR__ . '/../routes/note.php';
         require __DIR__ . '/../routes/notebook.php';
 

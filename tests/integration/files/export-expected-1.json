@@ -1,0 +1,41 @@
+[
+    {
+        "id": 1,
+        "title": "title 1",
+        "notes": [
+            {
+                "id": 1,
+                "title": "note 1",
+                "created": 0,
+                "updated": 0,
+                "url": "",
+                "type": "Text",
+                "content": "Note content"
+            },
+            {
+                "id": 2,
+                "title": "note 2",
+                "created": 0,
+                "updated": 0,
+                "url": "",
+                "type": "Text",
+                "content": "Second note content"
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "title": "title 2",
+        "notes": [
+            {
+                "id": 3,
+                "title": "note 3",
+                "created": 0,
+                "updated": 0,
+                "url": "",
+                "type": "Text",
+                "content": "Third note content"
+            }
+        ]
+    }
+]
