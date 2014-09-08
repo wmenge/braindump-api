@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <dataset>
-    <notebook id="1" title="title 1" />
-    <notebook id="2" title="title 2" />
+    <notebook id="1" title="title 1" created="0" updated="0" />
+    <notebook id="2" title="title 2" created="0" updated="0" />
     <note 
         id="1" 
         notebook_id="1" 

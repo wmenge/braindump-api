@@ -1,5 +1,7 @@
 {
     "id": 1,
     "title": "Updated title",
+    "created": 0,
+    "updated": 0,
     "noteCount": 0
 }

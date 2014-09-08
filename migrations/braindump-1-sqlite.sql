@@ -1,16 +1,3 @@
-/*
- Navicat SQLite Data Transfer
-
- Source Server         : Braindump
- Source Server Version : 3007005
- Source Database       : main
-
- Target Server Version : 3007005
- File Encoding         : utf-8
-
- Date: 04/22/2014 17:50:09 PM
-*/
-
 PRAGMA foreign_keys = false;
 
 -- ----------------------------
@@ -25,8 +12,8 @@ CREATE TABLE "note" (
 	 "updated" integer NOT NULL,
 	 "url" text,
 	 "type" text NOT NULL CHECK (type IN ('HTML', 'Text')),
-	 "content" text,
-	CONSTRAINT "notebook_id" FOREIGN KEY ("notebook_id") REFERENCES "notebook" ("notebook_id")
+	 "content" text
+	 -- CONSTRAINT "notebook_id" FOREIGN KEY ("notebook_id") REFERENCES "notebook" ("notebook_id") ON DELETE CASCADE
 );
 
 -- ----------------------------
