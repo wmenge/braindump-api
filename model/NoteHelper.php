@@ -113,30 +113,17 @@ class NoteHelper
             }
 
             // In import scenario, try to get create and update times from data object
-            if ($import) {
-
-                if (property_exists($data, 'created') && is_numeric($data->created)) {
-                    $note->created = filter_var($data->created, FILTER_SANITIZE_NUMBER_INT);
-                } else {
-                    $note->created = time();
-                }
-
-                if (property_exists($data, 'updated') && is_numeric($data->updated)) {
-                    $note->updated = filter_var($data->updated, FILTER_SANITIZE_NUMBER_INT);
-                } else {
-                    $note->updated = time();
-                }
-
-
-            } else {
-                if (!property_exists($note, 'created') || $note->created == null) {
-                    $note->created = time();
-                }
-
-                $note->updated = time();                
+            if ($import && property_exists($data, 'created') && is_numeric($data->created)) {
+                $note->created = filter_var($data->created, FILTER_SANITIZE_NUMBER_INT);
+            } elseif (!property_exists($note, 'created') || $note->created == null) {
+                $note->created = time();
             }
 
-
+            if ($import && property_exists($data, 'updated') && is_numeric($data->updated)) {
+                $note->updated = filter_var($data->updated, FILTER_SANITIZE_NUMBER_INT);
+            } else {
+                $note->updated = time();
+            }
         }
     }
 }

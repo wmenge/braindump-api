@@ -13,7 +13,9 @@ class DatabaseHelperTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->helper = new \Braindump\Api\Lib\DatabaseHelper();
+        $mockApp = new \stdClass();
+        $mockApp->braindumpConfig = (require( __DIR__ . '/../../config/braindump-config.php'));
+        $this->helper = new \Braindump\Api\Lib\DatabaseHelper($mockApp, null);
         
         $this->orm = $this->getMock('\MockORMHelper', ['order_by_asc', 'order_by_desc']);
 

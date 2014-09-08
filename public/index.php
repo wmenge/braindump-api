@@ -3,6 +3,9 @@ require '../vendor/autoload.php';
 require '../middleware/AttachHeaders.php';
 require '../lib/DatabaseHelper.php';
 
+date_default_timezone_set('Europe/Amsterdam');
+
+// TODO: move setup of app in separate to make inclusion in /test/bootstrap.php
 $app = new \Slim\Slim(array(
     'templates.path' => '../templates',
 ));
@@ -25,6 +28,13 @@ $app->add(new \Slim\Middleware\SessionCookie(array(
     'cipher_mode' => MCRYPT_MODE_CBC
 )));
 
+$app->refererringRoute = function() use ($app) {
+    if (strpos($app->environment['HTTP_REFERER'], $app->environment['HTTP_ORIGIN']) !== false) {
+        return str_replace($app->environment['HTTP_ORIGIN'], '', $app->environment['HTTP_REFERER']);
+    } else {
+        return "/";
+    }
+};
 
 $app->idiormConfig = (require '../config/idiorm-config.php');
 $app->braindumpConfig = (require '../config/braindump-config.php');

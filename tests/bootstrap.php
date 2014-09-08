@@ -50,8 +50,10 @@ abstract class AbstractDbTest extends \PHPUnit_Extensions_Database_TestCase
 
     protected function setUp()
     {
-        $dbHelper = new \Braindump\Api\Lib\DatabaseHelper();
-        $dbHelper->createDatabase(\ORM::get_db(), [ '0.1' => __DIR__ . '/../migrations/braindump-0.1-sqlite.sql']);
+        $mockApp = new \stdClass();
+        $mockApp->braindumpConfig = (require( __DIR__ . '/../config/braindump-config.php'));
+        $dbHelper = new \Braindump\Api\Lib\DatabaseHelper($mockApp, \ORM::get_db());
+        $dbHelper->createDatabase();
         
         parent::setUp();
     }
@@ -63,7 +65,6 @@ abstract class AbstractDbTest extends \PHPUnit_Extensions_Database_TestCase
     {
         if (self::$conn === null) {
             \ORM::configure([ 'connection_string' => 'sqlite::memory:' ]);
-            $dbHelper = new \Braindump\Api\Lib\DatabaseHelper();
             self::$conn = $this->createDefaultDBConnection(\ORM::get_db(), ':memory:');
         }
         

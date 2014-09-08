@@ -11,7 +11,12 @@ class NoteHelperDbTest extends AbstractDbTest
     protected function setUp()
     {
         parent::setUp();
-        $this->helper = new \Braindump\Api\Model\NoteHelper(new \Braindump\Api\Lib\DatabaseHelper());
+
+        $mockApp = new \stdClass();
+        $mockApp->braindumpConfig = (require( __DIR__ . '/../../config/braindump-config.php'));
+        $dbHelper = new \Braindump\Api\Lib\DatabaseHelper($mockApp, \ORM::get_db());
+        
+        $this->helper = new \Braindump\Api\Model\NoteHelper($dbHelper);
     }
 
     /**

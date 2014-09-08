@@ -10,7 +10,9 @@ class NoteHelperTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $dbHelper = $this->getMock('\Braindump\Api\Lib\DatabaseHelper');
+        $dbHelper = $this->getMockBuilder('\Braindump\Api\Lib\DatabaseHelper')
+                        ->disableOriginalConstructor()
+                        ->getMock();
         $this->helper = new \Braindump\Api\Model\NoteHelper($dbHelper);
     }
 

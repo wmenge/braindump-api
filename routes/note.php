@@ -3,7 +3,8 @@ namespace Braindump\Api;
 
 require_once(__DIR__ . '/../model/NoteHelper.php');
 
-$noteHelper = new \Braindump\Api\Model\NoteHelper(new \Braindump\Api\Lib\DatabaseHelper($app));
+$dbHelper = new \Braindump\Api\Lib\DatabaseHelper($app, \ORM::get_db());
+$noteHelper = new \Braindump\Api\Model\NoteHelper($dbHelper);
 
 $app->get('/(notebooks/:id/)notes(/)', function ($id = null) use ($app, $noteHelper) {
 
