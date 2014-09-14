@@ -15,7 +15,9 @@
         "slim/slim": "2.*",
         "slim/extras": "2.*",
         "j4mie/idiorm": "1.*",
-        "ezyang/htmlpurifier": "v4.6.0"   
+        "ezyang/htmlpurifier": "v4.6.0",
+        "cartalyst/sentry": "2.1.*",
+        "illuminate/database": "4.2.*"
     },
     "require-dev": {
         "phpunit/phpunit": "@stable",

@@ -124,6 +124,12 @@ class NoteHelper
             } else {
                 $note->updated = time();
             }
+
+            if ($import && property_exists($data, 'user_id') && is_numeric($data->user_id)) {
+                $note->user_id = \Sentry::findUserById(1)->id;
+            } elseif (!property_exists($notebook, 'user_id') || $notebook->user_id == null) {
+                $note->user_id = \Sentry::getUser()->id;
+            }
         }
     }
 }

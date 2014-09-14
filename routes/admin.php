@@ -4,16 +4,18 @@ namespace Braindump\Api\Admin;
 require_once(__DIR__ . '/../lib/DatabaseHelper.php');
 require_once(__DIR__ . '/../model/NotebookHelper.php');
 require_once(__DIR__ . '/../model/NoteHelper.php');
-
+require_once(__DIR__ . '/../model/UserHelper.php');
 $dbHelper = new \Braindump\Api\Lib\DatabaseHelper($app, \ORM::get_db());
 $notebookHelper = new \Braindump\Api\Model\NotebookHelper($dbHelper);
 $noteHelper = new \Braindump\Api\Model\NoteHelper($dbHelper);
+$userHelper = new \Braindump\Api\Model\UserHelper($dbHelper);
 
-$app->get('/admin', function () use ($app, $dbHelper) {
+$app->get('/admin', function () use ($app, $dbHelper, $userHelper) {
 
     $vars = [ 
           'notebookCount'   => 0,
           'noteCount'       => 0,
+          'userCount'       => 0,
           'currentVersion'  => $dbHelper->getCurrentVersion(),
           'highestVersion'  => $dbHelper->getHighestVersion(),
           'migrationNeeded' => $dbHelper->isMigrationNeeded() ];
@@ -21,15 +23,12 @@ $app->get('/admin', function () use ($app, $dbHelper) {
     try {
         $vars['notebookCount'] = \ORM::for_table('notebook')->count();
         $vars['noteCount'] = \ORM::for_table('note')->count();
+        $vars['userCount'] = \ORM::for_table('users')->count();
     } catch (\Exception $e) {
-        $app->flashNow('error', 'Database needs to be setup, <a href="/migrate" class="alert-link">fix now</a>');
+        $app->flashNow('error', $e->getMessage());
     }
     
-    $app->render(
-        'admin.php',
-        $vars
-    );
-
+    $app->render('admin.php', $vars);
 });
 
 $app->get('/export', function () use ($app) {
@@ -38,7 +37,7 @@ $app->get('/export', function () use ($app) {
 
     foreach ($notebooks as &$notebook) {
         $notebook['notes'] = \ORM::for_table('note')
-        ->select_many('id', 'title', 'created', 'updated', 'url', 'type', 'content')
+        ->select_many('id', 'title', 'created', 'updated', 'url', 'type', 'content', 'user_id')
         ->where_equal('notebook_id', $notebook['id'])->find_array();
     }
     

@@ -59,6 +59,12 @@ class NotebookHelper
             } else {
                 $notebook->updated = time();
             }
+
+            if ($import && property_exists($data, 'user_id') && is_numeric($data->user_id)) {
+                $notebook->user_id = \Sentry::findUserById(1)->id;
+            } elseif (!property_exists($notebook, 'user_id') || $notebook->user_id == null) {
+                $notebook->user_id = \Sentry::getUser()->id;
+            }
         }
     }
 
@@ -71,6 +77,7 @@ class NotebookHelper
         $notebook->title = 'Your first notebook';
         $notebook->created = time();
         $notebook->updated = time();
+        $notebook->user_id = \Sentry::getUser()->id;
         
         $notebook->save();
 
@@ -82,6 +89,7 @@ class NotebookHelper
         $note->content = '<div>Your very first note</div>';
         $note->created = time();
         $note->updated = time();
+        $note->user_id = \Sentry::getUser()->id;
         $note->save();
 
         // Commit a transaction

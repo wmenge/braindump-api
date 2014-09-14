@@ -5,6 +5,9 @@ require '../lib/DatabaseHelper.php';
 
 date_default_timezone_set('Europe/Amsterdam');
 
+// Sentry configuration/startup
+require '../app/sentry.php';
+
 // TODO: move setup of app in separate to make inclusion in /test/bootstrap.php
 $app = new \Slim\Slim(array(
     'templates.path' => '../templates',
