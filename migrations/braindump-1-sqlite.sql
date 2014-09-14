@@ -6,15 +6,16 @@ PRAGMA foreign_keys = false;
 DROP TABLE IF EXISTS "note";
 CREATE TABLE "note" (
 	 "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-	 "notebook_id" integer NOT NULL,
+	 "notebook_id" integer NOT NULL REFERENCES "notebook" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
 	 "title" text NOT NULL,
 	 "created" integer NOT NULL,
 	 "updated" integer NOT NULL,
 	 "url" text,
 	 "type" text NOT NULL CHECK (type IN ('HTML', 'Text')),
 	 "content" text
-	 -- CONSTRAINT "notebook_id" FOREIGN KEY ("notebook_id") REFERENCES "notebook" ("notebook_id") ON DELETE CASCADE
 );
+
+CREATE INDEX IF NOT EXISTS "notebook_id" ON "note" ( "notebook_id" );
 
 -- ----------------------------
 --  Table structure for "notebook"

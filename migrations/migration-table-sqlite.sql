@@ -3,6 +3,6 @@
 -- ----------------------------
 CREATE TABLE IF NOT EXISTS "migration" (
 	 "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-	 "version" text NOT NULL,
+	 "version" text UNIQUE NOT NULL,
 	 "executed" integer NOT NULL
 );

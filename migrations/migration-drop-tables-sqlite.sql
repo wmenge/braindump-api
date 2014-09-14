@@ -7,4 +7,8 @@ DROP TABLE IF EXISTS "notes";
 DROP TABLE IF EXISTS "notebooks";
 DROP TABLE IF EXISTS "migration";
 
+DROP TABLE IF EXISTS "groups";
+DROP TABLE IF EXISTS "users";
+DROP TABLE IF EXISTS "throttle";
+
 PRAGMA foreign_keys = true;
