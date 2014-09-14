@@ -56,7 +56,7 @@ class NotebookHelperTest extends \PHPUnit_Framework_TestCase
             [['field' => 'an array with a string'], (object)[]],
             [(object)['field' => 'an obect with an incorrect property'], (object)[]],
             [(object)['title' => 42], (object)[]],
-            [(object)['title' => 'Notebook title'], (object)['title' => 'Notebook title', 'created' => 0, 'updated' => 0]],
+            [(object)['title' => 'Notebook title'], (object)['title' => 'Notebook title', 'created' => 0, 'updated' => 0, 'user_id' => 1]],
         ];
     }
 }

@@ -18,6 +18,27 @@ function outputJson($data, $app)
     \Braindump\Api\outputJson($data, $app);
 }
 
+namespace Braindump\Api\Model;
+
+// Mock Sentry class
+class SentryFacadeMock {
+
+    static function getUser()
+    {
+        return SentryFacadeMock::findUserById(1);
+    }
+
+    static function findUserById($id)
+    {
+        $mockUser = new \stdClass();
+        $mockUser->id = $id;
+        return $mockUser;
+    }
+}
+
+// Create the Sentry alias
+class_alias('Braindump\Api\Model\SentryFacadeMock', 'Sentry');
+
 namespace Braindump\Api\Test\Integration;
 
 //
@@ -92,7 +113,7 @@ abstract class Slim_Framework_TestCase extends AbstractDbTest
         $app->braindumpConfig = (require( __DIR__ . '/../config/braindump-config.php'));
 
         // Include our core application file
-        //require __DIR__ . '/../public/index.php'
+        // require __DIR__ . '/../public/index.php'
         require __DIR__ . '/../routes/admin.php';
         require __DIR__ . '/../routes/note.php';
         require __DIR__ . '/../routes/notebook.php';

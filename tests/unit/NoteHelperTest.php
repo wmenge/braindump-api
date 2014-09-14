@@ -65,11 +65,11 @@ class NoteHelperTest extends \PHPUnit_Framework_TestCase
             // Valid object with text content
             [(object)['title' => 'Note title', 'type' => 'Text', 'url' => 'http://t.com', 'content' => 'Sample content'],
              (object)['title' => 'Note title', 'type' => 'Text', 'notebook_id' => 42,
-                      'url' => 'http://t.com', 'content' => 'Sample content', 'created' => 0, 'updated' => 0, ]],
+                      'url' => 'http://t.com', 'content' => 'Sample content', 'created' => 0, 'updated' => 0, 'user_id' => 1 ]],
             // Valid object with HTML content
             [(object)['title' => 'Note title', 'type' => 'HTML', 'url' => 'http://t.com', 'content' => '<div>Sample content</div>'],
              (object)['title' => 'Note title', 'type' => 'HTML', 'notebook_id' => 42,
-                      'url' => 'http://t.com', 'content' => '<div>Sample content</div>', 'created' => 0, 'updated' => 0, ]]
+                      'url' => 'http://t.com', 'content' => '<div>Sample content</div>', 'created' => 0, 'updated' => 0, 'user_id' => 1 ]]
         ];
     }
 }

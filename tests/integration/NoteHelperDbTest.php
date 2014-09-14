@@ -75,8 +75,8 @@ class NoteHelperDbTest extends AbstractDbTest
         $notebook = (object)[ 'id' => 1 ];
 
         $expected = [
-            [ 'id' => '2', 'title' => 'note 2', 'notebook_id' => '1', 'created' => '0', 'updated' => '0', 'url' => null],
-            [ 'id' => '1', 'title' => 'note 1', 'notebook_id' => '1', 'created' => '0', 'updated' => '0', 'url' => null],
+            [ 'id' => '2', 'title' => 'note 2', 'notebook_id' => '1', 'created' => '0', 'updated' => '0', 'url' => '' ],
+            [ 'id' => '1', 'title' => 'note 1', 'notebook_id' => '1', 'created' => '0', 'updated' => '0', 'url' => '' ],
         ];
 
         $this->assertEquals($expected, $this->helper->getNoteListForNotebook($notebook, '-title'));
@@ -96,7 +96,7 @@ class NoteHelperDbTest extends AbstractDbTest
     public function testGetNoteForId()
     {
         $expected = [ 'id' => '1', 'title' => 'note 1', 'notebook_id' => '1', 'created' => '0', 'updated' => '0', 'url' => null,
-                      'type' => 'Text', 'content' => 'Note content' ];
+                      'type' => 'Text', 'content' => 'Note content', 'user_id' => '1' ];
         $this->assertEquals($expected, $this->helper->getNoteForId(1)->as_array());
     }
 

@@ -37,8 +37,8 @@ class NotebookHelperDbTest extends AbstractDbTest
     public function testGetNotebookList()
     {
         $expected = [
-            [ 'id' => 1, 'title' => 'title 1', 'created' => 0, 'updated' => 0, 'noteCount' => 0 ],
-            [ 'id' => 2, 'title' => 'title 2', 'created' => 0, 'updated' => 0, 'noteCount' => 0 ],
+            [ 'id' => 1, 'title' => 'title 1', 'created' => 0, 'updated' => 0, 'noteCount' => 0, 'user_id' => 1 ],
+            [ 'id' => 2, 'title' => 'title 2', 'created' => 0, 'updated' => 0, 'noteCount' => 0, 'user_id' => 1 ],
         ];
 
         $this->assertEquals($expected, $this->helper->getNoteBookList());
@@ -47,8 +47,8 @@ class NotebookHelperDbTest extends AbstractDbTest
     public function testSortedGetNotebookList()
     {
         $expected = [
-            [ 'id' => 2, 'title' => 'title 2', 'created' => 0, 'updated' => 0, 'noteCount' => 0 ],
-            [ 'id' => 1, 'title' => 'title 1', 'created' => 0, 'updated' => 0, 'noteCount' => 0 ],
+            [ 'id' => 2, 'title' => 'title 2', 'created' => 0, 'updated' => 0, 'noteCount' => 0, 'user_id' => 1 ],
+            [ 'id' => 1, 'title' => 'title 1', 'created' => 0, 'updated' => 0, 'noteCount' => 0, 'user_id' => 1 ],
         ];
         
         $this->assertEquals($expected, $this->helper->getNoteBookList('-title'));
@@ -56,7 +56,7 @@ class NotebookHelperDbTest extends AbstractDbTest
 
     public function testGetNotebookForId()
     {
-        $expected = [ 'id' => 1, 'title' => 'title 1', 'created' => 0, 'updated' => 0, 'noteCount' => 0 ];
+        $expected = [ 'id' => 1, 'title' => 'title 1', 'created' => 0, 'updated' => 0, 'noteCount' => 0, 'user_id' => 1 ];
         
         $this->assertEquals($expected, $this->helper->getNotebookForId(1)->as_array());
     }

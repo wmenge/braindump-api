@@ -2,7 +2,7 @@
 
 namespace Braindump\Api\Test\Integration;
 
-class ImportExportRoutesTest extends Slim_Framework_TestCase
+class AdminRoutesTest extends Slim_Framework_TestCase
 {
     /**
      * @return PHPUnit_Extensions_Database_DataSet_IDataSet

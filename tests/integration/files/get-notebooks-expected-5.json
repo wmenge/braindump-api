@@ -3,5 +3,6 @@
     "title": "Updated title",
     "created": 0,
     "updated": 0,
+    "user_id": 1,
     "noteCount": 0
 }

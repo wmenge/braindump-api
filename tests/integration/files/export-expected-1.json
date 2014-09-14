@@ -4,6 +4,7 @@
         "title": "title 1",
         "created": 0,
         "updated": 0,
+        "user_id": 1,
         "notes": [
             {
                 "id": 1,
@@ -12,7 +13,8 @@
                 "updated": 0,
                 "url": "",
                 "type": "Text",
-                "content": "Note content"
+                "content": "Note content",
+                "user_id": 1
             },
             {
                 "id": 2,
@@ -21,7 +23,8 @@
                 "updated": 0,
                 "url": "",
                 "type": "Text",
-                "content": "Second note content"
+                "content": "Second note content",
+                "user_id": 1
             }
         ]
     },
@@ -30,6 +33,7 @@
         "title": "title 2",
         "created": 0,
         "updated": 0,
+        "user_id": 1,
         "notes": [
             {
                 "id": 3,
@@ -38,7 +42,8 @@
                 "updated": 0,
                 "url": "",
                 "type": "Text",
-                "content": "Third note content"
+                "content": "Third note content",
+                "user_id": 1
             }
         ]
     }

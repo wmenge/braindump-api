@@ -6,5 +6,6 @@
     "updated": 0,
     "url": "",
     "type": "Text",
-    "content": "Note content"
+    "content": "Note content",
+    "user_id": 1
 }
