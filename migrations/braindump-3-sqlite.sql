@@ -14,8 +14,8 @@ CREATE TABLE "groups" (
 
 CREATE UNIQUE INDEX IF NOT EXISTS "groups_name_unique" ON "groups" ( "name" );
  
-INSERT INTO "groups" VALUES (1, "Administrators", "", date('now'), date('now'));
-INSERT INTO "groups" VALUES (2, "Users", "", date('now'), date('now'));
+INSERT INTO "groups" VALUES (1, "Administrators", "{""|^/admin(/.*)?$|"":1, ""|^/api(/.*)?$|"":1}", date('now'), date('now'));
+INSERT INTO "groups" VALUES (2, "Users", "{""|^/api(/.*)?$|"":1}", date('now'), date('now'));
 
 -- ----------------------------
 --  Table structure for "users"

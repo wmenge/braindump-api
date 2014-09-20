@@ -18,6 +18,12 @@ function outputJson($data, $app)
     \Braindump\Api\outputJson($data, $app);
 }
 
+namespace Braindump\Api\Admin\Middleware;
+
+function adminAuthenticate() {
+    // mock implementation    
+}
+
 namespace Braindump\Api\Model;
 
 // Mock Sentry class
@@ -33,6 +39,10 @@ class SentryFacadeMock {
         $mockUser = new \stdClass();
         $mockUser->id = $id;
         return $mockUser;
+    }
+
+    static function check() {
+        return true;
     }
 }
 

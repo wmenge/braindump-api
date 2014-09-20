@@ -15,7 +15,7 @@ class AdminRoutesTest extends Slim_Framework_TestCase
     public function testGetExport()
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/export-expected-1.json');
-        $this->get('/export');
+        $this->get('/admin/export');
         $this->assertEquals(200, $this->response->status());
         $this->assertSame($expected, $this->response->body());
     }
@@ -28,7 +28,7 @@ class AdminRoutesTest extends Slim_Framework_TestCase
         
         $importData = file_get_contents(dirname(__FILE__).'/files/export-expected-1.json');
 
-        $this->post('/import', $importData);
+        $this->post('/admin/import', $importData);
         //$this->assertEquals(200, $this->response->status());
         
         // Assert db content

@@ -29,6 +29,10 @@
         <li><a href="#">Notebooks <span class="badge"><?= $notebookCount ?></span></a></li>
         <li><a href="#">Notes <span class="badge"><?= $noteCount ?></span></a></li>
       </ul>
+
+      <ul class="nav navbar-nav pull-right">
+        <li><a href="/admin/logout">Logout</a></li>
+      </ul>
     </div><!--/.nav-collapse -->
   </div>
   
@@ -72,7 +76,7 @@
         <h3 class="panel-title">Export data</h3>
       </div>
       <div class="panel-body">
-        <a href="/export" class="btn btn-default">Export data</a>
+        <a href="/admin/export" class="btn btn-default">Export data</a>
         <p class="help-block">Download a JSON dump of all notebooks and notes</p>
       </div>
     </div>
@@ -87,7 +91,7 @@
       </div>
       <div class="panel-body">
 
-        <form role="form" enctype="multipart/form-data" action="/import" method="POST">
+        <form role="form" enctype="multipart/form-data" action="/admin/import" method="POST">
           <div class="form-group">
             <input type="file" name="importFile" id="importFile">
           </div>
@@ -108,7 +112,7 @@
       </div>
       <div class="panel-body">
 
-        <form role="form" action="/setup" method="POST">
+        <form role="form" action="/admin/setup" method="POST">
           <div class="form-group">
             <label for="confirm">Confirm setup</label>
             <input type="text" class="form-control" name="confirm" id="confirm" placeholder="Type YES to confirm setup">
@@ -132,7 +136,7 @@
       </div>
       <div class="panel-body">
         <p>Database schema is not up to date and should be updated</p>
-        <form role="form" action="/migrate" method="POST">
+        <form role="form" action="/admin/migrate" method="POST">
           <button type="submit" class="btn btn-default">Update Schema</button>
         </form>
         <p class="help-block">Current version: <?= $currentVersion ?>, available version: <?= $highestVersion ?></p>
