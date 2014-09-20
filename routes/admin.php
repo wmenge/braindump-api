@@ -48,23 +48,24 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
 
     $app->get('(/)', function () use ($app, $dbHelper, $userHelper) {
 
-        $vars = [
-              'notebookCount'   => 0,
-              'noteCount'       => 0,
-              'userCount'       => 0,
+        $data = [
               'currentVersion'  => $dbHelper->getCurrentVersion(),
               'highestVersion'  => $dbHelper->getHighestVersion(),
               'migrationNeeded' => $dbHelper->isMigrationNeeded() ];
 
         try {
-            $vars['notebookCount'] = \ORM::for_table('notebook')->count();
-            $vars['noteCount'] = \ORM::for_table('note')->count();
-            $vars['userCount'] = \ORM::for_table('users')->count();
+            $menuData = [
+              'notebookCount'   => \ORM::for_table('notebook')->count(),
+              'noteCount'       => \ORM::for_table('note')->count(),
+              'userCount'       => \ORM::for_table('users')->count() ];
         } catch (\Exception $e) {
             $app->flashNow('error', $e->getMessage());
         }
-        
-        $app->render('admin.php', $vars);
+
+        $app->render('admin-template.php', [
+            'menu'    => $app->view->fetch('admin-menu.php', $menuData),
+            'content' => $app->view->fetch('admin-page.php', $data)
+        ]);
     });
 
     $app->get('/export', function () use ($app) {
