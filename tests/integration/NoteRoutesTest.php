@@ -29,16 +29,16 @@ class NoteRoutesTest extends Slim_Framework_TestCase
     public function getNotesProvider()
     {
         return [
-            ['/notes'                        , '/files/get-notes-expected-1.json'],
-            ['/notebooks/1/notes'            , '/files/get-notes-expected-2.json'],
-            ['/notebooks/1/notes?sort=-title', '/files/get-notes-expected-3.json'],
-            ['/notebooks/1/notes?q=note 1'   , '/files/get-notes-expected-4.json']
+            ['/api/notes'                        , '/files/get-notes-expected-1.json'],
+            ['/api/notebooks/1/notes'            , '/files/get-notes-expected-2.json'],
+            ['/api/notebooks/1/notes?sort=-title', '/files/get-notes-expected-3.json'],
+            ['/api/notebooks/1/notes?q=note 1'   , '/files/get-notes-expected-4.json']
         ];
     }
 
     public function testGetNotesForUnknownNotebook()
     {
-        $this->get('/notebooks/3/notes');
+        $this->get('/api/notebooks/3/notes');
         
         $this->assertEquals(404, $this->response->status());
         //$this->assertSame($expected, $this->response->body());
@@ -47,14 +47,14 @@ class NoteRoutesTest extends Slim_Framework_TestCase
     public function testGetNote()
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/get-notes-expected-5.json');
-        $this->get('/notes/1');
+        $this->get('/api/notes/1');
         $this->assertEquals(200, $this->response->status());
         $this->assertSame($expected, $this->response->body());
     }
 
     public function testGetUnkownNotebook()
     {
-        $this->get('/notes/4');
+        $this->get('/api/notes/4');
         $this->assertEquals(404, $this->response->status());
         // todo: assert message
         //$this->assertSame($expected, $this->response->body());
@@ -63,7 +63,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
     public function testGetNoteInNotebook()
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/get-notes-expected-5.json');
-        $this->get('/notebooks/1/notes/1');
+        $this->get('/api/notebooks/1/notes/1');
         $this->assertEquals(200, $this->response->status());
         $this->assertSame($expected, $this->response->body());
     }
@@ -71,7 +71,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
     public function testGetNoteInWrongNotebook()
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/get-notes-expected-5.json');
-        $this->get('/notebooks/2/notes/1');
+        $this->get('/api/notebooks/2/notes/1');
         $this->assertEquals(302, $this->response->status());
     }
 
@@ -88,7 +88,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
         
         $requestBody = '{ "title": "New Note", "type": "Text", "content": "Note content" }';
 
-        $this->post('/notebooks/1/notes', $requestBody);
+        $this->post('/api/notebooks/1/notes', $requestBody);
         // Assert response
         $this->assertEquals(200, $this->response->status());
         $this->assertSame($expected, $this->response->body());
@@ -105,7 +105,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
         $requestBody = '{ }';
 
         // Assert response
-        $this->post('/notebooks/1/notes', $requestBody);
+        $this->post('/api/notebooks/1/notes', $requestBody);
         $this->assertEquals(400, $this->response->status());
         // todo: assert message
     
@@ -121,7 +121,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
         $requestBody = '{ "title": "New Note", "type": "Text" }';
 
         // Assert response
-        $this->post('/notebooks/3/notes', $requestBody);
+        $this->post('/api/notebooks/3/notes', $requestBody);
         $this->assertEquals(404, $this->response->status());
         // todo: assert message
     
@@ -138,7 +138,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
         
         $requestBody = '{ "title": "Updated note 1", "type": "Text", "content": "Updated Note content" }';
 
-        $this->put('/notebooks/1/notes/1', $requestBody);
+        $this->put('/api/notebooks/1/notes/1', $requestBody);
 
        // Assert response
         $this->assertEquals(200, $this->response->status());
@@ -159,7 +159,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
         
         $requestBody = '{ "title": "New Note", "type": "Text", "content": "Note content" }';
 
-        $this->put('/notebooks/1/notes/4', $requestBody);
+        $this->put('/api/notebooks/1/notes/4', $requestBody);
 
         // Assert response
         $this->assertEquals(200, $this->response->status());
@@ -176,7 +176,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
     {
         $requestBody = '{ }';
 
-        $this->put('/notebooks/1/notes/1', $requestBody);
+        $this->put('/api/notebooks/1/notes/1', $requestBody);
         $this->assertEquals(400, $this->response->status());
         
         // Assert db content
@@ -194,7 +194,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
         
         $requestBody = '{ "title": "Updated note 1", "type": "Text", "content": "Updated Note content" }';
 
-        $this->put('/notebooks/3/notes/1', $requestBody);
+        $this->put('/api/notebooks/3/notes/1', $requestBody);
 
        // Assert response
         $this->assertEquals(404, $this->response->status());
@@ -214,7 +214,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
         
         $requestBody = '{ "title": "New Note", "type": "Text", "content": "Note content" }';
 
-        $this->put('/notes/4', $requestBody);
+        $this->put('/api/notes/4', $requestBody);
 
         // Assert response (400, not 404 as you cannot put a new note without specifying
         // the notebook)
@@ -231,7 +231,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testDeleteNote()
     {
-        $this->delete('/notes/1');
+        $this->delete('/api/notes/1');
         $this->assertEquals(200, $this->response->status());
 
         // Assert db content
@@ -245,7 +245,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testDeleteUnknownNote()
     {
-        $this->delete('/notes/4');
+        $this->delete('/api/notes/4');
         $this->assertEquals(404, $this->response->status());
         // todo: assert message
         
@@ -260,7 +260,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testDeleteNoteInUnknownNotebook()
     {
-        $this->delete('/notebooks/3/notes/1');
+        $this->delete('/api/notebooks/3/notes/1');
         $this->assertEquals(404, $this->response->status());
         // todo: assert message
         

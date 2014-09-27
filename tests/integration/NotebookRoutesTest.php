@@ -15,7 +15,7 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
     public function testGetRoot()
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/get-notebooks-expected-1.json');
-        $this->get('/');
+        $this->get('/api');
         $this->assertEquals(200, $this->response->status());
         $this->assertSame($expected, $this->response->body());
     }
@@ -23,7 +23,7 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
     public function testGetNotebooks()
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/get-notebooks-expected-1.json');
-        $this->get('/notebooks');
+        $this->get('/api/notebooks');
         $this->assertEquals(200, $this->response->status());
         $this->assertSame($expected, $this->response->body());
     }
@@ -35,7 +35,7 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
         $dbHelper->createDatabase(); //\ORM::get_db(), [ '0.1' => __DIR__ . '/../../migrations/braindump-0.1-sqlite.sql']);
         
         $expected = file_get_contents(dirname(__FILE__).'/files/get-notebooks-expected-3.json');
-        $this->get('/notebooks');
+        $this->get('/api/notebooks');
         $this->assertEquals(200, $this->response->status());
         $this->assertSame($expected, $this->response->body());
     }
@@ -43,14 +43,14 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
     public function testGetNotebook()
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/get-notebooks-expected-2.json');
-        $this->get('/notebooks/1');
+        $this->get('/api/notebooks/1');
         $this->assertEquals(200, $this->response->status());
         $this->assertSame($expected, $this->response->body());
     }
 
     public function testGetUnkownNotebook()
     {
-        $this->get('/notebooks/3');
+        $this->get('/api/notebooks/3');
         $this->assertEquals(404, $this->response->status());
         // todo: assert message
         //$this->assertSame($expected, $this->response->body());
@@ -62,7 +62,7 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
         
         $requestBody = '{ "title": "New Notebook" }';
 
-        $this->post('/notebooks', $requestBody);
+        $this->post('/api/notebooks', $requestBody);
         
         // Assert response
         $this->assertEquals(200, $this->response->status());
@@ -82,7 +82,7 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
         $requestBody = '{ }';
 
         // Assert response
-        $this->post('/notebooks', $requestBody);
+        $this->post('/api/notebooks', $requestBody);
         $this->assertEquals(400, $this->response->status());
         // todo: assert message
     
@@ -101,7 +101,7 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
         
         $requestBody = '{ "title": "Updated title" }';
 
-        $this->put('/notebooks/1', $requestBody);
+        $this->put('/api/notebooks/1', $requestBody);
 
         // Assert response
         $this->assertEquals(200, $this->response->status());
@@ -122,7 +122,7 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
         
         $requestBody = '{ "title": "New Notebook" }';
 
-        $this->put('/notebooks/3', $requestBody);
+        $this->put('/api/notebooks/3', $requestBody);
         $this->assertEquals(200, $this->response->status());
         $this->assertSame($expected, $this->response->body());
 
@@ -139,7 +139,7 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
     {
         $requestBody = '{ }';
 
-        $this->put('/notebooks/1', $requestBody);
+        $this->put('/api/notebooks/1', $requestBody);
         $this->assertEquals(400, $this->response->status());
         
         // Assert db content
@@ -153,7 +153,7 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
 
     public function testDeleteNotebook()
     {
-        $this->delete('/notebooks/1');
+        $this->delete('/api/notebooks/1');
         $this->assertEquals(200, $this->response->status());
 
         // test also with non-empty notebook
@@ -169,7 +169,7 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
 
     public function testDeleteUnknownNotebook()
     {
-        $this->delete('/notebooks/3');
+        $this->delete('/api/notebooks/3');
         $this->assertEquals(404, $this->response->status());
         // todo: assert message
         
