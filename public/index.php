@@ -63,6 +63,10 @@ $app->options('/:wildcard+', function () {
     header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS, DELETE');
 });
 
+$app->get('/', function () use ($app) {
+    $app->redirect('/admin');
+});
+
 require_once '../routes/admin.php';
 require_once '../routes/note.php';
 require_once '../routes/notebook.php';
