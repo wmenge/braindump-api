@@ -1,7 +1,7 @@
 <?php
 require '../vendor/autoload.php';
 require '../middleware/AttachHeaders.php';
-require '../middleware/AdminAuthentication.php';
+require '../middleware/Authentication.php';
 require '../lib/DatabaseHelper.php';
 
 date_default_timezone_set('Europe/Amsterdam');

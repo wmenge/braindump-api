@@ -6,7 +6,7 @@ require_once(__DIR__ . '/../model/NoteHelper.php');
 $dbHelper = new \Braindump\Api\Lib\DatabaseHelper($app, \ORM::get_db());
 $noteHelper = new \Braindump\Api\Model\NoteHelper($dbHelper);
 
-$app->group('/api', function () use ($app, $dbHelper, $notebookHelper, $noteHelper) {
+$app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function () use ($app, $dbHelper, $notebookHelper, $noteHelper) {
 
     $app->get('/(notebooks/:id/)notes(/)', function ($id = null) use ($app, $noteHelper) {
 

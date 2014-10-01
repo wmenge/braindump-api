@@ -20,8 +20,14 @@ function outputJson($data, $app)
 
 namespace Braindump\Api\Admin\Middleware;
 
-function adminAuthenticate() {
-    // mock implementation    
+function adminAuthenticate()
+{
+    // mock implementation
+}
+
+function apiAuthenticate()
+{
+    // mock implementation
 }
 
 namespace Braindump\Api\Model;
