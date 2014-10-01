@@ -14,18 +14,20 @@ $userHelper = new \Braindump\Api\Model\UserHelper($dbHelper);
 $app->group('/admin', function () use ($app, $dbHelper, $notebookHelper, $noteHelper, $userHelper) {
 
     $app->get('/login', function () use ($app, $dbHelper, $userHelper) {
-        $app->render('login.php');
+        $app->render('admin-page.php', [
+            'content' => $app->view->fetch('login-fragment.php')
+        ]);
     });
 
     $app->post('/login', function () use ($app) {
 
-        print_r($app->request->post());
-
         try {
-            \Sentry::authenticate($app->request->post(), true);
+            \Sentry::authenticate($app->request->post());
         } catch (\Exception $e) {
             $app->flashNow('error', $e->getMessage());
-            $app->render('login.php');
+            $app->render('admin-page.php', [
+                'content' => $app->view->fetch('login-fragment.php')
+            ]);
             return;
         }
         
@@ -57,14 +59,15 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
             $menuData = [
               'notebookCount'   => \ORM::for_table('notebook')->count(),
               'noteCount'       => \ORM::for_table('note')->count(),
-              'userCount'       => \ORM::for_table('users')->count() ];
+              'userCount'       => \ORM::for_table('users')->count(),
+              'user'            => \Sentry::getUser(), ];
         } catch (\Exception $e) {
             $app->flashNow('error', $e->getMessage());
         }
 
-        $app->render('admin-template.php', [
-            'menu'    => $app->view->fetch('admin-menu.php', $menuData),
-            'content' => $app->view->fetch('admin-page.php', $data)
+        $app->render('admin-page.php', [
+            'menu'    => $app->view->fetch('admin-menu-fragment.php', $menuData),
+            'content' => $app->view->fetch('admin-fragment.php', $data)
         ]);
     });
 
@@ -200,4 +203,237 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
 
     })->via('GET', 'POST');
 
+    $app->get('/users(/)', function () use ($app) {
+
+        $app->render(
+            'admin-page.php',
+            [
+                'menu'    => $app->view->fetch('admin-menu-fragment.php'),
+                'content' => $app->view->fetch(
+                    'user-list-fragment.php',
+                    [
+                        'users' => \Sentry::findAllUsers()
+                    ]
+                )
+            ]
+        );
+    });
+
+    $app->get('/users/createForm', function () use ($app) {
+        $app->render(
+            'admin-page.php',
+            [
+                'menu'    => $app->view->fetch('admin-menu-fragment.php'),
+                'content' => $app->view->fetch(
+                    'user-form-fragment.php',
+                    [
+                        'groups' => \Sentry::findAllGroups()
+                    ]
+                )
+            ]
+        );
+    });
+
+    $app->get('/users/:id', function ($id) use ($app) {
+        $app->render(
+            'admin-page.php',
+            [
+                'menu'    => $app->view->fetch('admin-menu-fragment.php'),
+                'content' => $app->view->fetch(
+                    'user-form-fragment.php',
+                    [
+                        'user'   => \Sentry::findUserById($id),
+                        'groups' => \Sentry::findAllGroups()
+                    ]
+                )
+            ]
+        );
+    });
+
+    $app->post('/users(/)', function () use ($app) {
+
+        //var $user == null;
+
+        try {
+
+            // Create the user
+            $user = \Sentry::createUser([
+                'email'      => htmlentities($app->request->params('email'), ENT_QUOTES, 'UTF-8'),
+                'first_name' => htmlentities($app->request->params('first_name'), ENT_QUOTES, 'UTF-8'),
+                'last_name'  => htmlentities($app->request->params('last_name'), ENT_QUOTES, 'UTF-8'),
+                'password'   => 'welcome',
+                'activated'  => true,
+            ]);
+
+            $groups = $app->request->params('groups');
+
+            foreach ($groups as $id) {
+                $user->addGroup(\Sentry::findGroupById($id));
+            }
+
+            $app->flashNow('success', 'Changes have been saved');
+            
+            $app->render(
+                'admin-page.php',
+                [
+                    'menu'    => $app->view->fetch('admin-menu-fragment.php'),
+                    'content' => $app->view->fetch(
+                        'user-list-fragment.php',
+                        [
+                            'users' => \Sentry::findAllUsers()
+                        ]
+                    )
+                ]
+            );
+
+        } catch (\Exception $e) {
+            $app->flashNow('error', $e->getMessage());
+
+            // Todo: In an error situation, the Groups checkboxes are not repopulated
+            $app->render(
+                'admin-page.php',
+                [
+                    'menu'    => $app->view->fetch('admin-menu-fragment.php'),
+                    'content' => $app->view->fetch(
+                        'user-form-fragment.php',
+                        [
+                            'user' => $user,
+                            'groups' => \Sentry::findAllGroups()
+                        ]
+                    )
+                ]
+            );
+        }
+    });
+
+    $app->put('/users/:id', function ($id) use ($app) {
+
+        $success = false;
+
+        try {
+
+            $user = \Sentry::findUserById($id);
+
+            $user->email      = htmlentities($app->request->params('email'), ENT_QUOTES, 'UTF-8');
+            $user->first_name = htmlentities($app->request->params('first_name'), ENT_QUOTES, 'UTF-8');
+            $user->last_name  = htmlentities($app->request->params('last_name'), ENT_QUOTES, 'UTF-8');
+            
+            $success = $user->save();
+
+            if ($success) {
+                
+                // Try to add all listed groups
+                $listedGroups = $app->request->params('groups');
+                
+                foreach ($listedGroups as $groupId) {
+                    $success = $user->addGroup(\Sentry::findGroupById($groupId));
+                }
+
+                // Try to remove all unlisted groups
+                $allGroups = \Sentry::findAllGroups();
+
+                foreach ($allGroups as $group) {
+                    if (!in_array($group->id, $listedGroups)) {
+                        $success = $user->removeGroup($group);
+                    }
+                }
+            }
+
+            if ($success) {
+                $app->flashNow('success', 'Changes have been saved');
+            }
+
+            $app->render(
+                'admin-page.php',
+                [
+                    'menu'    => $app->view->fetch('admin-menu-fragment.php'),
+                    'content' => $app->view->fetch(
+                        'user-list-fragment.php',
+                        [
+                            'users' => \Sentry::findAllUsers()
+                        ]
+                    )
+                ]
+            );
+
+        } catch (\Exception $e) {
+            $app->flashNow('error', $e->getMessage());
+
+            $app->render(
+                'admin-page.php',
+                [
+                    'menu'    => $app->view->fetch('admin-menu-fragment.php'),
+                    'content' => $app->view->fetch(
+                        'user-form-fragment.php',
+                        [
+                            'user'   => \Sentry::findUserById($id),
+                            'groups' => \Sentry::findAllGroups()
+                        ]
+                    )
+                ]
+            );
+        }
+
+    });
+
+    $app->post('/users/:id/throttle/:action(/)', function ($id, $action) use ($app) {
+
+        try {
+            $throttle = \Sentry::findThrottlerByUserId($id);
+
+            switch ($action) {
+                case 'suspend':
+                    $throttle->suspend();
+                    $app->flashNow('success', 'User has been suspended');
+                    break;
+                case 'unsuspend':
+                    $throttle->unsuspend();
+                    $app->flashNow('success', 'User has been unsuspended');
+                    break;
+                case 'ban':
+                    $throttle->ban();
+                    $app->flashNow('success', 'User has been banned');
+                    break;
+                case 'unban':
+                    $throttle->unban();
+                    $app->flashNow('success', 'User has been unbanned');
+                    break;
+                default:
+                    $app->halt('500', 'Illegal action');
+                    break;
+            }
+        } catch (\Exception $e) {
+            $app->flashNow('error', $e->getMessage());
+        }
+
+        $app->render(
+            'admin-page.php',
+            [
+                'menu'    => $app->view->fetch('admin-menu-fragment.php'),
+                'content' => $app->view->fetch(
+                    'user-list-fragment.php',
+                    [
+                        'users' => \Sentry::findAllUsers()
+                    ]
+                )
+            ]
+        );
+
+    });
+
+    $app->delete('/users/:id', function ($id) use ($app) {
+
+        try {
+            $user = \Sentry::findUserById($id);
+            // Todo: delete notebooks and notes of user
+            $user->delete();
+            $app->flash('success', 'User has been deleted');
+            
+        } catch (\Exception $e) {
+            $app->flash('error', $e->getMessage());
+        }
+
+        $app->redirect('/admin/users');
+    });
+    
 });
