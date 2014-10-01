@@ -32,7 +32,7 @@ $app->add(new \Slim\Middleware\SessionCookie(array(
     'cipher_mode' => MCRYPT_MODE_CBC
 )));
 
-$app->refererringRoute = function() use ($app) {
+$app->refererringRoute = function () use ($app) {
     if (strpos($app->environment['HTTP_REFERER'], $app->environment['HTTP_ORIGIN']) !== false) {
         return str_replace($app->environment['HTTP_ORIGIN'], '', $app->environment['HTTP_REFERER']);
     } else {

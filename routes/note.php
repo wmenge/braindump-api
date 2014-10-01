@@ -63,9 +63,7 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
         $input = json_decode($app->request->getBody());
 
         if (!$noteHelper->isValid($input)) {
-            $app->response->setStatus(400);
-            echo 'Invalid input';
-            return;
+            $app->halt(400, 'Invalid input');
         }
 
         $note = \ORM::for_table('note')->create();
@@ -94,10 +92,7 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
         $input = json_decode($app->request->getBody());
 
         if (!$noteHelper->isValid($input)) {
-            $app->response->setStatus(400);
-            echo 'Invalid input';
-
-            return;
+            $app->halt(400, 'Invalid input');
         }
 
         // Get note
@@ -108,9 +103,7 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
             // have been supplied (return 400 instead of 404 to
             // indicate error situation)
             if (!isset($notebook)) {
-                $app->response->setStatus(400);
-                echo 'Invalid input';
-                return;
+                $app->halt(400, 'Invalid input');
             }
             $note = \ORM::for_table('note')->create();
         } else {

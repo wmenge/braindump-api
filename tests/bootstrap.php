@@ -35,19 +35,20 @@ namespace Braindump\Api\Model;
 // Mock Sentry class
 class SentryFacadeMock {
 
-    static function getUser()
+    public static function getUser()
     {
         return SentryFacadeMock::findUserById(1);
     }
 
-    static function findUserById($id)
+    public static function findUserById($id)
     {
         $mockUser = new \stdClass();
         $mockUser->id = $id;
         return $mockUser;
     }
 
-    static function check() {
+    public static function check()
+    {
         return true;
     }
 }
@@ -190,5 +191,3 @@ abstract class Slim_Framework_TestCase extends AbstractDbTest
         throw new \BadMethodCallException(strtoupper($method) . ' is not supported');
     }
 }
-
-/* End of file bootstrap.php */

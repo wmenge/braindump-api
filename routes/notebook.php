@@ -38,10 +38,7 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
         $input = json_decode($app->request->getBody());
 
         if (!$notebookHelper->isValid($input)) {
-            $app->response->setStatus(400);
-            echo 'Invalid input:' . $app->request->getBody();
-
-            return;
+            $app->halt(400, 'Invalid input');
         }
 
         $notebook = \ORM::for_table('notebook')->create();
@@ -61,10 +58,7 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
         $input = json_decode($app->request->getBody());
 
         if (!$notebookHelper->isValid($input)) {
-            $app->response->setStatus(400);
-            echo 'Invalid input';
-
-            return;
+            $app->halt(400, 'Invalid input');
         }
 
         $notebook = \ORM::for_table('notebook')->find_one($id);
