@@ -40,10 +40,9 @@ $app->refererringRoute = function () use ($app) {
     }
 };
 
-$app->idiormConfig = (require '../config/idiorm-config.php');
 $app->braindumpConfig = (require '../config/braindump-config.php');
 
-ORM::configure($app->idiormConfig);
+ORM::configure($app->braindumpConfig[database_config]);
 
 function outputJson($data, $app)
 {
