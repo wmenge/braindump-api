@@ -9,11 +9,11 @@ function time()
 
 namespace Braindump\Api\Test\Integration;
 
-require_once __DIR__ . '/../../model/NotebookHelper.php';
+require_once __DIR__ . '/../../model/NotebookFacade.php';
 
-class NotebookHelperDbTest extends AbstractDbTest
+class NotebookFacadeDbTest extends AbstractDbTest
 {
-    protected $helper;
+    protected $Facade;
 
     protected function setUp()
     {
@@ -21,9 +21,9 @@ class NotebookHelperDbTest extends AbstractDbTest
 
         $mockApp = new \stdClass();
         $mockApp->braindumpConfig = (require( __DIR__ . '/../../config/braindump-config.php'));
-        $dbHelper = new \Braindump\Api\Lib\DatabaseHelper($mockApp, \ORM::get_db());
+        $dbFacade = new \Braindump\Api\Lib\DatabaseFacade($mockApp, \ORM::get_db());
         
-        $this->helper = new \Braindump\Api\Model\NotebookHelper($dbHelper);
+        $this->Facade = new \Braindump\Api\Model\NotebookFacade($dbFacade);
     }
 
     /**
@@ -41,7 +41,7 @@ class NotebookHelperDbTest extends AbstractDbTest
             [ 'id' => 2, 'title' => 'title 2', 'created' => 0, 'updated' => 0, 'noteCount' => 0, 'user_id' => 1 ],
         ];
 
-        $this->assertEquals($expected, $this->helper->getNoteBookList());
+        $this->assertEquals($expected, $this->Facade->getNoteBookList());
     }
 
     public function testSortedGetNotebookList()
@@ -51,24 +51,24 @@ class NotebookHelperDbTest extends AbstractDbTest
             [ 'id' => 1, 'title' => 'title 1', 'created' => 0, 'updated' => 0, 'noteCount' => 0, 'user_id' => 1 ],
         ];
         
-        $this->assertEquals($expected, $this->helper->getNoteBookList('-title'));
+        $this->assertEquals($expected, $this->Facade->getNoteBookList('-title'));
     }
 
     public function testGetNotebookForId()
     {
         $expected = [ 'id' => 1, 'title' => 'title 1', 'created' => 0, 'updated' => 0, 'noteCount' => 0, 'user_id' => 1 ];
         
-        $this->assertEquals($expected, $this->helper->getNotebookForId(1)->as_array());
+        $this->assertEquals($expected, $this->Facade->getNotebookForId(1)->as_array());
     }
 
     public function testGetNonExistingNotebookForId()
     {
-        $this->assertEquals(null, $this->helper->getNotebookForId(3));
+        $this->assertEquals(null, $this->Facade->getNotebookForId(3));
     }
 
     public function testCreateSampleData()
     {
-        $this->helper->createSampleData();
+        $this->Facade->createSampleData();
 
         $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/notebooks-expected-create-sample-data.xml');
 

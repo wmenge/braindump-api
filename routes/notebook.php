@@ -1,27 +1,27 @@
 <?php
 namespace Braindump\Api;
 
-require_once(__DIR__ . '/../model/NotebookHelper.php');
+require_once(__DIR__ . '/../model/NotebookFacade.php');
 
-$dbHelper = new \Braindump\Api\Lib\DatabaseHelper($app, \ORM::get_db());
-$notebookHelper = new \Braindump\Api\Model\NotebookHelper($dbHelper);
+$dbFacade = new \Braindump\Api\Lib\DatabaseFacade($app, \ORM::get_db());
+$notebookFacade = new \Braindump\Api\Model\NotebookFacade($dbFacade);
 
-$app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function () use ($app, $dbHelper, $notebookHelper, $noteHelper) {
+$app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function () use ($app, $dbFacade, $notebookFacade, $noteFacade) {
 
-    $app->get('(/)(notebooks)(/)', function () use ($notebookHelper, $app) {
+    $app->get('(/)(notebooks)(/)', function () use ($notebookFacade, $app) {
        
-        $list = $notebookHelper->getNoteBookList($app->request()->get('sort'));
+        $list = $notebookFacade->getNoteBookList($app->request()->get('sort'));
         if (empty($list)) {
-            $notebookHelper->createSampleData();
-            $list = $notebookHelper->getNoteBookList($app->request()->get('sort'));
+            $notebookFacade->createSampleData();
+            $list = $notebookFacade->getNoteBookList($app->request()->get('sort'));
         }
 
         outputJson($list, $app);
     });
 
-    $app->get('/notebooks/:id(/)', function ($id) use ($app, $notebookHelper) {
+    $app->get('/notebooks/:id(/)', function ($id) use ($app, $notebookFacade) {
 
-        $notebook = $notebookHelper->getNotebookForId($id);
+        $notebook = $notebookFacade->getNotebookForId($id);
 
         if ($notebook == null) {
             return $app->notFound();
@@ -30,34 +30,34 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
         outputJson($notebook->as_array(), $app);
     });
 
-    $app->post('/notebooks(/)', function () use ($app, $notebookHelper) {
+    $app->post('/notebooks(/)', function () use ($app, $notebookFacade) {
         // @TODO Notebook Title should be unique (for user)
         // @TODO After creation, set url in header,
         // check http://stackoverflow.com/questions/11159449
 
         $input = json_decode($app->request->getBody());
 
-        if (!$notebookHelper->isValid($input)) {
+        if (!$notebookFacade->isValid($input)) {
             $app->halt(400, 'Invalid input');
         }
 
         $notebook = \ORM::for_table('notebook')->create();
-        $notebookHelper->map($notebook, $input);
+        $notebookFacade->map($notebook, $input);
         // Todo: Check errors after db operations
         $notebook->save();
 
-        $notebook = $notebookHelper->getNotebookForId($notebook->id());
+        $notebook = $notebookFacade->getNotebookForId($notebook->id());
 
         outputJson($notebook->as_array(), $app);
     });
 
-    $app->put('/notebooks/:id(/)', function ($id) use ($app, $notebookHelper) {
+    $app->put('/notebooks/:id(/)', function ($id) use ($app, $notebookFacade) {
         // Todo: Notebook Title should be unique (for user)
         // Todo: After creation, set url in header,
         // check http://stackoverflow.com/questions/11159449
         $input = json_decode($app->request->getBody());
 
-        if (!$notebookHelper->isValid($input)) {
+        if (!$notebookFacade->isValid($input)) {
             $app->halt(400, 'Invalid input');
         }
 
@@ -67,10 +67,10 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
             $notebook = \ORM::for_table('notebook')->create();
         }
 
-        $notebookHelper->map($notebook, $input);
+        $notebookFacade->map($notebook, $input);
         $notebook->save();
 
-        $notebook = $notebookHelper->getNotebookForId($notebook->id());
+        $notebook = $notebookFacade->getNotebookForId($notebook->id());
 
         outputJson($notebook->as_array(), $app);
     });

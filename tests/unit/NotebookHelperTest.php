@@ -2,18 +2,18 @@
 namespace Braindump\Api\Test\Unit;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
-require_once __DIR__ . '/../../model/NotebookHelper.php';
+require_once __DIR__ . '/../../model/NotebookFacade.php';
 
-class NotebookHelperTest extends \PHPUnit_Framework_TestCase
+class NotebookFacadeTest extends \PHPUnit_Framework_TestCase
 {
-    protected $helper;
+    protected $Facade;
 
     protected function setUp()
     {
-        $dbHelper = $this->getMockBuilder('\Braindump\Api\Lib\DatabaseHelper')
+        $dbFacade = $this->getMockBuilder('\Braindump\Api\Lib\DatabaseFacade')
                         ->disableOriginalConstructor()
                         ->getMock();
-        $this->helper = new \Braindump\Api\Model\NotebookHelper($dbHelper);
+        $this->Facade = new \Braindump\Api\Model\NotebookFacade($dbFacade);
     }
 
     /**
@@ -21,7 +21,7 @@ class NotebookHelperTest extends \PHPUnit_Framework_TestCase
      */
     public function testIsValid($model, $expectedValid)
     {
-        $this->assertEquals($expectedValid, $this->helper->isValid($model));
+        $this->assertEquals($expectedValid, $this->Facade->isValid($model));
     }
 
     public function isValidProvider()
@@ -43,7 +43,7 @@ class NotebookHelperTest extends \PHPUnit_Framework_TestCase
     public function testMap($input, $output)
     {
         $mockNotebook = (object)[];
-        $this->helper->map($mockNotebook, $input);
+        $this->Facade->map($mockNotebook, $input);
         $this->assertEquals($output, $mockNotebook);
     }
 

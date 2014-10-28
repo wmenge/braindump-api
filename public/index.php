@@ -2,7 +2,7 @@
 require '../vendor/autoload.php';
 require '../middleware/AttachHeaders.php';
 require '../middleware/Authentication.php';
-require '../lib/DatabaseHelper.php';
+require '../lib/DatabaseFacade.php';
 
 date_default_timezone_set('Europe/Amsterdam');
 

@@ -31,8 +31,8 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
     public function testGetNotebookSampledata()
     {
         // Additional fixture, start with empty dataset
-        $dbHelper = new \Braindump\Api\Lib\DatabaseHelper($this->app, \ORM::get_db());
-        $dbHelper->createDatabase(); //\ORM::get_db(), [ '0.1' => __DIR__ . '/../../migrations/braindump-0.1-sqlite.sql']);
+        $dbFacade = new \Braindump\Api\Lib\DatabaseFacade($this->app, \ORM::get_db());
+        $dbFacade->createDatabase(); //\ORM::get_db(), [ '0.1' => __DIR__ . '/../../migrations/braindump-0.1-sqlite.sql']);
         
         $expected = file_get_contents(dirname(__FILE__).'/files/get-notebooks-expected-3.json');
         $this->get('/api/notebooks');

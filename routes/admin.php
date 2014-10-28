@@ -1,19 +1,19 @@
 <?php
 namespace Braindump\Api\Admin;
 
-require_once(__DIR__ . '/../lib/DatabaseHelper.php');
-require_once(__DIR__ . '/../model/NotebookHelper.php');
-require_once(__DIR__ . '/../model/NoteHelper.php');
-require_once(__DIR__ . '/../model/UserHelper.php');
-$dbHelper = new \Braindump\Api\Lib\DatabaseHelper($app, \ORM::get_db());
-$notebookHelper = new \Braindump\Api\Model\NotebookHelper($dbHelper);
-$noteHelper = new \Braindump\Api\Model\NoteHelper($dbHelper);
-$userHelper = new \Braindump\Api\Model\UserHelper($dbHelper);
+require_once(__DIR__ . '/../lib/DatabaseFacade.php');
+require_once(__DIR__ . '/../model/NotebookFacade.php');
+require_once(__DIR__ . '/../model/NoteFacade.php');
+require_once(__DIR__ . '/../model/UserFacade.php');
+$dbFacade = new \Braindump\Api\Lib\DatabaseFacade($app, \ORM::get_db());
+$notebookFacade = new \Braindump\Api\Model\NotebookFacade($dbFacade);
+$noteFacade = new \Braindump\Api\Model\NoteFacade($dbFacade);
+$userFacade = new \Braindump\Api\Model\UserFacade($dbFacade);
 
 
-$app->group('/admin', function () use ($app, $dbHelper, $notebookHelper, $noteHelper, $userHelper) {
+$app->group('/admin', function () use ($app, $dbFacade, $notebookFacade, $noteFacade, $userFacade) {
 
-    $app->get('/login', function () use ($app, $dbHelper, $userHelper) {
+    $app->get('/login', function () use ($app, $dbFacade, $userFacade) {
         $app->render('admin-page.php', [
             'content' => $app->view->fetch('login-fragment.php')
         ]);
@@ -46,14 +46,14 @@ $app->group('/admin', function () use ($app, $dbHelper, $notebookHelper, $noteHe
     });
 });
 
-$app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', function () use ($app, $dbHelper, $notebookHelper, $noteHelper, $userHelper) {
+$app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', function () use ($app, $dbFacade, $notebookFacade, $noteFacade, $userFacade) {
 
-    $app->get('(/)', function () use ($app, $dbHelper, $userHelper) {
+    $app->get('(/)', function () use ($app, $dbFacade, $userFacade) {
 
         $data = [
-              'currentVersion'  => $dbHelper->getCurrentVersion(),
-              'highestVersion'  => $dbHelper->getHighestVersion(),
-              'migrationNeeded' => $dbHelper->isMigrationNeeded() ];
+              'currentVersion'  => $dbFacade->getCurrentVersion(),
+              'highestVersion'  => $dbFacade->getHighestVersion(),
+              'migrationNeeded' => $dbFacade->isMigrationNeeded() ];
 
         try {
             $menuData = [
@@ -85,7 +85,7 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
         outputJson($notebooks, $app);
     });
 
-    $app->post('/import', function () use ($notebookHelper, $noteHelper, $dbHelper, $app) {
+    $app->post('/import', function () use ($notebookFacade, $noteFacade, $dbFacade, $app) {
 
         $notebooks = 0;
         $notes = 0;
@@ -119,7 +119,7 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
             
             foreach ($notebookRecords as $notebookRecord) {
 
-                if (!$notebookHelper->isValid($notebookRecord)) {
+                if (!$notebookFacade->isValid($notebookRecord)) {
                     \ORM::get_db()->rollback();
 
                     $app->flash('error', 'Invalid data');
@@ -128,14 +128,14 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
                 }
 
                 $notebook = \ORM::for_table('notebook')->create();
-                $notebookHelper->map($notebook, $notebookRecord, true);
+                $notebookFacade->map($notebook, $notebookRecord, true);
 
                 // Todo: Check errors after db operations
                 $notebook->save();
                 $notebooks++;
 
                 foreach ($notebookRecord->notes as $noteRecord) {
-                    if (!$noteHelper->isValid($noteRecord)) {
+                    if (!$noteFacade->isValid($noteRecord)) {
                         \ORM::get_db()->rollback();
                         $app->flash('error', 'Invalid data');
                         $app->redirect($app->refererringRoute);
@@ -143,7 +143,7 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
                     }
 
                     $note = \ORM::for_table('note')->create();
-                    $noteHelper->map($note, $notebook, $noteRecord, true);
+                    $noteFacade->map($note, $notebook, $noteRecord, true);
                     $note->save();
                     $notes++;
                 }
@@ -160,7 +160,7 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
         }
     });
 
-    $app->post('/setup', function () use ($dbHelper, $app) {
+    $app->post('/setup', function () use ($dbFacade, $app) {
 
         // Only perform setup if user has confirmed
         if ($app->request->params('confirm') != 'YES') {
@@ -171,7 +171,7 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
 
         try {
             \ORM::get_db()->beginTransaction();
-            $dbHelper->createDatabase();
+            $dbFacade->createDatabase();
             \ORM::get_db()->commit();
             $app->flash('success', 'Setup is executed');
             $app->redirect($app->refererringRoute);
@@ -184,13 +184,13 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
         
     });
 
-    $app->map('/migrate', function () use ($dbHelper, $app) {
+    $app->map('/migrate', function () use ($dbFacade, $app) {
 
         try {
             \ORM::get_db()->beginTransaction();
-            $dbHelper->migrateDatabase();
+            $dbFacade->migrateDatabase();
             \ORM::get_db()->commit();
-            $app->flash('success', sprintf('Migrated database schema to %s', $dbHelper->getCurrentVersion()));
+            $app->flash('success', sprintf('Migrated database schema to %s', $dbFacade->getCurrentVersion()));
             // get referring route does not seem to work from GET Request
             // $app->redirect($app->refererringRoute);
             $app->redirect('/admin');

@@ -2,16 +2,16 @@
 
 namespace Braindump\Api\Model;
 
-class NoteHelper
+class NoteFacade
 {
     const TYPE_TEXT = 'Text';
     const TYPE_HTML = 'HTML';
 
-    private $dbHelper;
+    private $dbFacade;
 
-    public function __construct($dbHelper)
+    public function __construct($dbFacade)
     {
-        $this->dbHelper = $dbHelper;
+        $this->dbFacade = $dbFacade;
     }
 
     public function getNoteList($sortString = null, $queryString = null)
@@ -27,7 +27,7 @@ class NoteHelper
         }
 
         if (!empty($sortString)) {
-            $queryObj = $this->dbHelper->addSortExpression($queryObj, $sortString);
+            $queryObj = $this->dbFacade->addSortExpression($queryObj, $sortString);
         }
 
         return $queryObj->find_array();
@@ -47,7 +47,7 @@ class NoteHelper
         }
 
         if (!empty($sortString)) {
-            $queryObj = $this->dbHelper->addSortExpression($queryObj, $sortString);
+            $queryObj = $this->dbFacade->addSortExpression($queryObj, $sortString);
         }
 
         return $queryObj->find_array();
@@ -70,7 +70,7 @@ class NoteHelper
             is_string($data->title) &&
             !empty($data->title) &&
             property_exists($data, 'type') &&
-            in_array($data->type, [NoteHelper::TYPE_TEXT, NoteHelper::TYPE_HTML]);
+            in_array($data->type, [NoteFacade::TYPE_TEXT, NoteFacade::TYPE_HTML]);
 
         // if url is supplied, check content
     //      ($inpuxtData->content_url == null || !(filter_var($inputData->content_url, FILTER_VALIDATE_URL) === false);
@@ -99,13 +99,13 @@ class NoteHelper
             }
 
             if (property_exists($data, 'content')) {
-                if ($note->type == NoteHelper::TYPE_HTML) {
+                if ($note->type == NoteFacade::TYPE_HTML) {
                     // check http://dev.evernote.com/doc/articles/enml.php for evenrote html format
                     // @TODO Check which tags to allow/disallow
                     // @TODO Allow images with base64 content
                     $purifier = new \HTMLPurifier(\HTMLPurifier_Config::createDefault());
                     $note->content = $purifier->purify($data->content);
-                } elseif ($note->type == NoteHelper::TYPE_TEXT) {
+                } elseif ($note->type == NoteFacade::TYPE_TEXT) {
                     $note->content = htmlentities($data->content, ENT_QUOTES, 'UTF-8');
                 } else {
                     // Shouldn't happen

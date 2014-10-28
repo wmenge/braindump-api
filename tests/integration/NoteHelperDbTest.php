@@ -2,11 +2,11 @@
 
 namespace Braindump\Api\Test\Integration;
 
-require_once __DIR__ . '/../../model/NoteHelper.php';
+require_once __DIR__ . '/../../model/NoteFacade.php';
 
-class NoteHelperDbTest extends AbstractDbTest
+class NoteFacadeDbTest extends AbstractDbTest
 {
-    protected $helper;
+    protected $Facade;
 
     protected function setUp()
     {
@@ -14,9 +14,9 @@ class NoteHelperDbTest extends AbstractDbTest
 
         $mockApp = new \stdClass();
         $mockApp->braindumpConfig = (require( __DIR__ . '/../../config/braindump-config.php'));
-        $dbHelper = new \Braindump\Api\Lib\DatabaseHelper($mockApp, \ORM::get_db());
+        $dbFacade = new \Braindump\Api\Lib\DatabaseFacade($mockApp, \ORM::get_db());
         
-        $this->helper = new \Braindump\Api\Model\NoteHelper($dbHelper);
+        $this->Facade = new \Braindump\Api\Model\NoteFacade($dbFacade);
     }
 
     /**
@@ -35,7 +35,7 @@ class NoteHelperDbTest extends AbstractDbTest
             [ 'id' => '3', 'title' => 'note 3', 'notebook_id' => '2', 'created' => '0', 'updated' => '0', 'url' => null],
         ];
 
-        $this->assertEquals($expected, $this->helper->getNoteList());
+        $this->assertEquals($expected, $this->Facade->getNoteList());
     }
 
     public function testSortedGetNoteList()
@@ -46,7 +46,7 @@ class NoteHelperDbTest extends AbstractDbTest
             [ 'id' => '1', 'title' => 'note 1', 'notebook_id' => '1', 'created' => '0', 'updated' => '0', 'url' => null],
         ];
 
-        $this->assertEquals($expected, $this->helper->getNoteList('-title'));
+        $this->assertEquals($expected, $this->Facade->getNoteList('-title'));
     }
 
     public function testFilteredGetNoteList()
@@ -55,7 +55,7 @@ class NoteHelperDbTest extends AbstractDbTest
             [ 'id' => '1', 'title' => 'note 1', 'notebook_id' => '1', 'created' => '0', 'updated' => '0', 'url' => null],
         ];
 
-        $this->assertEquals($expected, $this->helper->getNoteList('', 'note 1'));
+        $this->assertEquals($expected, $this->Facade->getNoteList('', 'note 1'));
     }
 
     public function testGetNoteListForNotebook()
@@ -67,7 +67,7 @@ class NoteHelperDbTest extends AbstractDbTest
             [ 'id' => '2', 'title' => 'note 2', 'notebook_id' => '1', 'created' => '0', 'updated' => '0', 'url' => null],
         ];
 
-        $this->assertEquals($expected, $this->helper->getNoteListForNotebook($notebook));
+        $this->assertEquals($expected, $this->Facade->getNoteListForNotebook($notebook));
     }
 
     public function testSortedGetNoteListForNotebook()
@@ -79,7 +79,7 @@ class NoteHelperDbTest extends AbstractDbTest
             [ 'id' => '1', 'title' => 'note 1', 'notebook_id' => '1', 'created' => '0', 'updated' => '0', 'url' => '' ],
         ];
 
-        $this->assertEquals($expected, $this->helper->getNoteListForNotebook($notebook, '-title'));
+        $this->assertEquals($expected, $this->Facade->getNoteListForNotebook($notebook, '-title'));
     }
 
     public function testFilteredGetNoteListForNotebook()
@@ -90,18 +90,18 @@ class NoteHelperDbTest extends AbstractDbTest
             [ 'id' => '1', 'title' => 'note 1', 'notebook_id' => '1', 'created' => '0', 'updated' => '0', 'url' => null],
         ];
 
-        $this->assertEquals($expected, $this->helper->getNoteListForNotebook($notebook, '', 'note 1'));
+        $this->assertEquals($expected, $this->Facade->getNoteListForNotebook($notebook, '', 'note 1'));
     }
 
     public function testGetNoteForId()
     {
         $expected = [ 'id' => '1', 'title' => 'note 1', 'notebook_id' => '1', 'created' => '0', 'updated' => '0', 'url' => null,
                       'type' => 'Text', 'content' => 'Note content', 'user_id' => '1' ];
-        $this->assertEquals($expected, $this->helper->getNoteForId(1)->as_array());
+        $this->assertEquals($expected, $this->Facade->getNoteForId(1)->as_array());
     }
 
     public function testGetNonExistingNoteForId()
     {
-        $this->assertEquals(null, $this->helper->getNoteForId(4));
+        $this->assertEquals(null, $this->Facade->getNoteForId(4));
     }
 }

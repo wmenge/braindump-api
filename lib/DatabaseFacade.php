@@ -2,7 +2,7 @@
 
 namespace Braindump\Api\Lib;
 
-class DatabaseHelper
+class DatabaseFacade
 {
     private $db = null;
     private $app = null;
@@ -94,7 +94,7 @@ class DatabaseHelper
     }
 
     /***
-	 * Helper function to parse a sort querystring expression.
+	 * Facade function to parse a sort querystring expression.
 	 *
 	 * Converts: "-title,type"
 	 *

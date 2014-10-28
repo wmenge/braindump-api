@@ -79,7 +79,7 @@ ini_set('display_startup_errors', 1);
 date_default_timezone_set('UTC');
 
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../lib/DatabaseHelper.php';
+require_once __DIR__ . '/../lib/DatabaseFacade.php';
 
 abstract class AbstractDbTest extends \PHPUnit_Extensions_Database_TestCase
 {
@@ -90,8 +90,8 @@ abstract class AbstractDbTest extends \PHPUnit_Extensions_Database_TestCase
     {
         $mockApp = new \stdClass();
         $mockApp->braindumpConfig = (require( __DIR__ . '/../config/braindump-config.php'));
-        $dbHelper = new \Braindump\Api\Lib\DatabaseHelper($mockApp, \ORM::get_db());
-        $dbHelper->createDatabase();
+        $dbFacade = new \Braindump\Api\Lib\DatabaseFacade($mockApp, \ORM::get_db());
+        $dbFacade->createDatabase();
         
         parent::setUp();
     }

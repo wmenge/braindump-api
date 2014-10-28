@@ -2,7 +2,7 @@
 
 namespace Braindump\Api\Model;
 
-class UserHelper
+class UserFacade
 {
     public function isValid($data)
     {

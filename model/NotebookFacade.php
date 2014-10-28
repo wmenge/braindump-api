@@ -2,13 +2,13 @@
 
 namespace Braindump\Api\Model;
 
-class NotebookHelper
+class NotebookFacade
 {
-    private $dbHelper;
+    private $dbFacade;
 
-    public function __construct($dbHelper)
+    public function __construct($dbFacade)
     {
-        $this->dbHelper = $dbHelper;
+        $this->dbFacade = $dbFacade;
     }
 
     public function getNoteBookList($sortString = null)
@@ -17,7 +17,7 @@ class NotebookHelper
             ->select('*')
             ->select_expr('(SELECT COUNT(*) FROM note WHERE notebook_id = notebook.id)', 'noteCount');
 
-        $query = $this->dbHelper->addSortExpression($query, $sortString);
+        $query = $this->dbFacade->addSortExpression($query, $sortString);
 
         return $query->find_array();
     }
@@ -85,7 +85,7 @@ class NotebookHelper
         $note->notebook_id = $notebook->id();
         $note->title = 'This is a Note';
         $note->url = 'https://github.com/wmenge/braindump-api';
-        $note->type = NoteHelper::TYPE_HTML;
+        $note->type = NoteFacade::TYPE_HTML;
         $note->content = '<div>Your very first note</div>';
         $note->created = time();
         $note->updated = time();
