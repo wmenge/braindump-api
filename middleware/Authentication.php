@@ -41,6 +41,8 @@ function adminAuthenticate()
  */
 function apiAuthenticate()
 {
+    if (\Sentry::check()) { return; }
+    
     $app = \Slim\Slim::getInstance();
 
     try {

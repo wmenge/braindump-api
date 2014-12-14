@@ -20,7 +20,6 @@ $app->add(new \Braindump\Api\Middleware\AttachHeaders());
 
 // Session used by admin routes
 // Todo: make sure its only used by Admin routes
-// Todo: add cookie/session support to api route
 $app->add(new \Slim\Middleware\SessionCookie(array(
     'expires' => '20 minutes',
     'path' => '/',
