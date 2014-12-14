@@ -1,13 +1,13 @@
 <?php
 require '../vendor/autoload.php';
-require '../middleware/AttachHeaders.php';
-require '../middleware/Authentication.php';
+
+require '../lib/SentryFacade.php';
 require '../lib/DatabaseFacade.php';
 
-date_default_timezone_set('Europe/Amsterdam');
+require '../middleware/AttachHeaders.php';
+require '../middleware/Authentication.php';
 
-// Sentry configuration/startup
-require '../app/sentry.php';
+date_default_timezone_set('Europe/Amsterdam');
 
 // TODO: move setup of app in separate to make inclusion in /test/bootstrap.php
 $app = new \Slim\Slim(array(
@@ -20,6 +20,7 @@ $app->add(new \Braindump\Api\Middleware\AttachHeaders());
 
 // Session used by admin routes
 // Todo: make sure its only used by Admin routes
+// Todo: add cookie/session support to api route
 $app->add(new \Slim\Middleware\SessionCookie(array(
     'expires' => '20 minutes',
     'path' => '/',
@@ -42,7 +43,7 @@ $app->refererringRoute = function () use ($app) {
 
 $app->braindumpConfig = (require '../config/braindump-config.php');
 
-ORM::configure($app->braindumpConfig[database_config]);
+ORM::configure($app->braindumpConfig['database_config']);
 
 function outputJson($data, $app)
 {

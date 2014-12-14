@@ -2,6 +2,7 @@
 
 namespace Braindump\Api\Model;
 
+// Todo: rename to NoteProvider?
 class NoteFacade
 {
     const TYPE_TEXT = 'Text';
@@ -53,6 +54,7 @@ class NoteFacade
         return $queryObj->find_array();
     }
 
+    // todo: rename to findById
     public function getNoteForId($id)
     {
         return \ORM::for_table('note')
