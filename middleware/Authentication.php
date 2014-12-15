@@ -41,11 +41,13 @@ function adminAuthenticate()
  */
 function apiAuthenticate()
 {
-    if (\Sentry::check()) { return; }
+    if (\Sentry::check()) { 
+        return; 
+    }
     
-    $app = \Slim\Slim::getInstance();
-
     try {
+        $app = \Slim\Slim::getInstance();
+
         \Sentry::authenticate(
             [ 'email'    => $app->request()->headers('PHP_AUTH_USER'),
               'password' => $app->request()->headers('PHP_AUTH_PW') ]
