@@ -59,7 +59,7 @@
           <td>
             <?= implode(', ', array_map(function ($entry) {
                 return $entry['name'];
-              }, $user->groups->toArray()));
+              }, $user->groups()->find_array()));
             ?>
           </td>
         </tr>
