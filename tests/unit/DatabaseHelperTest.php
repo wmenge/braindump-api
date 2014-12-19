@@ -4,8 +4,7 @@ namespace Braindump\Api\Test\Unit;
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../../lib/DatabaseFacade.php';
 require_once __DIR__ . '/MockORMHelper.php';
-//PHPUnit_Extensions_Database_TestCase
-//PHPUnit_Extensions_Database_TestCase
+
 class DatabaseFacadeTest extends \PHPUnit_Framework_TestCase
 {
     protected $Facade;

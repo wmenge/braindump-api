@@ -6,14 +6,14 @@ require_once __DIR__ . '/../../model/NoteFacade.php';
 
 class NoteFacadeTest extends \PHPUnit_Framework_TestCase
 {
-    protected $Facade;
+    protected $facade;
 
     protected function setUp()
     {
         $dbFacade = $this->getMockBuilder('\Braindump\Api\Lib\DatabaseFacade')
                         ->disableOriginalConstructor()
                         ->getMock();
-        $this->Facade = new \Braindump\Api\Model\NoteFacade($dbFacade);
+        $this->facade = new \Braindump\Api\Model\NoteFacade($dbFacade);
     }
 
     /**
@@ -21,7 +21,7 @@ class NoteFacadeTest extends \PHPUnit_Framework_TestCase
      */
     public function testIsValid($model, $expectedValid)
     {
-        $this->assertEquals($expectedValid, $this->Facade->isValid($model));
+        $this->assertEquals($expectedValid, $this->facade->isValid($model));
     }
 
     public function isValidProvider()
@@ -49,7 +49,7 @@ class NoteFacadeTest extends \PHPUnit_Framework_TestCase
     {
         $mockNote = (object)[];
         $mockNotebook = (object)['id' => 42];
-        $this->Facade->map($mockNote, $mockNotebook, $input);
+        $this->facade->map($mockNote, $mockNotebook, $input);
         $this->assertEquals($output, $mockNote);
     }
 
