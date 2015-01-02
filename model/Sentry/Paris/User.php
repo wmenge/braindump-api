@@ -465,7 +465,11 @@ class User extends \Cartalyst\Sentry\Paris\DateTimeModel implements UserInterfac
     public function addGroup(GroupInterface $group)
     {
         if (!$this->inGroup($group)) {
-            $this->groups()->attach($group);
+            $groupUser = \Model::factory(GroupUser::CLASS_NAME)->create();
+            $groupUser->group_id = $group->getID();
+            $groupUser->user_id = $this->getID();
+            $groupUser->save();
+
             $this->invalidateUserGroupsCache();
             $this->invalidateMergedPermissionsCache();
         }
@@ -482,7 +486,15 @@ class User extends \Cartalyst\Sentry\Paris\DateTimeModel implements UserInterfac
     public function removeGroup(GroupInterface $group)
     {
         if ($this->inGroup($group)) {
-            $this->groups()->detach($group);
+            $groupUser = \Model::factory(GroupUser::CLASS_NAME)
+                ->where('group_id', $group->getID())
+                ->where('user_id', $this->getID())
+                ->find_one();
+
+            if ($groupUser) {
+                $groupUser->delete();
+            }
+                
             $this->invalidateUserGroupsCache();
             $this->invalidateMergedPermissionsCache();
         }

@@ -92,15 +92,17 @@ class ParisUserTest extends \Braindump\Api\Test\Integration\AbstractDbTest
     public function testAddingGroupAttachesToRelationship()
     {
         $group = m::mock('Cartalyst\Sentry\Groups\GroupInterface');
+        $group->shouldReceive('getId')->andReturn(1);
 
         $relationship = m::mock('StdClass');
         $relationship->shouldReceive('attach')->with($group)->once();
 
-        $user  = m::mock('Cartalyst\Sentry\Users\Paris\User[inGroup,groups,invalidateMergedPermissionsCache,invalidateUserGroupsCache]');
+        $user  = m::mock('Cartalyst\Sentry\Users\Paris\User[inGroup,groups,invalidateMergedPermissionsCache,invalidateUserGroupsCache,getId]');
         $user->shouldReceive('inGroup')->once()->andReturn(false);
         $user->shouldReceive('groups')->once()->andReturn($relationship);
         $user->shouldReceive('invalidateUserGroupsCache')->once();
         $user->shouldReceive('invalidateMergedPermissionsCache')->once();
+        $user->shouldReceive('getId')->andReturn(1);
 
         $this->assertTrue($user->addGroup($group));
     }
@@ -108,15 +110,18 @@ class ParisUserTest extends \Braindump\Api\Test\Integration\AbstractDbTest
     public function testRemovingFromGroupDetachesRelationship()
     {
         $group = m::mock('Cartalyst\Sentry\Groups\GroupInterface');
+        $group->shouldReceive('getId')->andReturn(1);
 
         $relationship = m::mock('StdClass');
         $relationship->shouldReceive('detach')->with($group)->once();
 
-        $user  = m::mock('Cartalyst\Sentry\Users\Paris\User[inGroup,groups,invalidateMergedPermissionsCache,invalidateUserGroupsCache]');
+        $user  = m::mock('Cartalyst\Sentry\Users\Paris\User[inGroup,groups,invalidateMergedPermissionsCache,invalidateUserGroupsCache,getId]');
         $user->shouldReceive('inGroup')->once()->andReturn(true);
         $user->shouldReceive('groups')->once()->andReturn($relationship);
         $user->shouldReceive('invalidateUserGroupsCache')->once();
         $user->shouldReceive('invalidateMergedPermissionsCache')->once();
+        $user->shouldReceive('getId')->andReturn(1);
+
 
         $this->assertTrue($user->removeGroup($group));
     }
