@@ -267,8 +267,11 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
 
             $groups = $app->request->params('groups');
 
-            foreach ($groups as $id) {
-                $user->addGroup(\Sentry::findGroupById($id));
+            // TODO: validate that at least one group is supplied
+            if (is_array($groups)) {
+                foreach ($groups as $id) {
+                    $user->addGroup(\Sentry::findGroupById($id));
+                }
             }
 
             $app->flashNow('success', 'Changes have been saved');
@@ -322,11 +325,17 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
 
             if ($success) {
                 
+                // TODO: validate that at least one group is supplied
+ 
                 // Try to add all listed groups
                 $listedGroups = $app->request->params('groups');
-                
-                foreach ($listedGroups as $groupId) {
-                    $success = $user->addGroup(\Sentry::findGroupById($groupId));
+
+                if (is_array($listedGroups)) {
+                    foreach ($listedGroups as $groupId) {
+                        $success = $user->addGroup(\Sentry::findGroupById($groupId));
+                    }
+                } else {
+                    $listedGroups = []; // dummy array so removing groups will succeed
                 }
 
                 // Try to remove all unlisted groups

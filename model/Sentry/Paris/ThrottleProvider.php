@@ -145,9 +145,7 @@ class ThrottleProvider implements ProviderInterface {
      */
     public function createModel()
     {
-        $class = '\\'.ltrim($this->model, '\\');
-
-        return new $class;
+        return \Model::factory(Throttle::CLASS_NAME)->create();
     }
 
     /**
