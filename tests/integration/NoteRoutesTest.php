@@ -56,7 +56,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
     {
         $this->get('/api/notes/4');
         $this->assertEquals(404, $this->response->status());
-        // todo: assert message
+        // TODO: assert message
         //$this->assertSame($expected, $this->response->body());
     }
 
@@ -123,7 +123,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
         // Assert response
         $this->post('/api/notebooks/3/notes', $requestBody);
         $this->assertEquals(404, $this->response->status());
-        // todo: assert message
+        // TODO: assert message
     
         // Assert db content
         $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/notes-seed.xml');
@@ -247,7 +247,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
     {
         $this->delete('/api/notes/4');
         $this->assertEquals(404, $this->response->status());
-        // todo: assert message
+        // TODO: assert message
         
         // Assert db content
         $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/notes-seed.xml');
@@ -262,7 +262,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
     {
         $this->delete('/api/notebooks/3/notes/1');
         $this->assertEquals(404, $this->response->status());
-        // todo: assert message
+        // TODO: assert message
         
         // Assert db content
         $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/notes-seed.xml');

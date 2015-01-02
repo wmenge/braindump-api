@@ -130,7 +130,7 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
                 $notebook = \ORM::for_table('notebook')->create();
                 $notebookFacade->map($notebook, $notebookRecord, true);
 
-                // Todo: Check errors after db operations
+                // TODO: Check errors after db operations
                 $notebook->save();
                 $notebooks++;
 
@@ -292,7 +292,7 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
         } catch (\Exception $e) {
             $app->flashNow('error', $e->getMessage());
 
-            // Todo: In an error situation, the Groups checkboxes are not repopulated
+            // TODO: In an error situation, the Groups checkboxes are not repopulated
             $app->render(
                 'admin-page.php',
                 [
@@ -434,7 +434,7 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
 
         try {
             $user = \Sentry::findUserById($id);
-            // Todo: delete notebooks and notes of user
+            // TODO: delete notebooks and notes of user
             $user->delete();
             $app->flash('success', 'User has been deleted');
             

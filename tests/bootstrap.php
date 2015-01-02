@@ -6,7 +6,7 @@ function outputJson($data, $app)
     // JSON_NUMERIC_CHECK is needed as PDO will return strings
     // as default (even if DB schema defines numeric types).
     // http://stackoverflow.com/questions/11128823/how-to-properly-format-pdo-results-numeric-results-returned-as-string
-    // todo: replace with proper rendering engine?
+    // TODO: replace with proper rendering engine?
     $app->response->headers->set('Content-Type', 'application/json');
     $app->response()->body(json_encode($data, JSON_PRETTY_PRINT | JSON_NUMERIC_CHECK));
 }

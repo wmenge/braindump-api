@@ -52,7 +52,7 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
     {
         $this->get('/api/notebooks/3');
         $this->assertEquals(404, $this->response->status());
-        // todo: assert message
+        // TODO: assert message
         //$this->assertSame($expected, $this->response->body());
     }
 
@@ -84,7 +84,7 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
         // Assert response
         $this->post('/api/notebooks', $requestBody);
         $this->assertEquals(400, $this->response->status());
-        // todo: assert message
+        // TODO: assert message
     
         // Assert db content
         $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/post-notebooks-expected-2.xml');
@@ -171,7 +171,7 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
     {
         $this->delete('/api/notebooks/3');
         $this->assertEquals(404, $this->response->status());
-        // todo: assert message
+        // TODO: assert message
         
         // Assert db content
         $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/post-notebooks-expected-2.xml');

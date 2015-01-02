@@ -507,7 +507,7 @@ class ParisUserTest extends \Braindump\Api\Test\Integration\AbstractDbTest
         $this->assertInstanceOf('DateTime', $user->activated_at);
     }
 
-    // todo: check error
+    // TODO: check error
     public function testCheckingPassword()
     {
         User::setHasher($hasher = m::mock('\Cartalyst\Sentry\Hashing\HasherInterface'));

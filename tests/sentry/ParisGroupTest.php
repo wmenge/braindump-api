@@ -15,7 +15,7 @@ class ParisGroupTest extends \Braindump\Api\Test\Integration\AbstractDbTest
      */
     public function getDataSet()
     {
-        // todo: move files to sentry dir
+        // TODO: move files to sentry dir
         return $this->createFlatXMLDataSet(dirname(__FILE__) . '/files/groups-seed.xml');
     }
 
@@ -157,7 +157,7 @@ class ParisGroupTest extends \Braindump\Api\Test\Integration\AbstractDbTest
         $this->assertEquals(array(), $group->permissions);
     }
 
-    // todo: verify that db will be hit during validation
+    // TODO: verify that db will be hit during validation
     /*public function testValidation()
     {
         //$group = m::mock('Cartalyst\Sentry\Groups\Paris\Group[newQuery]');

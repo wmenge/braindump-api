@@ -2,7 +2,7 @@
 
 namespace Braindump\Api\Model;
 
-// Todo: rename to NoteProvider?
+// TODO: rename to NoteProvider?
 class NoteFacade
 {
     const TYPE_TEXT = 'Text';
@@ -17,7 +17,7 @@ class NoteFacade
 
     public function getNoteList($sortString = null, $queryString = null)
     {
-        // @TODO: Add paging to all lists
+        // TODO: Add paging to all lists
         $queryObj = \ORM::for_table('note')->select_many('id', 'notebook_id', 'title', 'created', 'updated', 'url');
 
         if (!empty($queryString)) {
@@ -54,7 +54,7 @@ class NoteFacade
         return $queryObj->find_array();
     }
 
-    // todo: rename to findById
+    // TODO: rename to findById
     public function getNoteForId($id)
     {
         return \ORM::for_table('note')
@@ -103,8 +103,8 @@ class NoteFacade
             if (property_exists($data, 'content')) {
                 if ($note->type == NoteFacade::TYPE_HTML) {
                     // check http://dev.evernote.com/doc/articles/enml.php for evenrote html format
-                    // @TODO Check which tags to allow/disallow
-                    // @TODO Allow images with base64 content
+                    // TODO Check which tags to allow/disallow
+                    // TODO Allow images with base64 content
                     $purifier = new \HTMLPurifier(\HTMLPurifier_Config::createDefault());
                     $note->content = $purifier->purify($data->content);
                 } elseif ($note->type == NoteFacade::TYPE_TEXT) {

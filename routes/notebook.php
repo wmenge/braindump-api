@@ -31,8 +31,8 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
     });
 
     $app->post('/notebooks(/)', function () use ($app, $notebookFacade) {
-        // @TODO Notebook Title should be unique (for user)
-        // @TODO After creation, set url in header,
+        // TODO: Notebook Title should be unique (for user)
+        // TODO: After creation, set url in header,
         // check http://stackoverflow.com/questions/11159449
 
         $input = json_decode($app->request->getBody());
@@ -43,7 +43,7 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
 
         $notebook = \ORM::for_table('notebook')->create();
         $notebookFacade->map($notebook, $input);
-        // Todo: Check errors after db operations
+        // TODO: Check errors after db operations
         $notebook->save();
 
         $notebook = $notebookFacade->getNotebookForId($notebook->id());
@@ -52,8 +52,8 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
     });
 
     $app->put('/notebooks/:id(/)', function ($id) use ($app, $notebookFacade) {
-        // Todo: Notebook Title should be unique (for user)
-        // Todo: After creation, set url in header,
+        // TODO: Notebook Title should be unique (for user)
+        // TODO: After creation, set url in header,
         // check http://stackoverflow.com/questions/11159449
         $input = json_decode($app->request->getBody());
 
