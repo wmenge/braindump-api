@@ -1,24 +1,6 @@
 <?php
 namespace Braindump\Api\Lib\Sentry\Facade;
 
-// Macbook: 
-// ========
-// No sentry:               0.023 seconds, mem: 2158912
-// Sentry with eloquent:    0.159 seconds, mem: 5618008
-// Sentry with Paris:       0.130 seconds, mem: 3135216 * 
-// * main performance drag is \Cartalyst\Sentry\Sentry::login
-// Sentry with Paris v2:    0.052 seconds, mem: 3134432 **
-// ** simplified login
-// Sentry with Paris v3:    0.026 seconds, mem: 3080896 ***
-// * using cookie (some might say it's not truly REST)
-
-
-// CH3SNAS: 
-// ========
-// No sentry:               0.667 seconds, mem: 1459564
-// Sentry with eloquent:    1.839 seconds, mem: 2863656
-// Sentry with Paris:       
-
 require '../model/Sentry/Paris/UserProvider.php';
 require '../model/Sentry/Paris/GroupProvider.php';
 require '../model/Sentry/Paris/ThrottleProvider.php';
