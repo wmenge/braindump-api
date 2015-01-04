@@ -4,7 +4,7 @@ namespace Braindump\Api\Test\Integration;
 
 require_once __DIR__ . '/../../model/NoteFacade.php';
 
-class NoteFacadeDbTest extends AbstractDbTest
+class NoteFacadeTest extends AbstractDbTest
 {
     protected $Facade;
 
