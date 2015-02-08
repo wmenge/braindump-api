@@ -145,4 +145,3 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
     });
 
 });
-

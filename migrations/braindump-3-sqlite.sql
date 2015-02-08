@@ -13,8 +13,10 @@ CREATE TABLE "groups" (
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS "groups_name_unique" ON "groups" ( "name" );
- 
+
+-- Administrators can access all routes starting with '/admin' or '/api' 
 INSERT INTO "groups" VALUES (1, "Administrators", "{""|^/admin(/.*)?$|"":1, ""|^/api(/.*)?$|"":1}", date('now'), date('now'));
+-- Normal users can access all routes starting with '/api'
 INSERT INTO "groups" VALUES (2, "Users", "{""|^/api(/.*)?$|"":1}", date('now'), date('now'));
 
 -- ----------------------------

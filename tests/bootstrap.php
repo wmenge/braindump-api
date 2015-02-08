@@ -1,6 +1,9 @@
 <?php
 namespace Braindump\Api;
 
+// Session handling will complain about headers already sent, this should suppress the subsequent
+ob_start();
+
 function outputJson($data, $app)
 {
     // JSON_NUMERIC_CHECK is needed as PDO will return strings
@@ -53,9 +56,6 @@ class SentryFacadeMock {
     }
 }
 
-// Create the Sentry alias
-class_alias('Braindump\Api\Model\SentryFacadeMock', 'Sentry');
-
 namespace Braindump\Api\Test\Integration;
 
 //
@@ -80,6 +80,8 @@ date_default_timezone_set('UTC');
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../lib/DatabaseFacade.php';
+require_once __DIR__ . '/../lib/SentryFacade.php';
+//require_once __DIR__ . '/../middleware/Authentication.php';
 
 abstract class AbstractDbTest extends \PHPUnit_Extensions_Database_TestCase
 {
@@ -92,7 +94,20 @@ abstract class AbstractDbTest extends \PHPUnit_Extensions_Database_TestCase
         $mockApp->braindumpConfig = (require( __DIR__ . '/../config/braindump-config.php'));
         $dbFacade = new \Braindump\Api\Lib\DatabaseFacade($mockApp, \ORM::get_db());
         $dbFacade->createDatabase();
-        
+
+        // Create a sample user
+        /*$user = \Sentry::createUser(array(
+            'email'     => 'john.doe@example.com',
+            'password'  => 'test',
+            'activated' => true,
+        ));
+
+        // Assign the group to the user
+        $user->addGroup(\Sentry::findGroupByName('Administrators'));
+
+        // Log the user in
+        \Sentry::login($user, false);
+        */
         parent::setUp();
     }
 

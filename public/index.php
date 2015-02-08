@@ -18,8 +18,7 @@ $app = new \Slim\Slim(array(
 // TODO: make sure they are only used by REST Routes
 $app->add(new \Braindump\Api\Middleware\AttachHeaders());
 
-// Session used by admin routes
-// TODO: make sure its only used by Admin routes
+// Session used by admin and api routes routes
 $app->add(new \Slim\Middleware\SessionCookie(array(
     'expires' => '20 minutes',
     'path' => '/',
