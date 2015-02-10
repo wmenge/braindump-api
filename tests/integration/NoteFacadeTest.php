@@ -17,6 +17,8 @@ class NoteFacadeTest extends AbstractDbTest
         $dbFacade = new \Braindump\Api\Lib\DatabaseFacade($mockApp, \ORM::get_db());
         
         $this->Facade = new \Braindump\Api\Model\NoteFacade($dbFacade);
+
+        \Sentry::$id = 1;
     }
 
     /**
@@ -34,6 +36,18 @@ class NoteFacadeTest extends AbstractDbTest
             [ 'id' => '1', 'title' => 'note 1', 'notebook_id' => '1', 'created' => '0', 'updated' => '0', 'url' => null],
             [ 'id' => '2', 'title' => 'note 2', 'notebook_id' => '1', 'created' => '0', 'updated' => '0', 'url' => null],
             [ 'id' => '3', 'title' => 'note 3', 'notebook_id' => '2', 'created' => '0', 'updated' => '0', 'url' => null],
+        ];
+
+        $this->assertEquals($expected, $this->Facade->getNoteList());
+    }
+
+    public function testGetNoteListForDifferentUser()
+    {
+        // Switch mock to different user
+        \Sentry::$id = 2;
+
+         $expected = [
+            [ 'id' => '4', 'title' => 'note 4', 'notebook_id' => '3', 'created' => '0', 'updated' => '0', 'url' => ''],
         ];
 
         $this->assertEquals($expected, $this->Facade->getNoteList());

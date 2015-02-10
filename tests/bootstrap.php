@@ -35,9 +35,11 @@ namespace Braindump\Api\Model;
 // Mock Sentry class
 class SentryFacadeMock {
 
+    public static $id = 1;
+
     public static function getUser()
     {
-        return SentryFacadeMock::findUserById(1);
+        return SentryFacadeMock::findUserById(SentryFacadeMock::$id);
     }
 
     public static function findUserById($id)

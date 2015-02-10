@@ -24,6 +24,8 @@ class NotebookFacadeTest extends AbstractDbTest
         $dbFacade = new \Braindump\Api\Lib\DatabaseFacade($mockApp, \ORM::get_db());
         
         $this->Facade = new \Braindump\Api\Model\NotebookFacade($dbFacade);
+
+        \Sentry::$id = 1;
     }
 
     /**
@@ -40,6 +42,18 @@ class NotebookFacadeTest extends AbstractDbTest
         $expected = [
             [ 'id' => 1, 'title' => 'title 1', 'created' => 0, 'updated' => 0, 'noteCount' => 0, 'user_id' => 1 ],
             [ 'id' => 2, 'title' => 'title 2', 'created' => 0, 'updated' => 0, 'noteCount' => 0, 'user_id' => 1 ],
+        ];
+
+        $this->assertEquals($expected, $this->Facade->getNoteBookList());
+    }
+
+    public function testGetNotebookListForDifferentUser()
+    {
+        // Switch mock to different user
+        \Sentry::$id = 2;
+
+        $expected = [
+            [ 'id' => 3, 'title' => 'title 3', 'created' => 0, 'updated' => 0, 'noteCount' => 0, 'user_id' => 2 ]
         ];
 
         $this->assertEquals($expected, $this->Facade->getNoteBookList());
@@ -67,7 +81,7 @@ class NotebookFacadeTest extends AbstractDbTest
         $this->assertEquals(null, $this->Facade->getNotebookForId(9));
     }
 
-    public function testNotebookForDifferentUser()
+    public function testGetNotebookForDifferentUser()
     {
         $this->assertEquals(null, $this->Facade->getNotebookForId(3));
     }
