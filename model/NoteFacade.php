@@ -63,6 +63,7 @@ class NoteFacade
         return \ORM::for_table('note')
             ->select('*')
             ->where_equal('id', $id)
+            ->where_equal('user_id', \Sentry::getUser()->id)
             ->find_one();
     }
 

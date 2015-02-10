@@ -119,4 +119,9 @@ class NoteFacadeTest extends AbstractDbTest
     {
         $this->assertEquals(null, $this->Facade->getNoteForId(99));
     }
+
+    public function testGetNoteForDifferentUser()
+    {
+        $this->assertEquals(null, $this->Facade->getNoteForId(4));
+    }
 }
