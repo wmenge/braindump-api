@@ -63,9 +63,14 @@ class NotebookFacadeTest extends AbstractDbTest
 
     public function testGetNonExistingNotebookForId()
     {
-        $this->assertEquals(null, $this->Facade->getNotebookForId(3));
+        $this->assertEquals(null, $this->Facade->getNotebookForId(9));
     }
 
+    public function testNotebookForDifferentUser()
+    {
+        $this->assertEquals(null, $this->Facade->getNotebookForId(3));
+    }
+    
     public function testCreateSampleData()
     {
         $this->Facade->createSampleData();

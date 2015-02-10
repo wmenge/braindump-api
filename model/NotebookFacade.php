@@ -15,7 +15,8 @@ class NotebookFacade
     {
         $query = \ORM::for_table('notebook')
             ->select('*')
-            ->select_expr('(SELECT COUNT(*) FROM note WHERE notebook_id = notebook.id)', 'noteCount');
+            ->select_expr('(SELECT COUNT(*) FROM note WHERE notebook_id = notebook.id)', 'noteCount')
+            ->where_equal('user_id', \Sentry::getUser()->id);
 
         $query = $this->dbFacade->addSortExpression($query, $sortString);
 
@@ -28,6 +29,7 @@ class NotebookFacade
             ->select('*')
             ->select_expr('(SELECT COUNT(*) FROM note WHERE notebook_id = notebook.id)', 'noteCount')
             ->where_equal('id', $id)
+            ->where_equal('user_id', \Sentry::getUser()->id)
             ->find_one();
     }
 

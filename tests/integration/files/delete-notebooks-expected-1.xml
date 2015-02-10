@@ -1,4 +1,5 @@
 <?xml version="1.0" ?>
 <dataset>
     <notebook id="2" title="title 2" created="0" updated="0" user_id="1" />
+    <notebook id="3" title="title 3" created="0" updated="0" user_id="2" />
 </dataset>
