@@ -32,6 +32,16 @@
         user_id="1" />
     <note 
         id="4" 
+        notebook_id="3" 
+        title="note 4" 
+        created="0"
+        updated="0"
+        url=""
+        type="Text" 
+        content="Note from another user"
+        user_id="2" />
+    <note 
+        id="5" 
         notebook_id="1" 
         title="New Note" 
         created="0"

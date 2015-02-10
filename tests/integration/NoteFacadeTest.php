@@ -27,6 +27,7 @@ class NoteFacadeTest extends AbstractDbTest
         return $this->createFlatXMLDataSet(dirname(__FILE__).'/files/notes-seed.xml');
     }
 
+    // TODO: add test to retrieve notes of different user
     public function testGetNoteList()
     {
         $expected = [
@@ -102,6 +103,6 @@ class NoteFacadeTest extends AbstractDbTest
 
     public function testGetNonExistingNoteForId()
     {
-        $this->assertEquals(null, $this->Facade->getNoteForId(4));
+        $this->assertEquals(null, $this->Facade->getNoteForId(99));
     }
 }

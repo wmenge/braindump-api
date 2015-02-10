@@ -34,6 +34,7 @@ class NotebookFacadeTest extends AbstractDbTest
         return $this->createFlatXMLDataSet(dirname(__FILE__).'/files/notebooks-seed.xml');
     }
 
+    // TODO: add test to retrieve notebooks of different user
     public function testGetNotebookList()
     {
         $expected = [

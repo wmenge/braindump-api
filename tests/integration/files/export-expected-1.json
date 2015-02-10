@@ -46,5 +46,24 @@
                 "user_id": 1
             }
         ]
+    },
+    {
+        "id": 3,
+        "title": "title 3",
+        "created": 0,
+        "updated": 0,
+        "user_id": 2,
+        "notes": [
+            {
+                "id": 4,
+                "title": "note 4",
+                "created": 0,
+                "updated": 0,
+                "url": "",
+                "type": "Text",
+                "content": "Note from another user",
+                "user_id": 2
+            }
+        ]
     }
 ]

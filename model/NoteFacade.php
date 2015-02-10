@@ -18,7 +18,9 @@ class NoteFacade
     public function getNoteList($sortString = null, $queryString = null)
     {
         // TODO: Add paging to all lists
-        $queryObj = \ORM::for_table('note')->select_many('id', 'notebook_id', 'title', 'created', 'updated', 'url');
+        $queryObj = \ORM::for_table('note')
+            ->select_many('id', 'notebook_id', 'title', 'created', 'updated', 'url')
+            ->where_equal('user_id', \Sentry::getUser()->id);
 
         if (!empty($queryString)) {
             $queryObj = $queryObj->where_raw(
@@ -38,7 +40,8 @@ class NoteFacade
     {
         $queryObj = \ORM::for_table('note')
             ->select_many('id', 'notebook_id', 'title', 'created', 'updated', 'url')
-            ->where_equal('notebook_id', $notebook->id);
+            ->where_equal('notebook_id', $notebook->id)
+            ->where_equal('user_id', \Sentry::getUser()->id);
 
         if (!empty($queryString)) {
             $queryObj = $queryObj->where_raw(
@@ -127,7 +130,7 @@ class NoteFacade
                 $note->updated = time();
             }
 
-            if (!property_exists($notebook, 'user_id') || $notebook->user_id == null) {
+            if (!property_exists($note, 'user_id') || $note->user_id == null) {
                 $note->user_id = \Sentry::getUser()->id;
             }
         }
