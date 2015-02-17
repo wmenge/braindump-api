@@ -53,7 +53,12 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
         $this->get('/api/notebooks/99');
         $this->assertEquals(404, $this->response->status());
         // TODO: assert message
-        //$this->assertSame($expected, $this->response->body());
+    }
+
+    public function testGetNotebookOfDifferentUser()
+    {
+        $this->get('/api/notebooks/3');
+        $this->assertEquals(404, $this->response->status());
     }
 
     public function testPostNotebook()
@@ -151,6 +156,25 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
         $this->assertTablesEqual($expectedNotebookContent, $notebookTable);
     }
 
+    public function testPutNotebookOfDifferentUser()
+    {
+        $expected = file_get_contents(dirname(__FILE__).'/files/get-notebooks-expected-4.json');
+        
+        $requestBody = '{ "title": "New Notebook" }';
+
+        $this->put('/api/notebooks/3', $requestBody);
+        $this->assertEquals(200, $this->response->status());
+        $this->assertSame($expected, $this->response->body());
+
+        // Assert db content
+        $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/post-notebooks-expected-1.xml');
+        $expectedNotebookContent = $dataset->getTable("notebook");
+        
+        $notebookTable = $this->getConnection()->createQueryTable('notebook', 'SELECT * FROM notebook');
+        
+        $this->assertTablesEqual($expectedNotebookContent, $notebookTable);
+    }
+
     public function testDeleteNotebook()
     {
         $this->delete('/api/notebooks/1');
@@ -170,6 +194,21 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
     public function testDeleteUnknownNotebook()
     {
         $this->delete('/api/notebooks/99');
+        $this->assertEquals(404, $this->response->status());
+        // TODO: assert message
+        
+        // Assert db content
+        $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/post-notebooks-expected-2.xml');
+        $expectedNotebookContent = $dataset->getTable("notebook");
+        
+        $notebookTable = $this->getConnection()->createQueryTable('notebook', 'SELECT * FROM notebook');
+        
+        $this->assertTablesEqual($expectedNotebookContent, $notebookTable);
+    }
+
+    public function testDeleteNotebookOfDifferentUser()
+    {
+        $this->delete('/api/notebooks/3');
         $this->assertEquals(404, $this->response->status());
         // TODO: assert message
         

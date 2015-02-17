@@ -39,9 +39,13 @@ class NoteRoutesTest extends Slim_Framework_TestCase
     public function testGetNotesForUnknownNotebook()
     {
         $this->get('/api/notebooks/99/notes');
-        
         $this->assertEquals(404, $this->response->status());
-        //$this->assertSame($expected, $this->response->body());
+    }
+
+    public function testGetNotesForNotebookBelongingToDifferentUser()
+    {
+        $this->get('/api/notebooks/3/notes');
+        $this->assertEquals(404, $this->response->status());
     }
 
     public function testGetNote()
@@ -70,15 +74,25 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testGetNoteInWrongNotebook()
     {
-        $expected = file_get_contents(dirname(__FILE__).'/files/get-notes-expected-5.json');
         $this->get('/api/notebooks/2/notes/1');
         $this->assertEquals(302, $this->response->status());
     }
 
     public function testGetNoteInUnknownNotebook()
     {
-        $expected = file_get_contents(dirname(__FILE__).'/files/get-notes-expected-5.json');
         $this->get('/notebooks/99/notes/1');
+        $this->assertEquals(404, $this->response->status());
+    }
+
+    public function testGetNoteFromDifferentUsersNotebook()
+    {
+        $this->get('/notebooks/3/notes/4');
+        $this->assertEquals(404, $this->response->status());
+    }
+
+    public function testGetNoteFromDifferentUser()
+    {
+        $this->get('/notes/4');
         $this->assertEquals(404, $this->response->status());
     }
 
@@ -132,6 +146,22 @@ class NoteRoutesTest extends Slim_Framework_TestCase
         $this->assertTablesEqual($expectedNoteContent, $noteTable);
     }
 
+    public function testPostNoteToNotebookOfDifferentUser()
+    {
+        $requestBody = '{ "title": "New Note", "type": "Text" }';
+
+        // Assert response
+        $this->post('/api/notebooks/3/notes', $requestBody);
+        $this->assertEquals(404, $this->response->status());
+        // TODO: assert message
+    
+        // Assert db content
+        $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/notes-seed.xml');
+        $expectedNoteContent = $dataset->getTable("note");
+        $noteTable = $this->getConnection()->createQueryTable('note', 'SELECT * FROM note');
+        $this->assertTablesEqual($expectedNoteContent, $noteTable);
+    }
+
     public function testPutNote()
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/put-notes-expected-1.json');
@@ -172,12 +202,28 @@ class NoteRoutesTest extends Slim_Framework_TestCase
         $this->assertTablesEqual($expectedNoteContent, $noteTable);
     }
 
-    public function testPutInvalidNotebook()
+    public function testPutInvalidNote()
     {
         $requestBody = '{ }';
 
         $this->put('/api/notebooks/1/notes/1', $requestBody);
         $this->assertEquals(400, $this->response->status());
+        
+        // Assert db content
+        $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/notes-seed.xml');
+        $expectedNotebookContent = $dataset->getTable("note");
+        
+        $notebookTable = $this->getConnection()->createQueryTable('note', 'SELECT * FROM note');
+        
+        $this->assertTablesEqual($expectedNotebookContent, $notebookTable);
+    }
+
+    public function testPutNoteOfDifferentUser()
+    {
+        $requestBody = '{ "title": "New Note", "type": "Text", "content": "Note content" }';
+
+        $this->put('/api/notebooks/3/notes/4', $requestBody);
+        $this->assertEquals(404, $this->response->status());
         
         // Assert db content
         $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/notes-seed.xml');
@@ -237,7 +283,6 @@ class NoteRoutesTest extends Slim_Framework_TestCase
         // Assert db content
         $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/delete-notes-expected-1.xml');
         $expectedNotebookContent = $dataset->getTable("note");
-        
         $notebookTable = $this->getConnection()->createQueryTable('note', 'SELECT * FROM note');
         
         $this->assertTablesEqual($expectedNotebookContent, $notebookTable);
@@ -246,6 +291,21 @@ class NoteRoutesTest extends Slim_Framework_TestCase
     public function testDeleteUnknownNote()
     {
         $this->delete('/api/notes/99');
+        $this->assertEquals(404, $this->response->status());
+        // TODO: assert message
+        
+        // Assert db content
+        $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/notes-seed.xml');
+        $expectedNotebookContent = $dataset->getTable("note");
+        
+        $notebookTable = $this->getConnection()->createQueryTable('note', 'SELECT * FROM note');
+        
+        $this->assertTablesEqual($expectedNotebookContent, $notebookTable);
+    }
+
+    public function testDeleteNoteOfDifferentUser()
+    {
+        $this->delete('/api/notes/4');
         $this->assertEquals(404, $this->response->status());
         // TODO: assert message
         
@@ -271,5 +331,21 @@ class NoteRoutesTest extends Slim_Framework_TestCase
         $notebookTable = $this->getConnection()->createQueryTable('note', 'SELECT * FROM note');
         
         $this->assertTablesEqual($expectedNotebookContent, $notebookTable);
-   }
+    }
+
+    public function testDeleteNoteInNotebookOfDifferentUser()
+    {
+        $this->delete('/api/notebooks/3/notes/4');
+        $this->assertEquals(404, $this->response->status());
+        // TODO: assert message
+        
+        // Assert db content
+        $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/notes-seed.xml');
+        $expectedNotebookContent = $dataset->getTable("note");
+        
+        $notebookTable = $this->getConnection()->createQueryTable('note', 'SELECT * FROM note');
+        
+        $this->assertTablesEqual($expectedNotebookContent, $notebookTable);
+    }
+    
 }

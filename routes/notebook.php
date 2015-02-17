@@ -46,7 +46,7 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
         // TODO: Check errors after db operations
         $notebook->save();
 
-        $notebook = $notebookFacade->getNotebookForId($notebook->id());
+        $notebook = $notebookFacade->getNotebookForId($notebook->id);
 
         outputJson($notebook->as_array(), $app);
     });
@@ -54,6 +54,7 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
     $app->put('/notebooks/:id(/)', function ($id) use ($app, $notebookFacade) {
         // TODO: Notebook Title should be unique (for user)
         // TODO: After creation, set url in header,
+        // TOOD: In create scenario, redirect to new id
         // check http://stackoverflow.com/questions/11159449
         $input = json_decode($app->request->getBody());
 
@@ -61,7 +62,7 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
             $app->halt(400, 'Invalid input');
         }
 
-        $notebook = \ORM::for_table('notebook')->find_one($id);
+        $notebook = $notebookFacade->getNotebookForId($id);
 
         if ($notebook == null) {
             $notebook = \ORM::for_table('notebook')->create();
@@ -70,15 +71,15 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
         $notebookFacade->map($notebook, $input);
         $notebook->save();
 
-        $notebook = $notebookFacade->getNotebookForId($notebook->id());
+        $notebook = $notebookFacade->getNotebookForId($notebook->id);
 
         outputJson($notebook->as_array(), $app);
     });
 
-    $app->delete('/notebooks/:id(/)', function ($id) use ($app) {
+    $app->delete('/notebooks/:id(/)', function ($id) use ($app, $notebookFacade) {
 
         // Check if notebook exists
-        $notebook = \ORM::for_table('notebook')->find_one($id);
+        $notebook = $notebookFacade->getNotebookForId($id);
 
         if ($notebook == null) {
             return $app->notFound();

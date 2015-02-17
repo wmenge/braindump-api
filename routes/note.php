@@ -8,7 +8,7 @@ $noteFacade = new \Braindump\Api\Model\NoteFacade($dbFacade);
 
 $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function () use ($app, $dbFacade, $notebookFacade, $noteFacade) {
 
-    $app->get('/(notebooks/:id/)notes(/)', function ($id = null) use ($app, $noteFacade) {
+    $app->get('/(notebooks/:id/)notes(/)', function ($id = null) use ($app, $noteFacade, $notebookFacade) {
 
         $req = $app->request();
 
@@ -16,7 +16,8 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
             outputJson($noteFacade->getNoteList($req->get('sort'), $req->get('q')), $app);
         } else {
             // Check if notebook exists, return 404 if it doesn't
-            $notebook = \ORM::for_table('notebook')->find_one($id);
+            $notebook = $notebookFacade->getNotebookForId($id);
+
             if ($notebook == null) {
                 return $app->notFound();
             }
@@ -24,13 +25,14 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
         }
     });
 
-    $app->get('/(notebooks/:notebook_id/)notes/:note_id(/)', function ($notebook_id, $note_id) use ($app, $noteFacade) {
+    $app->get('/(notebooks/:notebook_id/)notes/:note_id(/)', function ($notebook_id, $note_id) use ($app, $noteFacade, $notebookFacade) {
 
         $notebook = null;
 
         //Check if notebook exists, return 404 if it doesn't
         if ($notebook_id != null) {
-            $notebook = \ORM::for_table('notebook')->find_one($notebook_id);
+            $notebook = $notebookFacade->getNotebookForId($notebook_id);
+
             if ($notebook == null) {
                 return $app->notFound();
             }
@@ -51,10 +53,10 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
         outputJson($note->as_array(), $app);
     });
 
-    $app->post('/notebooks/:id/notes(/)', function ($id) use ($app, $noteFacade) {
+    $app->post('/notebooks/:id/notes(/)', function ($id) use ($app, $noteFacade, $notebookFacade) {
 
         //Check if notebook exists, return 404 if it doesn't
-        $notebook = \ORM::for_table('notebook')->find_one($id);
+        $notebook = $notebookFacade->getNotebookForId($id);
 
         if ($notebook == null) {
             return $app->notFound();
@@ -75,14 +77,14 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
         outputJson($note->as_array(), $app);
     });
 
-    $app->put('/(notebooks/:notebook_id/)notes/:note_id(/)', function ($notebook_id, $note_id) use ($app, $noteFacade) {
+    $app->put('/(notebooks/:notebook_id/)notes/:note_id(/)', function ($notebook_id, $note_id) use ($app, $noteFacade, $notebookFacade) {
 
         $notebook = null;
 
         // Check if notebook exists (if supplied)
         if ($notebook_id != null) {
 
-            $notebook = \ORM::for_table('notebook')->find_one($notebook_id);
+            $notebook = $notebookFacade->getNotebookForId($notebook_id);
 
             if ($notebook == null) {
                 return $app->notFound();
@@ -96,7 +98,7 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
         }
 
         // Get note
-        $note = \ORM::for_table('note')->find_one($note_id, $noteFacade);
+        $note = $noteFacade->getNoteForId($note_id);
 
         if ($note == null) {
             // For a create scenario, a valid notebook id should
@@ -125,16 +127,17 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
 
     });
 
-    $app->delete('/(notebooks/:notebook_id/)notes/:note_id(/)', function ($notebook_id, $note_id) use ($app, $noteFacade) {
+    $app->delete('/(notebooks/:notebook_id/)notes/:note_id(/)', function ($notebook_id, $note_id) use ($app, $noteFacade, $notebookFacade) {
 
         if (!empty($notebook_id)) {
-            $notebook = \ORM::for_table('notebook')->find_one($notebook_id);
+            $notebook = $notebookFacade->getNotebookForId($notebook_id);
+            
             if ($notebook == null) {
                 return $app->notFound();
             }
         }
 
-        $note = \ORM::for_table('note')->find_one($note_id);
+        $note = $noteFacade->getNoteForId($note_id);
 
         if ($note == null) {
             return $app->notFound();
@@ -145,4 +148,3 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
     });
 
 });
-
