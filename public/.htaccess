@@ -1,3 +1,10 @@
 RewriteEngine On
+
+# Do not process /client folder with api php application
+# (Only relevant when api and client reside in same folder)
+RewriteCond %{REQUEST_URI} "/client/"
+RewriteRule (.*) $1 [L]
+
+# For all other requests for non-existing file, api application 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^ index.php [QSA,L]
