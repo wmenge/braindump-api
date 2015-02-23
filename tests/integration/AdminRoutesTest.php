@@ -20,25 +20,21 @@ class AdminRoutesTest extends Slim_Framework_TestCase
         $this->assertSame($expected, $this->response->body());
     }
 
-// TODO: Fix ex/import by adding users
     public function testPostImport()
     {
         // Additional fixture, start with empty dataset
         $dbFacade = new \Braindump\Api\Lib\DatabaseFacade($this->app, \ORM::get_db());
-        $dbFacade->createDatabase(); //\ORM::get_db(), [ '0.1' => __DIR__ . '/../../migrations/braindump-0.1-sqlite.sql']);
-        
+        $dbFacade->createDatabase();
         $importData = file_get_contents(dirname(__FILE__).'/files/export-expected-1.json');
 
         $this->post('/admin/import', $importData);
-        //$this->assertEquals(200, $this->response->status());
         
         // Assert db content
         $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/notes-seed.xml');
 
         $expectedNotebookContent = $dataset->getTable("notebook");
         $notebookTable = $this->getConnection()->createQueryTable('notebook', 'SELECT * FROM notebook');
-        //$this->assertTablesEqual($expectedNotebookContent, $notebookTable);
-
+        
         $expectedNoteContent = $dataset->getTable("note");
         $noteTable = $this->getConnection()->createQueryTable('note', 'SELECT * FROM note');
         //$this->assertTablesEqual($expectedNoteContent, $noteTable);

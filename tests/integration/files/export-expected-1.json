@@ -1,69 +1,111 @@
-[
-    {
-        "id": 1,
-        "title": "title 1",
-        "created": 0,
-        "updated": 0,
-        "user_id": 1,
-        "notes": [
-            {
-                "id": 1,
-                "title": "note 1",
-                "created": 0,
-                "updated": 0,
-                "url": "",
-                "type": "Text",
-                "content": "Note content",
-                "user_id": 1
-            },
-            {
-                "id": 2,
-                "title": "note 2",
-                "created": 0,
-                "updated": 0,
-                "url": "",
-                "type": "Text",
-                "content": "Second note content",
-                "user_id": 1
-            }
-        ]
-    },
-    {
-        "id": 2,
-        "title": "title 2",
-        "created": 0,
-        "updated": 0,
-        "user_id": 1,
-        "notes": [
-            {
-                "id": 3,
-                "title": "note 3",
-                "created": 0,
-                "updated": 0,
-                "url": "",
-                "type": "Text",
-                "content": "Third note content",
-                "user_id": 1
-            }
-        ]
-    },
-    {
-        "id": 3,
-        "title": "title 3",
-        "created": 0,
-        "updated": 0,
-        "user_id": 2,
-        "notes": [
-            {
-                "id": 4,
-                "title": "note 4",
-                "created": 0,
-                "updated": 0,
-                "url": "",
-                "type": "Text",
-                "content": "Note from another user",
-                "user_id": 2
-            }
-        ]
-    }
-]
+{
+    "groups": [
+        {
+            "name": "Administrators",
+            "permissions": "",
+            "created_at": 0,
+            "updated_at": 0
+        },
+        {
+            "name": "Users",
+            "permissions": "",
+            "created_at": 0,
+            "updated_at": 0
+        }
+    ],
+    "users": [
+        {
+            "email": "administrator@braindump-api.local",
+            "password": "",
+            "permissions": "",
+            "activated": 1,
+            "activation_code": null,
+            "activated_at": 0,
+            "last_login": null,
+            "persist_code": null,
+            "reset_password_code": null,
+            "first_name": "Brain",
+            "last_name": "Dump",
+            "created_at": 0,
+            "updated_at": 0,
+            "groups": [
+                "Administrators"
+            ],
+            "notebooks": [
+                {
+                    "title": "title 1",
+                    "created": 0,
+                    "updated": 0,
+                    "notes": [
+                        {
+                            "title": "note 1",
+                            "created": 0,
+                            "updated": 0,
+                            "url": "",
+                            "type": "Text",
+                            "content": "Note content"
+                        },
+                        {
+                            "title": "note 2",
+                            "created": 0,
+                            "updated": 0,
+                            "url": "",
+                            "type": "Text",
+                            "content": "Second note content"
+                        }
+                    ]
+                },
+                {
+                    "title": "title 2",
+                    "created": 0,
+                    "updated": 0,
+                    "notes": [
+                        {
+                            "title": "note 3",
+                            "created": 0,
+                            "updated": 0,
+                            "url": "",
+                            "type": "Text",
+                            "content": "Third note content"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "email": "user@braindump-api.local",
+            "password": "",
+            "permissions": "",
+            "activated": 1,
+            "activation_code": null,
+            "activated_at": 0,
+            "last_login": null,
+            "persist_code": null,
+            "reset_password_code": null,
+            "first_name": "User",
+            "last_name": "Boy",
+            "created_at": 0,
+            "updated_at": 0,
+            "groups": [
+                "Administrators"
+            ],
+            "notebooks": [
+                {
+                    "title": "title 3",
+                    "created": 0,
+                    "updated": 0,
+                    "notes": [
+                        {
+                            "title": "note 4",
+                            "created": 0,
+                            "updated": 0,
+                            "url": "",
+                            "type": "Text",
+                            "content": "Note from another user"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

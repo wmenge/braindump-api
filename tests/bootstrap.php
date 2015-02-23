@@ -44,7 +44,9 @@ class SentryFacadeMock {
 
     public static function findUserById($id)
     {
-        $mockUser = new \stdClass();
+        //$mockUser = new \stdClass();
+        $mockUser = \Mockery::mock();
+        $mockUser->shouldReceive('getGroups')->andReturn([((object)['name' => 'Administrators'])]);
         $mockUser->id = $id;
         return $mockUser;
     }

@@ -73,20 +73,52 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
 
     $app->get('/export', function () use ($app) {
 
-        $notebooks = \ORM::for_table('notebook')->find_array();
+        $groups = \ORM::for_table('groups')
+            ->select_many('name', 'permissions', 'created_at', 'updated_at')
+            ->find_array();
 
-        foreach ($notebooks as &$notebook) {
-            $notebook['notes'] = \ORM::for_table('note')
-            ->select_many('id', 'title', 'created', 'updated', 'url', 'type', 'content', 'user_id')
-            ->where_equal('notebook_id', $notebook['id'])->find_array();
-        }
+        $users = \ORM::for_table('users')->find_array();
         
+        foreach ($users as &$user) {
+
+            // Add groups to user
+            $sentryUser = \Sentry::findUserById($user['id']);
+
+            // Get the user groups
+            $sentryGroups = $sentryUser->getGroups();
+
+            foreach ($sentryGroups as $group) {
+                $user['groups'][] = $group->name;
+            }
+
+            // Add notebooks to user
+            $user['notebooks'] = \ORM::for_table('notebook')
+                ->select_many('id', 'title', 'created', 'updated')
+                ->where_equal('user_id', $user['id'])
+                ->find_array();
+            
+            unset($user['id']);
+
+            foreach ($user['notebooks'] as &$notebook) {
+
+                // Add notes to notebook
+                $notebook['notes'] = \ORM::for_table('note')
+                ->select_many('title', 'created', 'updated', 'url', 'type', 'content')
+                ->where_equal('notebook_id', $notebook['id'])
+                ->find_array();
+
+                unset($notebook['id']);
+            }
+        }
+
         $app->response->headers->set('Content-Disposition', 'attachment; filename=export.json');
-        outputJson($notebooks, $app);
+        outputJson(['groups' => $groups, 'users' => $users], $app);
     });
 
     $app->post('/import', function () use ($notebookFacade, $noteFacade, $dbFacade, $app) {
 
+        $groups = 0;
+        $users = 0;
         $notebooks = 0;
         $notes = 0;
 
@@ -103,49 +135,83 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
             }
         }
 
-        $notebookRecords = json_decode($input);
+        $data = json_decode($input);
 
-        if (!is_array($notebookRecords)) {
+        if (!is_object($data) || !is_array($data->groups) || !is_array($data->users)) {
             $app->flash('error', 'No (valid) data found');
             $app->redirect($app->refererringRoute);
             return;
         }
-        
+
+        // Process input...        
         try {
             \ORM::get_db()->beginTransaction();
 
+            // TODO: What about currently logged in users?
+            // ...delete existing data...
             \ORM::for_table('note')->delete_many();
             \ORM::for_table('notebook')->delete_many();
-            
-            foreach ($notebookRecords as $notebookRecord) {
+            \ORM::for_table('throttle')->delete_many();
+            \ORM::for_table('users_groups')->delete_many();
+            \ORM::for_table('users')->delete_many();
+            \ORM::for_table('groups')->delete_many();
 
-                if (!$notebookFacade->isValid($notebookRecord)) {
-                    \ORM::get_db()->rollback();
+            // ...create groups...
+            foreach ($data->groups as $group) {
+                \Sentry::createGroup((array)$group);
+            }
 
-                    $app->flash('error', 'Invalid data');
-                    $app->redirect($app->refererringRoute);
-                    return;
+            // ...create users....
+            foreach ($data->users as $user) {
+
+                $userArray = (array)$user;
+
+                unset($userArray['groups']);
+                unset($userArray['notebooks']);
+
+                $sentryUser = \Sentry::createUser($userArray);
+
+                // ... assign groups to suers
+                if (property_exists($user, 'groups')) {
+                    foreach ($user->groups as $groupName) {
+                        print_r($groupName);
+
+                        $sentryUser->addGroup(\Sentry::findGroupByName($groupName));
+                    }
                 }
 
-                $notebook = \ORM::for_table('notebook')->create();
-                $notebookFacade->map($notebook, $notebookRecord, true);
+                // ...recreate notebooks and notes for each user
+                foreach ($user->notebooks as $notebookRecord) {
 
-                // TODO: Check errors after db operations
-                $notebook->save();
-                $notebooks++;
-
-                foreach ($notebookRecord->notes as $noteRecord) {
-                    if (!$noteFacade->isValid($noteRecord)) {
+                    if (!$notebookFacade->isValid($notebookRecord)) {
                         \ORM::get_db()->rollback();
+
                         $app->flash('error', 'Invalid data');
                         $app->redirect($app->refererringRoute);
                         return;
                     }
 
-                    $note = \ORM::for_table('note')->create();
-                    $noteFacade->map($note, $notebook, $noteRecord, true);
-                    $note->save();
-                    $notes++;
+                    $notebook = \ORM::for_table('notebook')->create();
+                    $notebookFacade->map($notebook, $notebookRecord, true);
+                    $notebook->user_id = $sentryUser->id;
+                    $notebook->save();
+                    $notebooks++;
+
+                    foreach ($notebookRecord->notes as $noteRecord) {
+                        if (!$noteFacade->isValid($noteRecord)) {
+                            \ORM::get_db()->rollback();
+                            $app->flash('error', 'Invalid data');
+                            $app->redirect($app->refererringRoute);
+                            return;
+                        }
+
+                        $note = \ORM::for_table('note')->create();
+                        $noteFacade->map($note, $notebook, $noteRecord, true);
+                        $note->user_id = $sentryUser->id;
+                        $note->save();
+                        $notes++;
+                    }
+
                 }
             }
             
@@ -154,7 +220,7 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
             $app->redirect('/admin');
 
         } catch (\Exception $e) {
-            //\ORM::get_db()->rollback();
+            \ORM::get_db()->rollback();
             $app->flash('error', $e->getMessage());
             $app->redirect('/admin');
         }
