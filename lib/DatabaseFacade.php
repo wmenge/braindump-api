@@ -149,11 +149,11 @@ class DatabaseFacade
         foreach ($sortList as $expression) {
             switch ($expression->order) {
                 case SORT_ASC:
-                $query = $query->order_by_asc($expression->field);
-                break;
+                    $query = $query->order_by_asc($expression->field);
+                    break;
                 default:
-                $query = $query->order_by_desc($expression->field);
-                break;
+                    $query = $query->order_by_desc($expression->field);
+                    break;
             }
         }
 
