@@ -54,6 +54,22 @@ class ParisUserTest extends \Braindump\Api\Test\Integration\AbstractDbTest
         $this->assertEquals('hashed_password_here', $user->getPassword());
     }
 
+    public function testUserPasswordCallsPasswordAttributeDuringHydrate()
+    {
+        $hasher = $this->getMock('Cartalyst\Sentry\Hashing\HasherInterface', array('hash', 'checkhash'));
+
+        $hasher->method('hash')
+               ->with($this->equalTo('unhashed_password_here'))->willReturn('hashed_password_here');
+
+        User::setHasher($hasher);
+
+        $user = \Model::factory(User::CLASS_NAME)->create();
+        $user->hydrate(['password' => 'unhashed_password_here']);
+        //$user->password = 'unhashed_password_here';
+
+        $this->assertEquals('hashed_password_here', $user->getPassword());
+    }
+
     public function testGettingGroups()
     {
         $pivot = m::mock('StdClass');

@@ -278,8 +278,25 @@ class User extends \Cartalyst\Sentry\Paris\DateTimeModel implements UserInterfac
      */
     public function delete()
     {
-        $this->groups()->detach();
-        return parent::delete();
+        $groups = $this->groups();
+        $result = false;
+        
+        \ORM::get_db()->beginTransaction();
+
+        try {
+            // TODO: Check why user_groups table is not updated
+            foreach ($groups as $group) {
+                $this->removeGroup($group);
+            }
+
+            $result = parent::delete();
+            \ORM::get_db()->commit();
+            return $result;
+
+        } catch (\Exception $e) {
+            \ORM::get_db()->rollback();
+            return $result;
+        }
     }
 
     /**
@@ -929,6 +946,28 @@ class User extends \Cartalyst\Sentry\Paris\DateTimeModel implements UserInterfac
     
             return parent::__set($property, $value);
         }
+    }
+
+    /***
+     * Hydrate (populate) while hashing the hashable attributes
+     */
+    public function hydrate($data = [])
+    {
+        // check if array contains hashable attributes
+        foreach ($data as $property => &$value) {
+            if (in_array($property, $this->hashableAttributes) and !empty($value)) {
+                $value = $this->hash($value);
+            }
+        }
+
+        return parent::hydrate($data);
+    }
+
+    /***
+     * Hydrate (populate) withoud (re-)hashing the hashable attributes
+     */
+    public function hydratePlain($data = []) {
+        return parent::hydrate($data);
     }
 }
 

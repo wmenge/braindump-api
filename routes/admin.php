@@ -238,6 +238,16 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
         try {
             \ORM::get_db()->beginTransaction();
             $dbFacade->createDatabase();
+
+            // Create a defauld user
+            \Sentry::createUser([
+                'email'      => 'administrator@braindump-local',
+                'first_name' => 'Braindump',
+                'last_name'  => 'Administrator',
+                'password'   => 'welcome',
+                'activated'  => true,
+            ]);
+
             \ORM::get_db()->commit();
             $app->flash('success', 'Setup is executed');
             $app->redirect($app->refererringRoute);
