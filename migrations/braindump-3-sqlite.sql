@@ -43,11 +43,6 @@ CREATE UNIQUE INDEX IF NOT EXISTS "users_email_unique" ON "users" ( "email" );
 CREATE INDEX IF NOT EXISTS "users_activation_code_index" ON "users" ( "activation_code" );
 CREATE INDEX IF NOT EXISTS "users_reset_password_code_index" ON "users" ( "reset_password_code" );
 
-INSERT INTO "users" VALUES (
-  1, "administrator@braindump-api.local", "", 
-  null, 0, null, null, null, null, null,
-  "Brain", "Dump", date('now'), date('now'));
-
 -- ----------------------------
 --  Table structure for "throttle"
 -- ----------------------------
