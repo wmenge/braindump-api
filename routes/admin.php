@@ -171,6 +171,12 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
 
                 $sentryUser = \Sentry::createUser($userArray);
 
+                // Bad hack: Password and activation code are already hashed
+                //           Sentry will rehash them, revert this
+                $userArray['id'] = $sentryUser->id;
+                $sentryUser->hydratePlain($userArray);
+                $sentryUser->save();
+               
                 // ... assign groups to suers
                 if (property_exists($user, 'groups')) {
                     foreach ($user->groups as $groupName) {
