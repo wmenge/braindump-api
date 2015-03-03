@@ -1,0 +1,6 @@
+.DS_Store
+.git
+.gitignore
+*.sqlite3
+*.sublime-project
+*.sublime-workspace

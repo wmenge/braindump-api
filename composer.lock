@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "b2d096df974c0b9f38d339ffa1bcdd0f",
+    "hash": "acd128b1db76af215ce7dd15804dbb32",
     "packages": [
         {
             "name": "cartalyst/sentry",
@@ -140,8 +140,7 @@
                 {
                     "name": "Edward Z. Yang",
                     "email": "admin@htmlpurifier.org",
-                    "homepage": "http://ezyang.com",
-                    "role": "Developer"
+                    "homepage": "http://ezyang.com"
                 }
             ],
             "description": "Standards compliant HTML filter written in PHP",
@@ -322,16 +321,16 @@
         },
         {
             "name": "slim/slim",
-            "version": "2.5.0",
+            "version": "2.6.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/codeguy/Slim.git",
-                "reference": "04958a10ed95bc7bc97568e573877d4f9b62db48"
+                "url": "https://github.com/slimphp/Slim.git",
+                "reference": "365dbfa0c02a31e76888eaec693dacd9dca1c82a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/codeguy/Slim/zipball/04958a10ed95bc7bc97568e573877d4f9b62db48",
-                "reference": "04958a10ed95bc7bc97568e573877d4f9b62db48",
+                "url": "https://api.github.com/repos/slimphp/Slim/zipball/365dbfa0c02a31e76888eaec693dacd9dca1c82a",
+                "reference": "365dbfa0c02a31e76888eaec693dacd9dca1c82a",
                 "shasum": ""
             },
             "require": {
@@ -364,10 +363,53 @@
                 "rest",
                 "router"
             ],
-            "time": "2014-12-09 19:59:29"
+            "time": "2015-03-02 19:09:48"
         }
     ],
     "packages-dev": [
+        {
+            "name": "albertofem/rsync-lib",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/albertofem/rsync-lib.git",
+                "reference": "0c156726ae930d6fba03a0d5ba919a19ab5142f9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/albertofem/rsync-lib/zipball/0c156726ae930d6fba03a0d5ba919a19ab5142f9",
+                "reference": "0c156726ae930d6fba03a0d5ba919a19ab5142f9",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "AFM": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alberto Fernandez",
+                    "email": "albertofem@gmail.com"
+                }
+            ],
+            "description": "A simple PHP rsync wrapper library",
+            "homepage": "http://albertofem.com",
+            "keywords": [
+                "rsync library"
+            ],
+            "time": "2015-03-02 21:53:45"
+        },
         {
             "name": "doctrine/instantiator",
             "version": "1.0.4",
@@ -423,17 +465,62 @@
             "time": "2014-10-13 12:58:55"
         },
         {
+            "name": "jaz303/phake",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jaz303/phake.git",
+                "reference": "e1911f799938ad0db6c17a447b7d86f6a0a66576"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jaz303/phake/zipball/e1911f799938ad0db6c17a447b7d86f6a0a66576",
+                "reference": "e1911f799938ad0db6c17a447b7d86f6a0a66576",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "bin": [
+                "bin/phake"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "phake": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jason Frame",
+                    "email": "jason@onehackoranother.com"
+                }
+            ],
+            "description": "A wee clone of Ruby's rake for PHP 5.3. Uses closures for ultimate coolness.",
+            "homepage": "http://github.com/jaz303/phake",
+            "keywords": [
+                "Tasks",
+                "automation",
+                "cli"
+            ],
+            "time": "2014-12-14 13:14:07"
+        },
+        {
             "name": "mockery/mockery",
             "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/padraic/mockery.git",
-                "reference": "2448c5b27f40d11db1f7bcee5a1188fef8ae490a"
+                "reference": "ef3ca8f5bbfd720e4f970526a1e7493005ebf41f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/padraic/mockery/zipball/2448c5b27f40d11db1f7bcee5a1188fef8ae490a",
-                "reference": "2448c5b27f40d11db1f7bcee5a1188fef8ae490a",
+                "url": "https://api.github.com/repos/padraic/mockery/zipball/ef3ca8f5bbfd720e4f970526a1e7493005ebf41f",
+                "reference": "ef3ca8f5bbfd720e4f970526a1e7493005ebf41f",
                 "shasum": ""
             },
             "require": {
@@ -485,7 +572,7 @@
                 "test double",
                 "testing"
             ],
-            "time": "2015-02-20 22:10:40"
+            "time": "2015-02-27 21:38:21"
         },
         {
             "name": "phpdocumentor/reflection-docblock",
@@ -1449,7 +1536,9 @@
     "stability-flags": {
         "phpunit/phpunit": 0,
         "phpunit/dbunit": 0,
-        "mockery/mockery": 20
+        "mockery/mockery": 20,
+        "jaz303/phake": 20,
+        "albertofem/rsync-lib": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
