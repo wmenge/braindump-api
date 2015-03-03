@@ -6,18 +6,33 @@
 
     <table class="table table-striped table-bordered table-hover">
       <tr>
-        <th>Actions</th>
-        <th>Email</th>
-        <th>Activated</th>
-        <th>Suspended</th>
-        <th>Banned</th>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Modified</th>
+        <th>User</th>
         <th>Member of</th>
+        <th>Actions</th>
       </tr>
       <?php foreach ($users as $user): ?>
         <tr>
+          <td>
+              <strong><?= $user->first_name ?> <?= $user->last_name ?> 
+
+              <?php if (\Sentry::findThrottlerByUserId($user->id)->isBanned() == 1): ?>
+                <span class="label label-danger">Banned</span></strong>
+              <?php elseif (\Sentry::findThrottlerByUserId($user->id)->isSuspended() == 1): ?>
+                <span class="label label-warning">Suspended</span></strong>
+              <?php elseif ($user->activated == 1): ?>
+                <span class="label label-success">Active</span></strong>
+              <?php else:  ?>
+                <span class="label label-info">Inactive</span></strong>
+              <?php endif; ?>
+
+              <br /> <small><?= $user->email ?></small></h4>
+          </td>
+          <td>
+            <?= implode(', ', array_map(function ($entry) {
+                return $entry['name'];
+              }, $user->groups()->find_array()));
+            ?>
+          </td>
           <td>
             <a href="/admin/users/<?= $user->id ?>" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-pencil"></a>
             <form style="display: inline;" role="form" action="/admin/users/<?= @$user->id ?>" method="POST">
@@ -45,28 +60,11 @@
             <?php endif; ?>
 
           </td>
-          <td><?= $user->email ?></td>
-          <td><?= ($user->activated == 1) ? 'Yes' : 'No' ?></td>
-          <td>
-            <?= (\Sentry::findThrottlerByUserId($user->id)->isSuspended() == 1) ? 'Yes' : 'No' ?>
-          </td>
-          <td>
-            <?= (\Sentry::findThrottlerByUserId($user->id)->isBanned() == 1) ? 'Yes' : 'No' ?>
-          </td>
-          <td><?= $user->first_name ?></td>
-          <td><?= $user->last_name ?></td>
-          <td><?= $user->updated_at ?></td>
-          <td>
-            <?= implode(', ', array_map(function ($entry) {
-                return $entry['name'];
-              }, $user->groups()->find_array()));
-            ?>
-          </td>
         </tr>
       <?php endforeach; ?>
       
     </table>
-
+  
     <a href="/admin/users/createForm" class="btn btn-primary" role="button">Create user</a>
 
   </div>
