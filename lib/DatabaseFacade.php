@@ -141,7 +141,7 @@ class DatabaseFacade
      */
     public function addSortExpression($query, $sortString)
     {
-        $sortList = $this->parseSortExpression($sortString);
+        $sortList = DatabaseFacade::parseSortExpression($sortString);
         if (empty($sortList)) {
             return $query;
         }

@@ -3,6 +3,8 @@ namespace Braindump\Api;
 
 require_once(__DIR__ . '/../model/NotebookFacade.php');
 
+use Braindump\Api\Model\Notebook as Notebook;
+
 $dbFacade = new \Braindump\Api\Lib\DatabaseFacade($app, \ORM::get_db());
 $notebookFacade = new \Braindump\Api\Model\NotebookFacade($dbFacade);
 
@@ -37,12 +39,12 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
 
         $input = json_decode($app->request->getBody());
 
-        if (!$notebookFacade->isValid($input)) {
+        if (!Notebook::isValid($input)) {
             $app->halt(400, 'Invalid input');
         }
 
-        $notebook = \ORM::for_table('notebook')->create();
-        $notebookFacade->map($notebook, $input);
+        $notebook = Notebook::create();
+        $notebook->map($input);
         // TODO: Check errors after db operations
         $notebook->save();
 
@@ -58,17 +60,17 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
         // check http://stackoverflow.com/questions/11159449
         $input = json_decode($app->request->getBody());
 
-        if (!$notebookFacade->isValid($input)) {
+        if (!Notebook::isValid($input)) {
             $app->halt(400, 'Invalid input');
         }
 
         $notebook = $notebookFacade->getNotebookForId($id);
 
         if ($notebook == null) {
-            $notebook = \ORM::for_table('notebook')->create();
+            $notebook = Notebook::create();
         }
 
-        $notebookFacade->map($notebook, $input);
+        $notebook->map($input);
         $notebook->save();
 
         $notebook = $notebookFacade->getNotebookForId($notebook->id);
@@ -89,6 +91,7 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
         \ORM::get_db()->beginTransaction();
 
         // First, delete all notes in notebook
+        // TODO use paris relations
         \ORM::for_table('note')
             ->where_equal('notebook_id', $notebook->id)
             ->delete_many();
