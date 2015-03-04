@@ -1,5 +1,7 @@
 <?php namespace Braindump\Api\Model;
 
+require_once(__DIR__ . '/Notebook.php');
+
 class NotebookFacade
 {
     private $dbFacade;
@@ -46,7 +48,7 @@ class NotebookFacade
         $note->notebook_id = $notebook->id();
         $note->title = 'This is a Note';
         $note->url = 'https://github.com/wmenge/braindump-api';
-        $note->type = NoteFacade::TYPE_HTML;
+        $note->type = Note::TYPE_HTML;
         $note->content = '<div>Your very first note</div>';
         $note->created = time();
         $note->updated = time();

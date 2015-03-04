@@ -3,6 +3,8 @@ namespace Braindump\Api;
 
 require_once(__DIR__ . '/../model/NoteFacade.php');
 
+use Braindump\Api\Model\Note as Note;
+
 $dbFacade = new \Braindump\Api\Lib\DatabaseFacade($app, \ORM::get_db());
 $noteFacade = new \Braindump\Api\Model\NoteFacade($dbFacade);
 
@@ -21,6 +23,7 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
             if ($notebook == null) {
                 return $app->notFound();
             }
+
             outputJson($noteFacade->getNoteListForNoteBook($notebook, $req->get('sort'), $req->get('q')), $app);
         }
     });
@@ -64,12 +67,15 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
 
         $input = json_decode($app->request->getBody());
 
-        if (!$noteFacade->isValid($input)) {
+        if (!Note::isValid($input)) {
             $app->halt(400, 'Invalid input');
         }
 
-        $note = \ORM::for_table('note')->create();
-        $noteFacade->map($note, $notebook, $input);
+        $note = Note::create();
+//echo "HELJE:LKJW:LKJ:LWEJF E:KLF :KEJF :ESJF: E F:E ";
+//print_r($notebook);
+
+        $note->map($notebook, $input);
         $note->save();
 
         $note = $noteFacade->getNoteForId($note->id());
@@ -93,7 +99,7 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
 
         $input = json_decode($app->request->getBody());
 
-        if (!$noteFacade->isValid($input)) {
+        if (!Note::isValid($input)) {
             $app->halt(400, 'Invalid input');
         }
 
@@ -107,7 +113,7 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
             if (!isset($notebook)) {
                 $app->halt(400, 'Invalid input');
             }
-            $note = \ORM::for_table('note')->create();
+            $note = Note::create();
         } else {
             // If notebook is supplied, it should match the
             // notebook id in the note
@@ -118,7 +124,7 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
         	}*/
         }
 
-        $noteFacade->map($note, $notebook, $input);
+        $note->map($notebook, $input);
         $note->save();
 
         $note = $noteFacade->getNoteForId($note->id());
