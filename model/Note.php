@@ -10,6 +10,14 @@ class Note extends \Model
     protected static $_table = 'note';
 
     /***
+     * Paris relation
+     */
+    public function notebook()
+    {
+        return $this->belongs_to('Braindump\Api\Model\Notebook');
+    }
+
+    /***
       * Paris filter method
       */
     public static function currentUser($orm)

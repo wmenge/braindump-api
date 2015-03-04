@@ -15,11 +15,8 @@ class NoteFacade
     {
         // TODO: Add paging to all lists
         $queryObj = Note::select_many('id', 'notebook_id', 'title', 'created', 'updated', 'url')
-            ->filter('currentUser');
-
-        if (!empty($queryString)) {
-            $queryObj = $queryObj->filter('content', $queryString);
-        }
+            ->filter('currentUser')
+            ->filter('content', $queryString);
 
         if (!empty($sortString)) {
             $queryObj = $this->dbFacade->addSortExpression($queryObj, $sortString);
@@ -30,13 +27,10 @@ class NoteFacade
 
     public function getNoteListForNoteBook($notebook, $sortString = null, $queryString = null)
     {
-        $queryObj = Note::select_many('id', 'notebook_id', 'title', 'created', 'updated', 'url')
-            ->where_equal('notebook_id', $notebook->id)
-            ->filter('currentUser');
-
-        if (!empty($queryString)) {
-            $queryObj = $queryObj->filter('content', $queryString);
-        }
+        $queryObj = $notebook->notes()
+            ->select_many('id', 'notebook_id', 'title', 'created', 'updated', 'url')
+            ->filter('currentUser')
+            ->filter('content', $queryString);
 
         if (!empty($sortString)) {
             $queryObj = $this->dbFacade->addSortExpression($queryObj, $sortString);

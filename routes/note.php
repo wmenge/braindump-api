@@ -72,8 +72,6 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
         }
 
         $note = Note::create();
-//echo "HELJE:LKJW:LKJ:LWEJF E:KLF :KEJF :ESJF: E F:E ";
-//print_r($notebook);
 
         $note->map($notebook, $input);
         $note->save();

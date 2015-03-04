@@ -5,6 +5,14 @@ class Notebook extends \Model
     protected static $_table = 'notebook';
 
     /***
+     * Paris relation
+     */
+    public function notes()
+    {
+        return $this->has_many('Braindump\Api\Model\Note');
+    }
+
+    /***
       * Paris filter method
       */
     public static function currentUser($orm)

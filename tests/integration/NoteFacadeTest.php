@@ -1,8 +1,8 @@
-<?php
-
-namespace Braindump\Api\Test\Integration;
+<?php namespace Braindump\Api\Test\Integration;
 
 require_once __DIR__ . '/../../model/NoteFacade.php';
+
+use Braindump\Api\Model\Notebook as Notebook;
 
 class NoteFacadeTest extends AbstractDbTest
 {
@@ -75,7 +75,8 @@ class NoteFacadeTest extends AbstractDbTest
 
     public function testGetNoteListForNotebook()
     {
-        $notebook = (object)[ 'id' => 1 ];
+        $notebook = Notebook::create();
+        $notebook->id = 1;
 
         $expected = [
             [ 'id' => '1', 'title' => 'note 1', 'notebook_id' => '1', 'created' => '0', 'updated' => '0', 'url' => null],
@@ -87,7 +88,8 @@ class NoteFacadeTest extends AbstractDbTest
 
     public function testSortedGetNoteListForNotebook()
     {
-        $notebook = (object)[ 'id' => 1 ];
+        $notebook = Notebook::create();
+        $notebook->id = 1;
 
         $expected = [
             [ 'id' => '2', 'title' => 'note 2', 'notebook_id' => '1', 'created' => '0', 'updated' => '0', 'url' => '' ],
@@ -99,7 +101,8 @@ class NoteFacadeTest extends AbstractDbTest
 
     public function testFilteredGetNoteListForNotebook()
     {
-        $notebook = (object)[ 'id' => 1 ];
+        $notebook = Notebook::create();
+        $notebook->id = 1;
 
         $expected = [
             [ 'id' => '1', 'title' => 'note 1', 'notebook_id' => '1', 'created' => '0', 'updated' => '0', 'url' => null],
