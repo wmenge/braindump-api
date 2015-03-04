@@ -1,5 +1,9 @@
 <?php namespace Braindump\Api\Model;
 
+require_once(__DIR__ . '/../lib/SortHelper.php');
+
+use Braindump\Api\Lib\SortHelper as SortHelper;
+
 class Notebook extends \Model
 {
     protected static $_table = 'notebook';
@@ -18,6 +22,18 @@ class Notebook extends \Model
     public static function currentUser($orm)
     {
         return $orm->where('user_id', \Sentry::getUser()->id);
+    }
+
+    /***
+      * Paris filter method
+      */
+    public static function sort($orm, $sortString)
+    {
+        if (empty($sortString)) {
+            return $orm;
+        }
+
+        return SortHelper::addSortExpression($orm, $sortString);
     }
 
     public static function isValid($data)

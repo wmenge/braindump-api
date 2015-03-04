@@ -1,28 +1,20 @@
-<?php
-namespace Braindump\Api\Test\Unit;
+<?php namespace Braindump\Api\Test\Unit;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
-require_once __DIR__ . '/../../lib/DatabaseFacade.php';
+require_once __DIR__ . '/../../lib/SortHelper.php';
 require_once __DIR__ . '/MockORMHelper.php';
 
-class DatabaseFacadeTest extends \PHPUnit_Framework_TestCase
+use Braindump\Api\Lib\SortHelper as SortHelper;
+
+class SortHelperTest extends \PHPUnit_Framework_TestCase
 {
-    protected $Facade;
     protected $orm;
 
     protected function setUp()
     {
-        $mockApp = new \stdClass();
-        $mockApp->braindumpConfig = (require( __DIR__ . '/../../config/braindump-config.php'));
-        $this->Facade = new \Braindump\Api\Lib\DatabaseFacade($mockApp, null);
-        
         $this->orm = $this->getMock('\MockORMFacade', ['order_by_asc', 'order_by_desc']);
-
-        $this->orm->method('order_by_asc')
-             ->willReturn($this->orm);
-
-        $this->orm->method('order_by_desc')
-             ->willReturn($this->orm);
+        $this->orm->method('order_by_asc')->willReturn($this->orm);
+        $this->orm->method('order_by_desc')->willReturn($this->orm);
     }
 
     /**
@@ -33,13 +25,10 @@ class DatabaseFacadeTest extends \PHPUnit_Framework_TestCase
      */
     public function testAddSortExpression($expr, $ascCount, $descCount, $fields)
     {
-        $this->orm->expects($this->exactly($ascCount))
-             ->method('order_by_asc');
-
-        $this->orm->expects($this->exactly($descCount))
-             ->method('order_by_desc');
-
-        $query = $this->Facade->addSortExpression($this->orm, $expr);
+        $this->orm->expects($this->exactly($ascCount))->method('order_by_asc');
+        $this->orm->expects($this->exactly($descCount))->method('order_by_desc');
+        
+        $query = SortHelper::addSortExpression($this->orm, $expr);
     }
 
     public function expressionProvider()

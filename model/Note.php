@@ -1,6 +1,8 @@
 <?php namespace Braindump\Api\Model;
 
-//require_once(__DIR__ . '/Notebook.php');
+require_once(__DIR__ . '/../lib/SortHelper.php');
+
+use Braindump\Api\Lib\SortHelper as SortHelper;
 
 class Note extends \Model
 {
@@ -30,10 +32,26 @@ class Note extends \Model
       */
     public static function content($orm, $queryString)
     {
+        if (empty($queryString)) {
+            return $orm;
+        }
+
         return $orm->where_raw(
             '(`title` LIKE ? OR `content` LIKE ?)',
             array(sprintf('%%%s%%', $queryString), sprintf('%%%s%%', $queryString))
         );
+    }
+
+    /***
+      * Paris filter method
+      */
+    public static function sort($orm, $sortString)
+    {
+        if (empty($sortString)) {
+            return $orm;
+        }
+
+        return SortHelper::addSortExpression($orm, $sortString);
     }
 
     public static function isValid($data)
