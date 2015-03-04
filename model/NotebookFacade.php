@@ -18,9 +18,6 @@ class NotebookFacade
             ->filter('currentUserFilter')
             ->filter('sortFilter', $sortString);
 
-        // Todo: Move to filter
-        //$query = $this->dbFacade->addSortExpression($query, $sortString);
-
         return $query->find_array();
     }
 
