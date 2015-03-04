@@ -22,7 +22,7 @@ class Note extends \Model
     /***
       * Paris filter method
       */
-    public static function currentUser($orm)
+    public static function currentUserFilter($orm)
     {
         return $orm->where('user_id', \Sentry::getUser()->id);
     }
@@ -30,7 +30,7 @@ class Note extends \Model
     /***
       * Paris filter method
       */
-    public static function content($orm, $queryString)
+    public static function contentFilter($orm, $queryString)
     {
         if (empty($queryString)) {
             return $orm;
@@ -45,7 +45,7 @@ class Note extends \Model
     /***
       * Paris filter method
       */
-    public static function sort($orm, $sortString)
+    public static function sortFilter($orm, $sortString)
     {
         if (empty($sortString)) {
             return $orm;

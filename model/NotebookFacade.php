@@ -15,10 +15,11 @@ class NotebookFacade
     {
         $query = Notebook::select('*')
             ->select_expr('(SELECT COUNT(*) FROM note WHERE notebook_id = notebook.id)', 'noteCount')
-            ->filter('currentUser');
+            ->filter('currentUserFilter')
+            ->filter('sortFilter', $sortString);
 
         // Todo: Move to filter
-        $query = $this->dbFacade->addSortExpression($query, $sortString);
+        //$query = $this->dbFacade->addSortExpression($query, $sortString);
 
         return $query->find_array();
     }
@@ -27,7 +28,7 @@ class NotebookFacade
     {
         return Notebook::select('*')
             ->select_expr('(SELECT COUNT(*) FROM note WHERE notebook_id = notebook.id)', 'noteCount')
-            ->filter('currentUser')
+            ->filter('currentUserFilter')
             ->find_one($id);
     }
 

@@ -15,12 +15,9 @@ class NoteFacade
     {
         // TODO: Add paging to all lists
         $queryObj = Note::select_many('id', 'notebook_id', 'title', 'created', 'updated', 'url')
-            ->filter('currentUser')
-            ->filter('content', $queryString);
-
-        if (!empty($sortString)) {
-            $queryObj = $this->dbFacade->addSortExpression($queryObj, $sortString);
-        }
+            ->filter('currentUserFilter')
+            ->filter('contentFilter', $queryString)
+            ->filter('sortFilter', $sortString);
 
         return $queryObj->find_array();
     }
@@ -29,12 +26,9 @@ class NoteFacade
     {
         $queryObj = $notebook->notes()
             ->select_many('id', 'notebook_id', 'title', 'created', 'updated', 'url')
-            ->filter('currentUser')
-            ->filter('content', $queryString);
-
-        if (!empty($sortString)) {
-            $queryObj = $this->dbFacade->addSortExpression($queryObj, $sortString);
-        }
+            ->filter('currentUserFilter')
+            ->filter('contentFilter', $queryString)
+            ->filter('sortFilter', $sortString);
 
         return $queryObj->find_array();
     }
@@ -42,6 +36,6 @@ class NoteFacade
     // TODO: rename to findById
     public function getNoteForId($id)
     {
-        return Note::filter('currentUser')->find_one($id);
+        return Note::filter('currentUserFilter')->find_one($id);
     }
 }
