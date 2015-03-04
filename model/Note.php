@@ -81,19 +81,26 @@ class Note extends \Model
             // In import scenario, try to get create and update times from data object
             if ($import && property_exists($data, 'created') && is_numeric($data->created)) {
                 $this->created = filter_var($data->created, FILTER_SANITIZE_NUMBER_INT);
-            } elseif (!property_exists($this, 'created') || $this->created == null) {
-                $this->created = time();
             }
 
             if ($import && property_exists($data, 'updated') && is_numeric($data->updated)) {
                 $this->updated = filter_var($data->updated, FILTER_SANITIZE_NUMBER_INT);
-            } else {
-                $this->updated = time();
-            }
-
-            if (!property_exists($this, 'user_id') || $note->user_id == null) {
-                $this->user_id = \Sentry::getUser()->id;
             }
         }
+    }
+
+    public function save()
+    {
+        if (!property_exists($this, 'created') || $this->created == null) {
+            $this->created = time();
+        }
+
+        if (!property_exists($this, 'user_id') || $note->user_id == null) {
+            $this->user_id = \Sentry::getUser()->id;
+        }
+
+        $this->updated = time();
+
+        return parent::save();
     }
 }

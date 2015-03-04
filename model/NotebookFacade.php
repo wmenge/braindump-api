@@ -38,21 +38,14 @@ class NotebookFacade
 
         $notebook = Notebook::create();
         $notebook->title = 'Your first notebook';
-        $notebook->created = time();
-        $notebook->updated = time();
-        $notebook->user_id = \Sentry::getUser()->id;
-        
         $notebook->save();
 
-        $note = \ORM::for_table('note')->create();
+        $note = Note::create();
         $note->notebook_id = $notebook->id();
         $note->title = 'This is a Note';
         $note->url = 'https://github.com/wmenge/braindump-api';
         $note->type = Note::TYPE_HTML;
         $note->content = '<div>Your very first note</div>';
-        $note->created = time();
-        $note->updated = time();
-        $note->user_id = \Sentry::getUser()->id;
         $note->save();
 
         // Commit a transaction
