@@ -1,10 +1,14 @@
-<?php
-namespace Braindump\Api\Admin;
+<?php namespace Braindump\Api\Admin;
 
 require_once(__DIR__ . '/../lib/DatabaseFacade.php');
 require_once(__DIR__ . '/../model/NotebookFacade.php');
 require_once(__DIR__ . '/../model/NoteFacade.php');
 require_once(__DIR__ . '/../model/UserFacade.php');
+
+use Braindump\Api\Model\Notebook as Notebook;
+use Braindump\Api\Model\Note as Note;
+use Cartalyst\Sentry\Users\Paris\User as User;
+
 $dbFacade = new \Braindump\Api\Lib\DatabaseFacade($app, \ORM::get_db());
 $notebookFacade = new \Braindump\Api\Model\NotebookFacade($dbFacade);
 $noteFacade = new \Braindump\Api\Model\NoteFacade($dbFacade);
@@ -57,9 +61,9 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
 
         try {
             $menuData = [
-              'notebookCount'   => \ORM::for_table('notebook')->count(),
-              'noteCount'       => \ORM::for_table('note')->count(),
-              'userCount'       => \ORM::for_table('users')->count(),
+              'notebookCount'   => Notebook::count(),
+              'noteCount'       => Note::count(),
+              'userCount'       => User::count(),
               'user'            => \Sentry::getUser(), ];
         } catch (\Exception $e) {
             $app->flashNow('error', $e->getMessage());
@@ -69,6 +73,10 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
             'menu'    => $app->view->fetch('admin-menu-fragment.php', $menuData),
             'content' => $app->view->fetch('admin-fragment.php', $data)
         ]);
+    });
+
+    $app->get('/info', function () use ($app) {
+        phpinfo();
     });
 
     $app->get('/export', function () use ($app) {
@@ -92,20 +100,17 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
             }
 
             // Add notebooks to user
-            $user['notebooks'] = \ORM::for_table('notebook')
-                ->select_many('id', 'title', 'created', 'updated')
+            $user['notebooks'] = Notebook::select_many('id', 'title', 'created', 'updated')
                 ->where_equal('user_id', $user['id'])
                 ->find_array();
             
             unset($user['id']);
 
             foreach ($user['notebooks'] as &$notebook) {
-
                 // Add notes to notebook
-                $notebook['notes'] = \ORM::for_table('note')
-                ->select_many('title', 'created', 'updated', 'url', 'type', 'content')
-                ->where_equal('notebook_id', $notebook['id'])
-                ->find_array();
+                $notebook['notes'] = Note::select_many('title', 'created', 'updated', 'url', 'type', 'content')
+                    ->where_equal('notebook_id', $notebook['id'])
+                    ->find_array();
 
                 unset($notebook['id']);
             }
