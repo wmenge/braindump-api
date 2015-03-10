@@ -49,6 +49,7 @@ task('sync', function() {
     $rsync = new Rsync;
     //$rsync->setDryRun(true);
     $rsync->setVerbose(true);
+    $rsync->setDeleteFromTarget(true);
     $rsync->setExcludeFrom('rsync_exclude.txt');
     //$rsync->setOptionalParameters(['Wilco'=>'test']);
     echo $rsync->getCommand($origin, $target) . PHP_EOL;
