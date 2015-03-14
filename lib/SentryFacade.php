@@ -14,7 +14,9 @@ use Cartalyst\Sentry\Users\UserInterface as UserInterface;
 use Cartalyst\Sentry\Users\ProviderInterface as UserProviderInterface;
 use Cartalyst\Sentry\Groups\ProviderInterface as GroupProviderInterface;
 use Cartalyst\Sentry\Throttling\ProviderInterface as ThrottleProviderInterface;
+use Cartalyst\Sentry\Sessions\SessionInterface as SessionInterface;
 use Cartalyst\Sentry\Sessions\NativeSession as NativeSession;
+use Cartalyst\Sentry\Cookies\CookieInterface;
 use Cartalyst\Sentry\Cookies\NativeCookie as NativeCookie;
 
 class SentryFacade extends \Cartalyst\Sentry\Facades\Native\Sentry
@@ -32,11 +34,11 @@ class SentryFacade extends \Cartalyst\Sentry\Facades\Native\Sentry
      * @return \Cartalyst\Sentry\Sentry
      */
     public static function createSentry(
-        UsersProviderInterface $userProvider = null,
+        UserProviderInterface $userProvider = null,
         GroupProviderInterface $groupProvider = null,
         ThrottleProviderInterface $throttleProvider = null,
-        \SessionInterface $session = null,
-        \CookieInterface $cookie = null,
+        SessionInterface $session = null,
+        CookieInterface $cookie = null,
         $ipAddress = null
     ) {
         $userProvider = $userProvider ?: new UserProvider(new BcryptHasher);
