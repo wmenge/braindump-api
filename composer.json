@@ -16,7 +16,8 @@
         "slim/extras": "2.*",
         "j4mie/paris": "1.*",
         "ezyang/htmlpurifier": "v4.6.0",
-        "cartalyst/sentry": "2.1.*"
+        "cartalyst/sentry": "2.1.*",
+        "tedivm/fetch": "0.6.*"
     },
     "require-dev": {
         "phpunit/phpunit": "@stable",

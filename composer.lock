@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "acd128b1db76af215ce7dd15804dbb32",
+    "hash": "0aa8ec34ca2ec27bfb795627a10b33a0",
     "packages": [
         {
             "name": "cartalyst/sentry",
@@ -364,6 +364,55 @@
                 "router"
             ],
             "time": "2015-03-02 19:09:48"
+        },
+        {
+            "name": "tedivm/fetch",
+            "version": "v0.6.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tedious/Fetch.git",
+                "reference": "154a84fdfa0d045c2871dd9f8708362fb9ea4acf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tedious/Fetch/zipball/154a84fdfa0d045c2871dd9f8708362fb9ea4acf",
+                "reference": "154a84fdfa0d045c2871dd9f8708362fb9ea4acf",
+                "shasum": ""
+            },
+            "require": {
+                "ext-imap": "*",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "fabpot/php-cs-fixer": "0.5.*",
+                "phpunit/phpunit": "4.2.*",
+                "satooshi/php-coveralls": "dev-master",
+                "tedivm/dovecottesting": "1.2.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Fetch": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Robert Hafner",
+                    "email": "tedivm@tedivm.com"
+                }
+            ],
+            "description": "A PHP IMAP Library",
+            "homepage": "http://github.com/tedious/Fetch",
+            "keywords": [
+                "email",
+                "imap",
+                "pop3"
+            ],
+            "time": "2015-01-08 03:22:20"
         }
     ],
     "packages-dev": [
