@@ -117,11 +117,11 @@ class Note extends \Model
 
     public function save()
     {
-        if (!property_exists($this, 'created') || $this->created == null) {
+        if ($this->created == null) {
             $this->created = time();
         }
 
-        if (!property_exists($this, 'user_id') || $note->user_id == null) {
+        if ($this->user_id == null) {
             $this->user_id = \Sentry::getUser()->id;
         }
 
