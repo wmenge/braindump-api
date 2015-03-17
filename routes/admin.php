@@ -88,7 +88,6 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
         $users = \ORM::for_table('users')->find_array();
         
         foreach ($users as &$user) {
-
             // Add groups to user
             $sentryUser = \Sentry::findUserById($user['id']);
 
@@ -135,7 +134,8 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
         // Then check if a file upload has been made
         if (strlen($input) == 0) {
             if ($_FILES['importFile']['error'] == UPLOAD_ERR_OK               //checks for errors
-                && is_uploaded_file($_FILES['importFile']['tmp_name'])) { //checks that file is uploaded
+                && is_uploaded_file($_FILES['importFile']['tmp_name'])) {
+                //checks that file is uploaded
                 $input = file_get_contents($_FILES['importFile']['tmp_name']);
             }
         }
@@ -148,7 +148,7 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
             return;
         }
 
-        // Process input...        
+        // Process input...
         try {
             \ORM::get_db()->beginTransaction();
 
@@ -168,7 +168,6 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
 
             // ...create users....
             foreach ($data->users as $user) {
-
                 $userArray = (array)$user;
 
                 unset($userArray['groups']);
@@ -193,7 +192,6 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
 
                 // ...recreate notebooks and notes for each user
                 foreach ($user->notebooks as $notebookRecord) {
-
                     if (!$notebookFacade->isValid($notebookRecord)) {
                         \ORM::get_db()->rollback();
 
@@ -339,10 +337,7 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
 
     $app->post('/users(/)', function () use ($app) {
 
-        //var $user == null;
-
         try {
-
             // Create the user
             $user = \Sentry::createUser([
                 'email'      => htmlentities($app->request->params('email'), ENT_QUOTES, 'UTF-8'),
@@ -401,7 +396,6 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
         $success = false;
 
         try {
-
             $user = \Sentry::findUserById($id);
 
             $user->email      = htmlentities($app->request->params('email'), ENT_QUOTES, 'UTF-8');
@@ -411,7 +405,6 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
             $success = $user->save();
 
             if ($success) {
-                
                 // TODO: validate that at least one group is supplied
  
                 // Try to add all listed groups

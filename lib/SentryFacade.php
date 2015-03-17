@@ -1,5 +1,4 @@
-<?php
-namespace Braindump\Api\Lib\Sentry\Facade;
+<?php namespace Braindump\Api\Lib\Sentry\Facade;
 
 require __DIR__ . '/../model/Sentry/Paris/UserProvider.php';
 require __DIR__ . '/../model/Sentry/Paris/GroupProvider.php';
