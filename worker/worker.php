@@ -16,52 +16,60 @@ $worker->job('process-mail', ['cron_time' => '* * * * *', 'command' => function(
 
     // TODO: Refactor into some IMAPFacade
 
-    // Setup DB connection
-    $braindumpConfig = (require __DIR__ . '/../config/braindump-config.php');
-    ORM::configure($braindumpConfig['database_config']);
+    try {
+        // Setup DB connection
+        $braindumpConfig = (require __DIR__ . '/../config/braindump-config.php');
+        ORM::configure($braindumpConfig['database_config']);
 
-    // Setup Imap connection
-    $server = new \Fetch\Server('imap.inbox.com', 993);
-    $server->setAuthentication('braindump@inbox.com', 'BatteryHorseStaple!');
-    $server->setMailbox('Inbox');
+        // Setup Imap connection
 
-    $messageCount = $server->numMessages();
+        $config = (object)$braindumpConfig['imap_config'];
+        $server = new \Fetch\Server($config->server, $config->port);
+        $server->setAuthentication($config->user, $config->password);
 
-    if ($messageCount > 10) {
-        $worker->output->writeln("<fg=red>Too many messages in ".$server->getMailBox()."</fg=red>");
-        return;
-    }
+        $server->setMailbox($config->sourceFolder);
 
-    $worker->output->writeln('<comment>'.$messageCount.'</comment> Messages found in '.$server->getMailBox());
+        $messageCount = $server->numMessages();
 
-    $messages = $server->getMessages();
-
-    foreach ($messages as $message) {
-        $sender = (object)$message->getAddresses('sender');
-       
-        $user = \Cartalyst\Sentry\Users\Paris\User::where('email', $sender->address)->find_one();
-        
-        if (!$user) {
-            $worker->output->writeln('Message from <comment>'.$sender->address.'</comment> ignored.');
-        } else {
-            $worker->output->writeln('<info>Message found from user <comment>'.$user->email.'</comment>.</info>');
-
-            $notebook = \Braindump\Api\Model\Notebook::find_one(2);
-
-            $note = \Braindump\Api\Model\Note::create();
-
-            $dataObject = (object)[
-                'title' => $message->getSubject(),
-                'type' => 'HTML',
-                'content' => $message->getMessageBody()
-            ];
-
-            $note->map($notebook, $dataObject);
-            $note->user_id = $user->id;
-            $note->save();
+        if ($messageCount > $config->messageLimit) {
+            throw new Exception("Too many messages in ".$server->getMailBox());
         }
 
-        $message->moveToMailBox('Processed');
+        $worker->output->writeln('<comment>'.$messageCount.'</comment> Messages found in '.$server->getMailBox());
+
+        $messages = $server->getMessages();
+
+        foreach ($messages as $message) {
+            $sender = (object)$message->getAddresses('sender');
+           
+            $user = \Cartalyst\Sentry\Users\Paris\User::where('email', $sender->address)->find_one();
+            
+            if (!$user) {
+                $worker->output->writeln('Message from <comment>'.$sender->address.'</comment> ignored.');
+            } else {
+                $worker->output->writeln('<info>Message found from user <comment>'.$user->email.'</comment>.</info>');
+
+                // TODO: Store email folder on user
+                $notebook = \Braindump\Api\Model\Notebook::find_one(2);
+
+                $note = \Braindump\Api\Model\Note::create();
+
+                $dataObject = (object)[
+                    'title' => $message->getSubject(),
+                    'type' => 'HTML',
+                    'content' => $message->getMessageBody()
+                ];
+
+                $note->map($notebook, $dataObject);
+                $note->user_id = $user->id;
+                $note->save();
+            }
+
+            $message->moveToMailBox($config->processedFolder);
+        }
+
+    } catch (Exception $ex) {
+        $worker->output->writeln("<fg=red>".$ex->getMessage()."</fg=red>");
     }
 
 }]);
