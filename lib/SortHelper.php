@@ -16,7 +16,7 @@ class SortHelper
      *
      * Does not check if fieldnames actually exist
      */
-    private static function parseSortExpression($sortString)
+    public static function parseSortExpression($sortString)
     {
         $expressions = array();
         $tokens = mb_split(',', $sortString);

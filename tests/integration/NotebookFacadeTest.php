@@ -21,9 +21,7 @@ class NotebookFacadeTest extends AbstractDbTest
 
         $mockApp = new \stdClass();
         $mockApp->braindumpConfig = (require( __DIR__ . '/../../config/braindump-config.php'));
-        $dbFacade = new \Braindump\Api\Lib\DatabaseFacade($mockApp, \ORM::get_db());
-        
-        $this->Facade = new \Braindump\Api\Model\NotebookFacade($dbFacade);
+        $this->Facade = new \Braindump\Api\Model\NotebookFacade();
 
         \Sentry::$id = 1;
     }

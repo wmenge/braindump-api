@@ -4,13 +4,6 @@ require_once(__DIR__ . '/Note.php');
 
 class NoteFacade
 {
-    private $dbFacade;
-
-    public function __construct($dbFacade)
-    {
-        $this->dbFacade = $dbFacade;
-    }
-
     public function getNoteList($sortString = null, $queryString = null)
     {
         // TODO: Add paging to all lists

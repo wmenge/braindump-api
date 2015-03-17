@@ -4,13 +4,6 @@ require_once(__DIR__ . '/Notebook.php');
 
 class NotebookFacade
 {
-    private $dbFacade;
-
-    public function __construct($dbFacade)
-    {
-        $this->dbFacade = $dbFacade;
-    }
-
     public function getNoteBookList($sortString = null)
     {
         $query = Notebook::select('*')

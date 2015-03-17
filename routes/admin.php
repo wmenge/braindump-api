@@ -10,14 +10,14 @@ use Braindump\Api\Model\Note as Note;
 use Cartalyst\Sentry\Users\Paris\User as User;
 
 $dbFacade = new \Braindump\Api\Lib\DatabaseFacade($app, \ORM::get_db());
-$notebookFacade = new \Braindump\Api\Model\NotebookFacade($dbFacade);
-$noteFacade = new \Braindump\Api\Model\NoteFacade($dbFacade);
-$userFacade = new \Braindump\Api\Model\UserFacade($dbFacade);
+$notebookFacade = new \Braindump\Api\Model\NotebookFacade();
+$noteFacade = new \Braindump\Api\Model\NoteFacade();
+$userFacade = new \Braindump\Api\Model\UserFacade();
 
 
-$app->group('/admin', function () use ($app, $dbFacade, $notebookFacade, $noteFacade, $userFacade) {
+$app->group('/admin', function () use ($app) {
 
-    $app->get('/login', function () use ($app, $dbFacade, $userFacade) {
+    $app->get('/login', function () use ($app) {
         $app->render('admin-page.php', [
             'content' => $app->view->fetch('login-fragment.php')
         ]);
@@ -52,7 +52,7 @@ $app->group('/admin', function () use ($app, $dbFacade, $notebookFacade, $noteFa
 
 $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', function () use ($app, $dbFacade, $notebookFacade, $noteFacade, $userFacade) {
 
-    $app->get('(/)', function () use ($app, $dbFacade, $userFacade) {
+    $app->get('(/)', function () use ($app, $dbFacade) {
 
         $data = [
               'currentVersion'  => $dbFacade->getCurrentVersion(),

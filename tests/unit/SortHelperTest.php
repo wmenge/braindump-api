@@ -23,6 +23,18 @@ class SortHelperTest extends \PHPUnit_Framework_TestCase
      *
      * @dataProvider expressionProvider
      */
+    public function testParseSortExpression($expr, $ascCount, $descCount, $fields)
+    {
+        $sortList = SortHelper::parseSortExpression($expr);
+        $this->assertEquals($fields, $sortList);
+    }
+
+    /**
+     *
+     * Test parsing of 'title,-modification style sort string'
+     *
+     * @dataProvider expressionProvider
+     */
     public function testAddSortExpression($expr, $ascCount, $descCount, $fields)
     {
         $this->orm->expects($this->exactly($ascCount))->method('order_by_asc');
@@ -36,17 +48,22 @@ class SortHelperTest extends \PHPUnit_Framework_TestCase
         return [
 
           // Basic testcases with a few fields
-          ['title'           , 1, 0, ['title']],
-          ['title,modified'  , 2, 0, ['title','modified']],
-          ['-title'          , 0, 1, ['title']],
-          ['title,-modified' , 1, 1, ['title','modified']],
-          ['-title,-modified', 0, 2, ['title','modified']],
+          ['title'           , 1, 0, [ (object)['field' => 'title', 'order' => SORT_ASC]]],
+          ['title,modified'  , 2, 0, [ (object)['field' => 'title', 'order' => SORT_ASC],
+                                       (object)['field' => 'modified', 'order' => SORT_ASC]]],
+          ['-title'          , 0, 1, [ (object)['field' => 'title', 'order' => SORT_DESC]]],
+          ['title,-modified' , 1, 1, [ (object)['field' => 'title', 'order' => SORT_ASC],
+                                       (object)['field' => 'modified', 'order' => SORT_DESC]]],
+          ['-title,-modified', 0, 2, [ (object)['field' => 'title', 'order' => SORT_DESC],
+                                       (object)['field' => 'modified', 'order' => SORT_DESC]]],
 
           // Bad user input (leading, trailing spaces, should be corrected
-          ['title '           , 1, 0, ['title']],
-          [' title, modified ', 2, 0, ['title','modified']],
-          ['- title'          , 0, 1, ['title']],
-          ['title, - modified', 1, 1, ['title','modified']],
+          ['title '           , 1, 0, [ (object)['field' => 'title', 'order' => SORT_ASC]]],
+          [' title, modified ', 2, 0, [ (object)['field' => 'title', 'order' => SORT_ASC],
+                                        (object)['field' => 'modified', 'order' => SORT_ASC]]],
+          ['- title'          , 0, 1, [ (object)['field' => 'title', 'order' => SORT_DESC]]],
+          ['title, - modified', 1, 1, [ (object)['field' => 'title', 'order' => SORT_ASC],
+                                        (object)['field' => 'modified', 'order' => SORT_DESC]]],
 
           // No input, should lead to empty output
           ['', 0, 0, []],

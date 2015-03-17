@@ -5,10 +5,9 @@ require_once(__DIR__ . '/../model/NoteFacade.php');
 
 use Braindump\Api\Model\Note as Note;
 
-$dbFacade = new \Braindump\Api\Lib\DatabaseFacade($app, \ORM::get_db());
-$noteFacade = new \Braindump\Api\Model\NoteFacade($dbFacade);
+$noteFacade = new \Braindump\Api\Model\NoteFacade();
 
-$app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function () use ($app, $dbFacade, $notebookFacade, $noteFacade) {
+$app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function () use ($app, $notebookFacade, $noteFacade) {
 
     $app->get('/(notebooks/:id/)notes(/)', function ($id = null) use ($app, $noteFacade, $notebookFacade) {
 
