@@ -69,5 +69,7 @@ $app->get('/', function () use ($app) {
 require_once '../routes/admin.php';
 require_once '../routes/note.php';
 require_once '../routes/notebook.php';
+require_once '../routes/user_configuration.php';
+
 
 $app->run();

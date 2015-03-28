@@ -10,11 +10,31 @@ use Cartalyst\Sentry\Users\UserAlreadyActivatedException;
 use Cartalyst\Sentry\Users\UserExistsException;
 use Cartalyst\Sentry\Users\UserInterface;
 
+// braindump specific
+require_once(__DIR__ . '/../../Notebook.php');
+require_once(__DIR__ . '/../../UserConfiguration.php');
+
 class User extends \Cartalyst\Sentry\Paris\DateTimeModel implements UserInterface
 {
     const CLASS_NAME = '\Cartalyst\Sentry\Users\Paris\User';
 
     public static $_table = 'users';
+
+    /***
+     * Paris relation (Braindump specific)
+     */
+    public function configuration()
+    {
+        return $this->has_one('\Braindump\Api\Model\UserConfiguration', 'user_id');
+    }
+
+    /***
+     * Paris relation (Braindump specific)
+     */
+    public function notebooks()
+    {
+        return $this->has_many('\Braindump\Api\Model\Notebook', 'user_id');
+    }
 
     /**
      * Attributes that should be hashed.

@@ -11,4 +11,6 @@ DROP TABLE IF EXISTS "groups";
 DROP TABLE IF EXISTS "users";
 DROP TABLE IF EXISTS "throttle";
 
+DROP TABLE IF EXISTS "user_configuration";
+
 PRAGMA foreign_keys = true;
