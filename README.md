@@ -1,8 +1,7 @@
 Braindump REST API
 ==================
 
-Braindump is an alternative to [Evernote](http://www.evernote.com), born out of 
-frustration as it is becoming more more locked down.
+Braindump is an alternative to [Evernote](http://www.evernote.com).
 As I want to be in control of my own notes and bookmarks, I've
 decided to take a shot at developing my own note takeing app.
 
@@ -10,37 +9,26 @@ This project contains the backend and API part of the project.
 It aims to provide a simple REST-style API to to store and retrieve 
 notes. These notes will be stored in a server side database.
 
-Created by Wilco Menge (wilcomenge@gmail.com), the code is hosted at [github](https://github.com/wmenge/braindump-api) for the REST based backend API.
-
 See [Braindump Client](https://github.com/wmenge/braindump-client) for a HTML/Javascript based client.
 
 Roadmap
 -------
 Currently, storing and retrieving simple HTML notes is supported. If this project works out well I'll be adding functionality so Braindump can serve as a reasonable alternative to Evernote.
 
-**Currently supported features:**
+**Current features:**
 
 * Maintaining/retrieving Notebooks: A notebook contains a number of Notes
 * Maintaining/retrieving Notes: A note is a piece of plaintext or HTML contained in a Notebook
-
-**Planned features:**
-
 * Simple admin console embedded in this project
-* Tagging of notes
 * Import/export of notes
 * Multiple users
 * Search
+
+**Planned features:**
+
+* Tagging of notes
 * Paste images/attachments
 * Security (Encryption of notes)
-
-Implementation details
-----------------------
-
-* PHP 5.3.3 (or higher) is required
-* [Composer](https://getcomposer.org) for dependancy management
-* [SQLite](http://www.sqlite.org)
-* [Slim PHP Framework](http://www.slimframework.com)
-* [Idiorm](http://j4mie.github.io/idiormandparis/) for object/relational mapping
 
 ###Data Model
 
