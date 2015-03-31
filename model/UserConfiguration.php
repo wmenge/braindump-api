@@ -1,5 +1,7 @@
 <?php namespace Braindump\Api\Model;
 
+require_once(__DIR__ . '/Sentry/Paris/User.php');
+
 class UserConfiguration extends \Model
 {
     protected static $_table = 'user_configuration';
@@ -9,15 +11,15 @@ class UserConfiguration extends \Model
      */
     public function user()
     {
-        return $this->belongs_to('\Cartalyst\Sentry\Users\Paris\User');
+        return $this->belongs_to('\Cartalyst\Sentry\Users\Paris\User', 'user_id');
     }
 
     /***
      * Paris relation 
      */
-    public function notebooks()
+    public function emailToNotebook()
     {
-        return user()->find_one()->notebooks();
+        return $this->user()->find_one()->notebooks()->where('id', $this->email_to_notebook);
     }
 
     public static function isValid($data)

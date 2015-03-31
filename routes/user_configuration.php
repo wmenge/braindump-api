@@ -14,13 +14,14 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
         $configuration = $configurationFacade->getConfiguration();
 
         if ($configuration == null) {
-            return $app->notFound();
+            $configuration = UserConfiguration::create();
+            $configuration->email_to_notebook = null;
         }
-
-        outputJson($configuration->as_array(), $app);
+        
+        outputJson($configuration->as_array('email_to_notebook'), $app);
     });
 
-    $app->map('/configuration(/)', function ($id) use ($app, $configurationFacade) {
+    $app->map('/configuration(/)', function () use ($app, $configurationFacade) {
         
         $input = json_decode($app->request->getBody());
 

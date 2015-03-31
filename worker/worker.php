@@ -3,6 +3,8 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../lib/ImapFacade.php';
 
+//class_alias('Braindump\Api\Lib\Sentry\Facade\SentryFacade', 'Sentry');
+
 date_default_timezone_set('Europe/Amsterdam');
 
 $worker = new \Kohkimakimoto\Worker\Worker();

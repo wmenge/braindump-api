@@ -66,7 +66,7 @@ class ImapFacade
             ];
 
             // TODO: Store email folder on user
-            $notebook = \Braindump\Api\Model\Notebook::find_one(2);
+            $notebook = $user->configuration()->find_one()->emailToNotebook()->find_one();
 
             $note = \Braindump\Api\Model\Note::create();
             $note->map($notebook, $dataObject);
