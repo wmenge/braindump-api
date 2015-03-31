@@ -53,4 +53,4 @@ class SentryFacade extends \Cartalyst\Sentry\Facades\Native\Sentry
     }
 }
 
-class_alias('Braindump\Api\Lib\Sentry\Facade\SentryFacade', 'Sentry');
+//class_alias('Braindump\Api\Lib\Sentry\Facade\SentryFacade', 'Sentry');
