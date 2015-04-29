@@ -70,4 +70,34 @@ class NoteTest extends \PHPUnit_Framework_TestCase
                       'url' => 'http://t.com', 'content' => '<div>Sample content</div>']]
         ];
     }
+
+    public function testInlineImage() {
+
+        $string = '<img src="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABGdBTUEAALGP
+C/xhBQAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9YGARc5KB0XV+IA
+AAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAF1J
+REFUGNO9zL0NglAAxPEfdLTs4BZM4DIO4C7OwQg2JoQ9LE1exdlYvBBeZ7jq
+ch9//q1uH4TLzw4d6+ErXMMcXuHWxId3KOETnnXXV6MJpcq2MLaI97CER3N0
+vr4MkhoXe0rZigAAAABJRU5ErkJggg==" alt="Red dot" />';
+
+        $input = (object)[ 'title' => 'Note title', 'type' => 'HTML', 'content' => $string ];
+        $output = [ 'title' => 'Note title', 'type' => 'HTML', 'content' => str_replace(PHP_EOL, '', $string), 'notebook_id' => 42 ];
+
+        $notebook = (object)['id' => 42];
+        $this->note->map($notebook, $input);
+        $this->assertEquals($output, $this->note->as_array());
+    }
+
+    public function testUrlImage() {
+
+        $string = '<img src="http://ic.tweakimg.net/ext/i/imagenormal/2000606770.jpeg" alt="Red dot" />';
+
+        $input = (object)[ 'title' => 'Note title', 'type' => 'HTML', 'content' => $string ];
+        $output = [ 'title' => 'Note title', 'type' => 'HTML', 'content' => $string, 'notebook_id' => 42 ];
+
+        $notebook = (object)['id' => 42];
+        $this->note->map($notebook, $input);
+        $this->assertEquals($output, $this->note->as_array());
+    }
 }

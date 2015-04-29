@@ -94,8 +94,12 @@ class Note extends \Model
                 if ($this->type == Note::TYPE_HTML) {
                     // check http://dev.evernote.com/doc/articles/enml.php for evenrote html format
                     // TODO Check which tags to allow/disallow
-                    // TODO Allow images with base64 content
-                    $purifier = new \HTMLPurifier(\HTMLPurifier_Config::createDefault());
+
+                    $config = \HTMLPurifier_Config::createDefault();
+                    // Allow base64 image data
+                    $config->set('URI.AllowedSchemes', ['http' => true, 'https' => true, 'data' => true]);
+                    $purifier = new \HTMLPurifier($config);
+
                     $this->content = $purifier->purify($data->content);
                 } elseif ($this->type == Note::TYPE_TEXT) {
                     $this->content = htmlentities($data->content, ENT_QUOTES, 'UTF-8');
