@@ -18,8 +18,7 @@
         "ezyang/htmlpurifier": "v4.6.0",
         "cartalyst/sentry": "2.1.*",
         "tedivm/fetch": "0.6.*",
-        "kohkimakimoto/workerphp": "0.*"
-        "jaz303/phake": "dev-master",
+        "jaz303/phake": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "@stable",
