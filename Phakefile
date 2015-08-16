@@ -3,6 +3,8 @@ include './vendor/autoload.php';
 require_once(__DIR__ . '/lib/SentryFacade.php');
 require_once(__DIR__ . '/lib/DatabaseFacade.php');
 
+class_alias('Braindump\Api\Lib\Sentry\Facade\SentryFacade', 'Sentry');
+
 use AFM\Rsync\Rsync;
 
 desc('Setup Braindump API');
