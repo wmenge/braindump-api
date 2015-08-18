@@ -192,7 +192,8 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
 
                 // ...recreate notebooks and notes for each user
                 foreach ($user->notebooks as $notebookRecord) {
-                    if (!$notebookFacade->isValid($notebookRecord)) {
+
+                    if (!Notebook::isValid($notebookRecord)) {
                         \ORM::get_db()->rollback();
 
                         $app->flash('error', 'Invalid data');
@@ -200,22 +201,23 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
                         return;
                     }
 
-                    $notebook = \ORM::for_table('notebook')->create();
-                    $notebookFacade->map($notebook, $notebookRecord, true);
+                    $notebook = Notebook::create();
+                    $notebook->map($notebookRecord, true);
+
                     $notebook->user_id = $sentryUser->id;
                     $notebook->save();
                     $notebooks++;
 
                     foreach ($notebookRecord->notes as $noteRecord) {
-                        if (!$noteFacade->isValid($noteRecord)) {
+                        if (!Note::isValid($noteRecord)) {
                             \ORM::get_db()->rollback();
                             $app->flash('error', 'Invalid data');
                             $app->redirect($app->refererringRoute);
                             return;
                         }
 
-                        $note = \ORM::for_table('note')->create();
-                        $noteFacade->map($note, $notebook, $noteRecord, true);
+                        $note = Note::create();
+                        $note->map($notebook, $noteRecord, true);
                         $note->user_id = $sentryUser->id;
                         $note->save();
                         $notes++;
@@ -249,13 +251,15 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
             $dbFacade->createDatabase();
 
             // Create a defauld user
-            \Sentry::createUser([
-                'email'      => 'administrator@braindump-local',
+            $user = \Sentry::createUser([
+                'email'      => 'administrator@braindump-api.local',
                 'first_name' => 'Braindump',
                 'last_name'  => 'Administrator',
                 'password'   => 'welcome',
                 'activated'  => true,
             ]);
+
+            $user->addGroup(\Sentry::findGroupByName('Administrators'));
 
             \ORM::get_db()->commit();
             $app->flash('success', 'Setup is executed');
