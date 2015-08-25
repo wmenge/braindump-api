@@ -9,6 +9,8 @@ class AttachHeaders extends \Slim\Middleware
         $this->app->response->headers->set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
         $this->app->response->headers->set('Access-Control-Allow-Origin', $this->app->braindumpConfig['client_cors_domain']);
         $this->app->response->headers->set('Access-Control-Allow-Credentials', 'true');
+
+        $this->app->expires(0);
         
         // Run inner middleware and application
         $this->next->call();
