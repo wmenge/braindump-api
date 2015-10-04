@@ -6,16 +6,6 @@ require_once(__DIR__ . '/../model/Note.php');
 
 class ImapFacade
 {
-    protected static $default_config = [
-        'server'          => 'imap.yourserver.com',
-        'port'            => 993,
-        'messageLimit'    => 10,
-        'user'            => 'your_imap_user',
-        'password'        => 'your_imap_password',
-        'sourceFolder'    => 'Inbox',
-        'processedFolder' => 'Processed'
-    ];
-
     private $config;
 
     private function __construct($config, $server)
@@ -26,17 +16,17 @@ class ImapFacade
 
     public static function createFacade($config, $server = null)
     {
-        return new ImapFacade(
-            $config,
-            $server ?: new \Fetch\Server($config['server'], $config['port'])
-        );
+        if ($server == null) {
+            $server = new \Fetch\Server($config['server'], $config['port']);
+            $server->setAuthentication($config['user'], $config['password']);
+            $server->setMailbox($config['sourceFolder']);
+        }
+        
+        return new ImapFacade($config, $server);
     }
 
     public function getMessages()
     {
-        $this->server->setAuthentication($this->config['user'], $this->config['password']);
-        $this->server->setMailbox($this->config['sourceFolder']);
-
         if ($this->server->numMessages() > $this->config['messageLimit']) {
             throw new Exception("Too many messages in ".$server->getMailBox());
         }
@@ -65,7 +55,6 @@ class ImapFacade
                 'content' => $message->getMessageBody(true) // HTML will be sanitized in $note->map()
             ];
 
-            // TODO: Store email folder on user
             $notebook = $user->configuration()->find_one()->emailToNotebook()->find_one();
 
             $note = \Braindump\Api\Model\Note::create();
