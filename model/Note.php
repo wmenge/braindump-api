@@ -119,7 +119,7 @@ class Note extends \Model
         }
     }
 
-    public function save()
+    public function save($updateTimestamp = true)
     {
         if ($this->created == null) {
             $this->created = time();
@@ -129,7 +129,9 @@ class Note extends \Model
             $this->user_id = \Sentry::getUser()->id;
         }
 
-        $this->updated = time();
+        if ($updateTimestamp) {
+            $this->updated = time();
+        }
 
         return parent::save();
     }

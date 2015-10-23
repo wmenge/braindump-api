@@ -52,15 +52,18 @@ class ImapFacade
             $dataObject = (object)[
                 'title' => $message->getSubject(),
                 'type' => 'HTML',
-                'content' => $message->getMessageBody(true) // HTML will be sanitized in $note->map()
+                'content' => $message->getMessageBody(true), // HTML will be sanitized in $note->map()
+                'created' => $message->getDate(),
+                'updated' => $message->getDate()
             ];
 
             $notebook = $user->configuration()->find_one()->emailToNotebook()->find_one();
 
             $note = \Braindump\Api\Model\Note::create();
-            $note->map($notebook, $dataObject);
+            $note->map($notebook, $dataObject, true);
             $note->user_id = $user->id;
-            $note->save();
+
+            $note->save(false);
         }
 
         $message->moveToMailBox($this->config['processedFolder']);
