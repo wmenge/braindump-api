@@ -31,7 +31,10 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
     public function testGetNotebookSampledata()
     {
         // Additional fixture, start with empty dataset, with one user
-        $dbFacade = new \Braindump\Api\Lib\DatabaseFacade($this->app, \ORM::get_db());
+        $dbFacade = new \Braindump\Api\Lib\DatabaseFacade(
+            \ORM::get_db(),
+            (require( __DIR__ . '/../../migrations/migration-config.php')));
+        
         $dbFacade->createDatabase();
         $user = \ORM::for_table('users')->create();
         $user->email = 'administrator@braindump-local';

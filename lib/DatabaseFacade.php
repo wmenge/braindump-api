@@ -5,12 +5,13 @@ namespace Braindump\Api\Lib;
 class DatabaseFacade
 {
     private $db = null;
-    private $app = null;
+    public $config = null;
 
-    public function __construct($app, $db)
+    public function __construct($db, $config)
     {
+        //print_r($config);
         $this->db = $db;
-        $this->app = $app;
+        $this->config = $config;
     }
 
     public function createDatabase()
@@ -18,7 +19,7 @@ class DatabaseFacade
         $this->deleteDatabase();
         $this->createMigrationTable();
 
-        $scripts = $this->app->braindumpConfig['databases_setup_scripts'];
+        $scripts = $this->config['databases_setup_scripts'];
 
         // For initial setup, just run all scripts
         foreach ($scripts as $version => $script) {
@@ -34,7 +35,7 @@ class DatabaseFacade
     public function migrateDatabase()
     {
         $currentVersion = $this->getCurrentVersion();
-        $scripts = $this->app->braindumpConfig['databases_setup_scripts'];
+        $scripts = $this->config['databases_setup_scripts'];
 
         $this->createMigrationTable();
 
@@ -69,18 +70,18 @@ class DatabaseFacade
 
     public function getHighestVersion()
     {
-        $versions = array_keys($this->app->braindumpConfig['databases_setup_scripts']);
+        $versions = array_keys($this->config['databases_setup_scripts']);
         return max($versions);
     }
 
     private function deleteDatabase()
     {
-        $this->runSqlScript($this->app->braindumpConfig['drop_tables_script']);
+        $this->runSqlScript($this->config['drop_tables_script']);
     }
 
     private function createMigrationTable()
     {
-        $this->runSqlScript($this->app->braindumpConfig['migration_table_script']);
+        $this->runSqlScript($this->config['migration_table_script']);
     }
 
     private function runSqlScript($script)
