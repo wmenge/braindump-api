@@ -15,9 +15,9 @@
         "slim/slim": "2.*",
         "slim/extras": "2.*",
         "j4mie/paris": "1.*",
-        "ezyang/htmlpurifier": "v4.6.0",
+        "ezyang/htmlpurifier": "@stable",
         "cartalyst/sentry": "2.1.*",
-        "tedivm/fetch": "0.6.*",
+        "tedivm/fetch": "@stable",
         "jaz303/phake": "dev-master"
     },
     "require-dev": {
