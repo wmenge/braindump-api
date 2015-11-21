@@ -219,7 +219,7 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
                         $note = Note::create();
                         $note->map($notebook, $noteRecord, true);
                         $note->user_id = $sentryUser->id;
-                        $note->save();
+                        $note->save(false);
                         $notes++;
                     }
 
