@@ -1,8 +1,8 @@
 <?php namespace Braindump\Api\Lib\Sentry\Facade;
 
-require __DIR__ . '/../model/Sentry/Paris/UserProvider.php';
-require __DIR__ . '/../model/Sentry/Paris/GroupProvider.php';
-require __DIR__ . '/../model/Sentry/Paris/ThrottleProvider.php';
+require_once __DIR__ . '/../model/Sentry/Paris/UserProvider.php';
+require_once __DIR__ . '/../model/Sentry/Paris/GroupProvider.php';
+require_once __DIR__ . '/../model/Sentry/Paris/ThrottleProvider.php';
 
 use Cartalyst\Sentry\Users\Paris\UserProvider as UserProvider;
 use Cartalyst\Sentry\Groups\Paris\GroupProvider as GroupProvider;

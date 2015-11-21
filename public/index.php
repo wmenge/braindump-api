@@ -4,8 +4,6 @@ require '../vendor/autoload.php';
 require '../lib/SentryFacade.php';
 class_alias('Braindump\Api\Lib\Sentry\Facade\SentryFacade', 'Sentry');
 
-require '../lib/DatabaseFacade.php';
-
 require '../middleware/AttachHeaders.php';
 require '../middleware/Authentication.php';
 

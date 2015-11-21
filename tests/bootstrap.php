@@ -32,9 +32,10 @@ function apiAuthenticate()
 
 namespace Braindump\Api\Model;
 
-// Mock Sentry class
-class SentryFacadeMock {
-
+// Mock Sentry class 
+// (Try to remove from integration tests)
+class SentryFacadeMock
+{
     public static $id = 1;
 
     public static function getUser()
@@ -47,6 +48,17 @@ class SentryFacadeMock {
         //$mockUser = new \stdClass();
         $mockUser = \Mockery::mock();
         $mockUser->shouldReceive('getGroups')->andReturn([((object)['name' => 'Administrators'])]);
+
+        $mockConfigurationInstance = \Mockery::mock();
+        $mockConfigurationInstance->shouldReceive('as_array')->andReturn(['email_to_notebook' => '1']);
+
+        $mockConfiguration = \Mockery::mock();
+        $mockConfiguration->shouldReceive('find_one')->andReturn($mockConfigurationInstance);
+
+        $mockUser->shouldReceive('configuration')->andReturn($mockConfiguration);
+    
+    
+
         $mockUser->id = $id;
         return $mockUser;
     }
@@ -92,9 +104,11 @@ abstract class AbstractDbTest extends \PHPUnit_Extensions_Database_TestCase
 
     protected function setUp()
     {
-        $mockApp = new \stdClass();
-        $mockApp->braindumpConfig = (require( __DIR__ . '/../config/braindump-config.php'));
-        $dbFacade = new \Braindump\Api\Lib\DatabaseFacade($mockApp, \ORM::get_db());
+        //$db = \ORM::get_db();
+        //$config = (require( __DIR__ . '/../migrations/migration-config.php'));
+        $dbFacade = new \Braindump\Api\Lib\DatabaseFacade(
+            \ORM::get_db(),
+            (require( __DIR__ . '/../migrations/migration-config.php')));
         $dbFacade->createDatabase();
         
         parent::setUp();
@@ -138,6 +152,7 @@ abstract class Slim_Framework_TestCase extends AbstractDbTest
         require __DIR__ . '/../routes/admin.php';
         require __DIR__ . '/../routes/note.php';
         require __DIR__ . '/../routes/notebook.php';
+        require __DIR__ . '/../routes/user_configuration.php';
 
         // Establish a local reference to the Slim app object
         $this->app = $app;

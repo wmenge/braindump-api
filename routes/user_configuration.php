@@ -2,10 +2,13 @@
 namespace Braindump\Api;
 
 require_once(__DIR__ . '/../model/UserConfigurationFacade.php');
+require_once(__DIR__ . '/../model/NotebookFacade.php');
 
 use Braindump\Api\Model\UserConfiguration as UserConfiguration;
+use Braindump\Api\Model\Notebook as Notebook;
 
 $configurationFacade = new \Braindump\Api\Model\UserConfigurationFacade();
+UserConfiguration::setNotebookFacade(new \Braindump\Api\Model\NotebookFacade());
 
 $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function () use ($app, $configurationFacade) {
 
