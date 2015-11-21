@@ -36,6 +36,7 @@ $app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function (
         }
 
         $configuration->map($input);
+        // Move to map?
         $configuration->user_id = \Sentry::getUser()->getId();
         $configuration->save();
 

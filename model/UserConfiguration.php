@@ -5,6 +5,7 @@ require_once(__DIR__ . '/Sentry/Paris/User.php');
 class UserConfiguration extends \Model
 {
     protected static $_table = 'user_configuration';
+    protected static $notebookFacade;
     
     /***
      * Paris relation 
@@ -22,15 +23,20 @@ class UserConfiguration extends \Model
         return $this->user()->find_one()->notebooks()->where('id', $this->email_to_notebook);
     }
 
+    public static function setNotebookFacade($notebookFacade)
+    {
+        UserConfiguration::$notebookFacade = $notebookFacade;
+    }
+
     public static function isValid($data)
     {
         // Check minimum required fields
         return
             is_object($data) &&
             property_exists($data, 'email_to_notebook') &&
-            is_integer($data->email_to_notebook);// &&
-            //is_object($this->notebooks->find_one($email_to_notebook));
+            is_integer($data->email_to_notebook) &&
             // checks wether the notebook id given is from a notebook belonging to this user
+            is_object(UserConfiguration::$notebookFacade->getNotebookForId($data->email_to_notebook));
     }
 
     public function map($data, $import = false)
