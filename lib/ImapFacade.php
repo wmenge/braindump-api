@@ -28,7 +28,14 @@ class ImapFacade
     public function getMessages()
     {
         if ($this->server->numMessages() > $this->config['messageLimit']) {
-            throw new Exception("Too many messages in ".$server->getMailBox());
+            throw new \Exception(
+                sprintf(
+                    'Error: %d (more than %d) messages found in %s, stop processing...',
+                    $this->server->numMessages(),
+                    $this->config['messageLimit'],
+                    $this->config['sourceFolder']
+                )
+            );
         }
 
         return $this->server->getMessages();
