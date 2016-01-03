@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+
+<dataset>    
+    <users id="1" email="administrator@braindump-api.local" password="" permissions="" activated="1" activated_at="0" first_name="Brain" last_name="Dump" created_at="0" updated_at="0" />
+    <file id="1" user_id="1" logical_filename="existing_file.png" physical_filename="file1.png" hash="1" original_filename="test" mime_type="image/png" size="1" />
+    <file id="2" user_id="1" logical_filename="multiple_existing_file.png" physical_filename="file2.png" original_filename="test" hash="1" mime_type="image/png" size="1" />
+    <file id="3" user_id="1" logical_filename="multiple_existing_file 2.png" physical_filename="file3.png" original_filename="test" hash="1" mime_type="image/png" size="1" />
+</dataset>

@@ -9,7 +9,6 @@ use Braindump\Api\Model\Notebook as Notebook;
 use Braindump\Api\Model\Note as Note;
 use Cartalyst\Sentry\Users\Paris\User as User;
 
-//$dbFacade = new \Braindump\Api\Lib\DatabaseFacade($app, \ORM::get_db());
 $dbFacade = new \Braindump\Api\Lib\DatabaseFacade(
     \ORM::get_db(),
     (require( __DIR__ . '/../migrations/migration-config.php')));

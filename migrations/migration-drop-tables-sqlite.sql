@@ -13,4 +13,6 @@ DROP TABLE IF EXISTS "throttle";
 
 DROP TABLE IF EXISTS "user_configuration";
 
+DROP TABLE IF EXISTS "file";
+
 PRAGMA foreign_keys = true;

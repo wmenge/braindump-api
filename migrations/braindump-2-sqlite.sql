@@ -1,4 +1,4 @@
-PRAGMA foreign_keys = true;
+PRAGMA foreign_keys = false;
 PRAGMA ignore_check_constraints = true;
 
 -- ----------------------------
@@ -13,5 +13,5 @@ CREATE TABLE "user_configuration" (
 
 CREATE UNIQUE INDEX IF NOT EXISTS "user_configuration_user_id" ON "user_configuration" ( "user_id" );
 
-PRAGMA foreign_keys = false;
+PRAGMA foreign_keys = true;
 PRAGMA ignore_check_constraints = false;

@@ -1,0 +1,1 @@
+Dummy file to add /data/uploads folder to version control. Give this directory minimal access rights (no execute)

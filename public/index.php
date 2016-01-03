@@ -71,6 +71,6 @@ require_once '../routes/note.php';
 require_once '../routes/notebook.php';
 require_once '../routes/user.php';
 require_once '../routes/user_configuration.php';
-
+require_once '../routes/file.php';
 
 $app->run();

@@ -18,8 +18,10 @@ task('setup', function() {
 
         ORM::configure($app->braindumpConfig['database_config']);
 
-        $dbFacade = new \Braindump\Api\Lib\DatabaseFacade($app, \ORM::get_db());
-
+        $dbFacade = new \Braindump\Api\Lib\DatabaseFacade(
+            \ORM::get_db(),
+            (require( __DIR__ . '/migrations/migration-config.php')));
+        
         // Todo: first create an export of the db
         \ORM::get_db()->beginTransaction();
         $dbFacade->createDatabase();
