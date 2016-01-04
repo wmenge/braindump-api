@@ -18,6 +18,11 @@ function outputJson($data, $app)
     \Braindump\Api\outputJson($data, $app);
 }
 
+function base64_encode($content)
+{
+    return $content;
+}
+
 namespace Braindump\Api\Admin\Middleware;
 
 function adminAuthenticate()
@@ -31,6 +36,11 @@ function apiAuthenticate()
 }
 
 namespace Braindump\Api\Model;
+
+function file_get_contents($filename)
+{
+    return 'content';
+}
 
 // Mock Sentry class 
 // (Try to remove from integration tests)

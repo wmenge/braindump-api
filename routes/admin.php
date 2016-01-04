@@ -4,10 +4,12 @@ require_once(__DIR__ . '/../lib/DatabaseFacade.php');
 require_once(__DIR__ . '/../model/NotebookFacade.php');
 require_once(__DIR__ . '/../model/NoteFacade.php');
 require_once(__DIR__ . '/../model/UserFacade.php');
+require_once(__DIR__ . '/../model/FileFacade.php');
 
 use Braindump\Api\Model\Notebook as Notebook;
 use Braindump\Api\Model\Note as Note;
 use Cartalyst\Sentry\Users\Paris\User as User;
+use Braindump\Api\Model\File as File;
 
 $dbFacade = new \Braindump\Api\Lib\DatabaseFacade(
     \ORM::get_db(),
@@ -106,8 +108,13 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
                 ->where_equal('user_id', $user['id'])
                 ->find_array();
             
-            unset($user['id']);
-
+            // TODO: replace with relation syntax (refactor unit tests to allow)
+            /*$user['notebooks'] = $sentryUser
+                ->notebooks()
+                ->select_many('id', 'title', 'created')
+                ->find_array();*/
+            
+            
             foreach ($user['notebooks'] as &$notebook) {
                 // Add notes to notebook
                 $notebook['notes'] = Note::select_many('title', 'created', 'updated', 'url', 'type', 'content')
@@ -116,6 +123,24 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
 
                 unset($notebook['id']);
             }
+
+            // Add files to user
+            $user['files'] = File::select_many('logical_filename', 'physical_filename', 'original_filename')
+                ->where_equal('user_id', $user['id'])
+                ->find_array();
+
+
+            // Add content of files to entries (todo: memory issues on larger sets)
+            foreach ($user['files'] as &$fileEntry) {
+                //$file = new File();
+                $file = File::create();
+                $file->physical_filename = $fileEntry['physical_filename'];
+                unset($fileEntry['physical_filename']);
+                $fileEntry['content'] = base64_encode($file->getContents());
+            }
+            
+            unset($user['id']);
+
         }
 
         $app->response->headers->set('Content-Disposition', 'attachment; filename=export.json');
@@ -128,6 +153,7 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
         $users = 0;
         $notebooks = 0;
         $notes = 0;
+        $files = 0;
 
         //Check size and type of input
 
@@ -153,6 +179,7 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
 
         // Process input...
         try {
+
             \ORM::get_db()->beginTransaction();
 
             // TODO: What about currently logged in users?
@@ -163,6 +190,7 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
             \ORM::for_table('users_groups')->delete_many();
             \ORM::for_table('users')->delete_many();
             \ORM::for_table('groups')->delete_many();
+            \ORM::for_table('file')->delete_many();
 
             // ...create groups...
             foreach ($data->groups as $group) {
@@ -175,6 +203,7 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
 
                 unset($userArray['groups']);
                 unset($userArray['notebooks']);
+                unset($userArray['files']);
 
                 $sentryUser = \Sentry::createUser($userArray);
 
@@ -195,7 +224,6 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
 
                 // ...recreate notebooks and notes for each user
                 foreach ($user->notebooks as $notebookRecord) {
-
                     if (!Notebook::isValid($notebookRecord)) {
                         \ORM::get_db()->rollback();
 
@@ -228,9 +256,48 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
 
                 }
             }
+
+            // recreate files
+            if (property_exists($user, 'files')) {
+                foreach ($user->files as $fileRecord) {
+
+                    // Store file (assume trusted)
+                    $filename = uniqid();
+                    $path = File::$config['upload_directory'] . $filename;
+                    
+                    if (!file_put_contents($path, base64_decode($fileRecord->content))) {
+                        \ORM::get_db()->rollback();
+                        $app->flash('error', 'Invalid data');
+                        $app->redirect($app->refererringRoute);
+                        return;
+                    }
+                    
+                    $fileObj = $input = (object)[
+                        'logical_filename'  => $fileRecord->logical_filename,
+                        'physical_filename' => $filename,
+                        'original_filename'  => $fileRecord->original_filename,
+                        'mime_type'         => finfo_file(finfo_open(FILEINFO_MIME_TYPE), $path),
+                        'hash'              => md5_file($path),
+                        'size'              => filesize($path),
+                    ];
+
+                    if (!File::isValid($fileObj)) {
+                        \ORM::get_db()->rollback();
+                        $app->flash('error', 'Invalid data');
+                        $app->redirect($app->refererringRoute);
+                        return;
+                    }
+
+                    $file = File::create();
+                    $file->map($fileObj);
+                    $file->user_id = $sentryUser->id;
+                    $file->save();
+                    $files++;
+                }
+            }
             
             \ORM::get_db()->commit();
-            $app->flash('success', sprintf('%d notebook(s) and %d note(s) have been imported', $notebooks, $notes));
+            $app->flash('success', sprintf('%d notebook(s), %d note(s) and %d file(s) have been imported', $notebooks, $notes, $files));
             $app->redirect('/admin');
 
         } catch (\Exception $e) {
@@ -238,6 +305,7 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
             $app->flash('error', $e->getMessage());
             $app->redirect('/admin');
         }
+
     });
 
     $app->post('/setup', function () use ($dbFacade, $app) {

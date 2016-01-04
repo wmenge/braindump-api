@@ -70,6 +70,13 @@
                         }
                     ]
                 }
+            ],
+            "files": [
+                {
+                    "logical_filename": "logical name.pdf",
+                    "original_filename": "logical name.pdf",
+                    "content": "content"
+                }
             ]
         },
         {
@@ -104,6 +111,13 @@
                             "content": "Note from another user"
                         }
                     ]
+                }
+            ],
+            "files": [
+                {
+                    "logical_filename": "logical name.pdf",
+                    "original_filename": "logical name.pdf",
+                    "content": "content"
                 }
             ]
         }

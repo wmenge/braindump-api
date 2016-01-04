@@ -78,4 +78,10 @@ class File extends \Model
     {
         readfile(File::$config['upload_directory'] . $this->physical_filename);
     }
+
+    public function getContents()
+    {
+        //return is_file(File::$config['upload_directory'] . $this->physical_filename);
+        return file_get_contents(File::$config['upload_directory'] . $this->physical_filename);
+    }
 }
