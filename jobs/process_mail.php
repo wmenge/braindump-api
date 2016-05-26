@@ -5,6 +5,7 @@ require_once __DIR__ . '/../lib/ImapFacade.php';
 
 date_default_timezone_set('Europe/Amsterdam');
 
+echo date("F j, Y, g:i a");
 echo 'Connect to imap server and process messages...' . PHP_EOL;
 
 try {
