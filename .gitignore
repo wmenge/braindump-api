@@ -6,3 +6,4 @@ build
 *.sublime-workspace
 braindump-config.php
 .htaccess
+data/uploads
