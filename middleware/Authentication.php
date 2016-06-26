@@ -26,7 +26,18 @@ function adminAuthenticate()
     
     // Check if a user is logged in
     if (!\Sentry::check()) {
-        $app->redirect('/admin/login');
+
+        // Check if http authentication credentials have been passed
+        // (command line client scenario)
+        if ($app->request()->headers('PHP_AUTH_USER') && $app->request()->headers('PHP_AUTH_PW')) {
+            \Sentry::authenticate(
+                [ 'email'    => $app->request()->headers('PHP_AUTH_USER'),
+                  'password' => $app->request()->headers('PHP_AUTH_PW') ]
+            );
+        } else {
+            // otherwise redirect to login page
+            $app->redirect('/admin/login');
+        }
     }
 
     if (!routeIsAllowed(\Sentry::getUser(), $app->environment['PATH_INFO'])) {
