@@ -1,5 +1,13 @@
 <?php
 
+namespace Braindump\Api\Admin;
+
+// Mocking standard date function to be able to compare file name
+function date($format)
+{
+    return 0;
+}
+
 namespace Braindump\Api\Test\Integration;
 
 class AdminRoutesTest extends Slim_Framework_TestCase
@@ -16,6 +24,12 @@ class AdminRoutesTest extends Slim_Framework_TestCase
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/export-expected-1.json');
         $this->get('/admin/export');
+        //print_r($this->response);
+//[Content-Disposition] => 
+
+        // Mock HTTP Host (empty during unit test)
+        $this->assertEquals('application/json', $this->response->headers['Content-Type']);
+        $this->assertEquals('attachment; filename=export-localhost-0.json', $this->response->headers['Content-Disposition']);
         $this->assertEquals(200, $this->response->status());
         $this->assertSame($expected, $this->response->body());
     }

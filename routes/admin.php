@@ -1,4 +1,5 @@
-<?php namespace Braindump\Api\Admin;
+<?php 
+namespace Braindump\Api\Admin;
 
 require_once(__DIR__ . '/../lib/DatabaseFacade.php');
 require_once(__DIR__ . '/../model/NotebookFacade.php');
@@ -143,7 +144,7 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
 
         }
 
-        $app->response->headers->set('Content-Disposition', 'attachment; filename=export.json');
+        $app->response->headers->set('Content-Disposition', 'attachment; filename=export-' . $_SERVER["HTTP_HOST"] . '-' . date('Y-m-d His') . '.json');
         outputJson(['groups' => $groups, 'users' => $users], $app);
     });
 
