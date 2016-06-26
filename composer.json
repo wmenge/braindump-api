@@ -21,9 +21,6 @@
         "jaz303/phake": "dev-master"
     },
     "require-dev": {
-        "phpunit/phpunit": "@stable",
-        "phpunit/dbunit": "@stable",
-        "mockery/mockery": "0.9.*@dev",
-        "albertofem/rsync-lib": "dev-master"
+        "mockery/mockery": "0.9.*@dev"
     }
 }
