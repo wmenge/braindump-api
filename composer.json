@@ -16,6 +16,7 @@
         "slim/extras": "2.*",
         "j4mie/paris": "1.*",
         "ezyang/htmlpurifier": "@stable",
+        "xemlock/htmlpurifier-html5": "dev-master",
         "cartalyst/sentry": "2.1.*",
         "tedivm/fetch": "@stable",
         "jaz303/phake": "dev-master"

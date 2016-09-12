@@ -39,8 +39,8 @@ class File extends \Model
             is_string($data->physical_filename) &&
             !empty($data->physical_filename) &&
 
-            property_exists($data, 'mime_type') &&
-            array_key_exists($data->mime_type, File::$config['mime_types']) && // Get whitelist from config
+            //property_exists($data, 'mime_type') &&
+            //array_key_exists($data->mime_type, File::$config['mime_types']) && // Get whitelist from config
 
             property_exists($data, 'hash') &&
             is_string($data->hash) &&

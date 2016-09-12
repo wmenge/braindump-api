@@ -96,11 +96,41 @@ class Note extends \Model
                     // TODO Check which tags to allow/disallow
 
                     $config = \HTMLPurifier_Config::createDefault();
+                    
                     // Allow base64 image data
                     $config->set('URI.AllowedSchemes', ['http' => true, 'https' => true, 'data' => true]);
+
+                    // Allow image tags without alt (should really be fixed on trix level)
+                    $config->set('Attr.DefaultImageAlt', 'remove-me');
+
+
+                    $def = $config->getHTMLDefinition(true);
+
+                    // Allow flow(block)-level children in anchor
+                    $def->addElement(
+                        'a', // element name
+                        'Inline', // the type of element: 'Block','Inline', or false, if it's a special case
+                        'Flow', // what type of child elements are permitted: 'Empty', 'Inline', or 'Flow', which includes block elements like div
+                        'Common' // permitted attributes
+                    );
+
+                    // Allow some additional trix attributes
+                    $anon = $def->getAnonymousModule();
+                    $anon->attr_collections = 
+                        [ 'Core' => [
+                          'data-trix-attachment' => 'CDATA',
+                          'data-trix-content-type' => 'CDATA' ]];
+
+                    $config = \HTMLPurifier_HTML5Config::create($config); 
+ 
                     $purifier = new \HTMLPurifier($config);
 
                     $this->content = $purifier->purify($data->content);
+
+                    // Bad hack: remove alt tag
+                    $this->content = str_replace(' alt="remove-me" /', '', $this->content);
+
+
                 } elseif ($this->type == Note::TYPE_TEXT) {
                     $this->content = htmlentities($data->content, ENT_QUOTES, 'UTF-8');
                 } else {
