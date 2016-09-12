@@ -5,6 +5,7 @@
     <li><a href="/admin/users">Users <span class="badge"><?= @$userCount ?></span></a></li>
     <li><a href="#">Notebooks <span class="badge"><?= @$notebookCount ?></span></a></li>
     <li><a href="#">Notes <span class="badge"><?= @$noteCount ?></span></a></li>
+    <li><a href="#">Files <span class="badge"><?= @$fileCount ?></span></a></li>
   </ul>
 
   <ul class="nav navbar-nav pull-right">

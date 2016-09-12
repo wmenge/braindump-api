@@ -70,6 +70,7 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
               'notebookCount'   => Notebook::count(),
               'noteCount'       => Note::count(),
               'userCount'       => User::count(),
+              'fileCount'       => File::count(),
               'user'            => \Sentry::getUser(), ];
         } catch (\Exception $e) {
             $app->flashNow('error', $e->getMessage());
