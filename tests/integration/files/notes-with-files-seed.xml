@@ -54,5 +54,25 @@
         type="Text" 
         content="Note from another user"
         user_id="2" />
-        
+
+    <file
+        id="1" 
+        user_id="1" 
+        logical_filename="logical name.pdf" 
+        physical_filename="logical name.pdf"
+        original_filename="logical name.pdf"
+        hash="1"
+        mime_type="application/pdf"
+        size="1"
+    />
+    <file
+        id="2" 
+        user_id="2" 
+        logical_filename="logical name.pdf" 
+        physical_filename="logical name 2.pdf"
+        original_filename="logical name.pdf"
+        hash="1"
+        mime_type="application/pdf"
+        size="1"
+    />
 </dataset>

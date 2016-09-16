@@ -73,38 +73,41 @@ class NoteFacadeTest extends AbstractDbTest
 
     public function testGetNoteListForNotebook()
     {
-        $notebook = Notebook::create();
-        $notebook->id = 1;
-
         $expected = [
             [ 'id' => '1', 'title' => 'note 1', 'notebook_id' => '1', 'created' => '0', 'updated' => '0', 'url' => null],
             [ 'id' => '2', 'title' => 'note 2', 'notebook_id' => '1', 'created' => '0', 'updated' => '0', 'url' => null],
         ];
+
+        // Mock notebook as parameter for method getNoteListForNotebook()
+        $notebook = Notebook::create();
+        $notebook->id = 1;
 
         $this->assertEquals($expected, $this->Facade->getNoteListForNotebook($notebook));
     }
 
     public function testSortedGetNoteListForNotebook()
     {
-        $notebook = Notebook::create();
-        $notebook->id = 1;
-
         $expected = [
             [ 'id' => '2', 'title' => 'note 2', 'notebook_id' => '1', 'created' => '0', 'updated' => '0', 'url' => '' ],
             [ 'id' => '1', 'title' => 'note 1', 'notebook_id' => '1', 'created' => '0', 'updated' => '0', 'url' => '' ],
         ];
+
+        // Mock notebook as parameter for method getNoteListForNotebook()
+        $notebook = Notebook::create();
+        $notebook->id = 1;
 
         $this->assertEquals($expected, $this->Facade->getNoteListForNotebook($notebook, '-title'));
     }
 
     public function testFilteredGetNoteListForNotebook()
     {
-        $notebook = Notebook::create();
-        $notebook->id = 1;
-
         $expected = [
             [ 'id' => '1', 'title' => 'note 1', 'notebook_id' => '1', 'created' => '0', 'updated' => '0', 'url' => null],
         ];
+
+        // Mock notebook as parameter for method getNoteListForNotebook()
+        $notebook = Notebook::create();
+        $notebook->id = 1;
 
         $this->assertEquals($expected, $this->Facade->getNoteListForNotebook($notebook, '', 'note 1'));
     }

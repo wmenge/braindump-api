@@ -110,13 +110,6 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
                 ->where_equal('user_id', $user['id'])
                 ->find_array();
             
-            // TODO: replace with relation syntax (refactor unit tests to allow)
-            /*$user['notebooks'] = $sentryUser
-                ->notebooks()
-                ->select_many('id', 'title', 'created')
-                ->find_array();*/
-            
-            
             foreach ($user['notebooks'] as &$notebook) {
                 // Add notes to notebook
                 $notebook['notes'] = Note::select_many('title', 'created', 'updated', 'url', 'type', 'content')
@@ -127,18 +120,21 @@ $app->group('/admin', 'Braindump\Api\Admin\Middleware\adminAuthenticate', functi
             }
 
             // Add files to user
-            $user['files'] = File::select_many('logical_filename', 'physical_filename', 'original_filename')
+            $files = File::select_many('logical_filename', 'physical_filename', 'original_filename')
                 ->where_equal('user_id', $user['id'])
                 ->find_array();
 
-
-            // Add content of files to entries (todo: memory issues on larger sets)
-            foreach ($user['files'] as &$fileEntry) {
-                //$file = new File();
-                $file = File::create();
-                $file->physical_filename = $fileEntry['physical_filename'];
-                unset($fileEntry['physical_filename']);
-                $fileEntry['content'] = base64_encode($file->getContents());
+            if (is_array($files) && count($files) > 0) {
+                $user['files'] = $files;
+            
+                // Add content of files to entries (todo: memory issues on larger sets)
+                foreach ($user['files'] as &$fileEntry) {
+                    //$file = new File();
+                    $file = File::create();
+                    $file->physical_filename = $fileEntry['physical_filename'];
+                    unset($fileEntry['physical_filename']);
+                    $fileEntry['content'] = base64_encode($file->getContents());
+                }
             }
             
             unset($user['id']);
