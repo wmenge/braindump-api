@@ -1,9 +1,15 @@
-<?php
+<?php namespace Braindump\Api\Test\Integration;
 
-namespace Braindump\Api\Test\Integration;
+require_once(__DIR__ . '/../../controllers/NoteController.php');
 
 class NoteRoutesTest extends Slim_Framework_TestCase
 {
+    public function setup()
+    {
+        parent::setUp();
+        $this->controller = new \Braindump\Api\Controller\Notes\NoteController($this->container);
+    }
+
     /**
      * @return PHPUnit_Extensions_Database_DataSet_IDataSet
      */
@@ -17,95 +23,108 @@ class NoteRoutesTest extends Slim_Framework_TestCase
      *
      * @dataProvider getNotesProvider
      */
-    public function testGetNotes($route, $file)
+    public function testGetNotes($args, $headers, $file)
     {
         $expected = file_get_contents(dirname(__FILE__) . $file);
-        $this->get($route);
         
-        $this->assertEquals(200, $this->response->status());
-        $this->assertSame($expected, $this->response->body());
+        $response = $this->controller->getNotes($this->getRequest($headers), new \Slim\Http\Response(), $args);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame($expected, (string)$response->getBody());
     }
 
     public function getNotesProvider()
     {
         return [
-            ['/api/notes'                        , '/files/get-notes-expected-1.json'],
-            ['/api/notebooks/1/notes'            , '/files/get-notes-expected-2.json'],
-            ['/api/notebooks/1/notes?sort=-title', '/files/get-notes-expected-3.json'],
-            ['/api/notebooks/1/notes?q=note 1'   , '/files/get-notes-expected-4.json']
+            [ []           , [], '/files/get-notes-expected-1.json'],
+            [ [ 'id' => 1 ], [], '/files/get-notes-expected-2.json'],
+            [ [ 'id' => 1 ], [ 'QUERY_STRING' => 'sort=-title' ], '/files/get-notes-expected-3.json'],
+            [ [ 'id' => 1 ], [ 'QUERY_STRING' => 'q=note 1' ], '/files/get-notes-expected-4.json'],
         ];
     }
 
     public function testGetNotesForUnknownNotebook()
     {
-        $this->get('/api/notebooks/99/notes');
-        $this->assertEquals(404, $this->response->status());
+        $response = $this->controller->getNotes($this->getRequest(), new \Slim\Http\Response(), [ 'id' => 99 ]);
+
+        $this->assertEquals(404, $response->getStatusCode());
     }
 
     public function testGetNotesForNotebookBelongingToDifferentUser()
     {
-        $this->get('/api/notebooks/3/notes');
-        $this->assertEquals(404, $this->response->status());
+        $response = $this->controller->getNotes($this->getRequest(), new \Slim\Http\Response(), [ 'id' => 3 ]);
+        $this->assertEquals(404, $response->getStatusCode());
     }
 
     public function testGetNote()
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/get-notes-expected-5.json');
-        $this->get('/api/notes/1');
-        $this->assertEquals(200, $this->response->status());
-        $this->assertSame($expected, $this->response->body());
+        
+        $response = $this->controller->getNote($this->getRequest(), new \Slim\Http\Response(), [ 'note_id' => 1 ]);
+        
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame($expected, (string)$response->getBody());
     }
 
     public function testGetUnkownNote()
     {
-        $this->get('/api/notes/99');
-        $this->assertEquals(404, $this->response->status());
+        $response = $this->controller->getNote($this->getRequest(), new \Slim\Http\Response(), [ 'note_id' => 99 ]);
+        
+        $this->assertEquals(404, $response->getStatusCode());
         // TODO: assert message
-        //$this->assertSame($expected, $this->response->body());
+        //$this->assertSame($expected, $this->response->getBody());
     }
 
     public function testGetNoteInNotebook()
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/get-notes-expected-5.json');
-        $this->get('/api/notebooks/1/notes/1');
-        $this->assertEquals(200, $this->response->status());
-        $this->assertSame($expected, $this->response->body());
+        
+        $response = $this->controller->getNote($this->getRequest(), new \Slim\Http\Response(), [ 'notebook_id' => 1, 'note_id' => 1 ]);
+        
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame($expected, (string)$response->getBody());
     }
 
     public function testGetNoteInWrongNotebook()
     {
-        $this->get('/api/notebooks/2/notes/1');
-        $this->assertEquals(302, $this->response->status());
+        $response = $this->controller->getNote($this->getRequest(), new \Slim\Http\Response(), [ 'notebook_id' => 2, 'note_id' => 1 ]);
+        
+        $this->assertEquals(302, $response->getStatusCode());
     }
 
     public function testGetNoteInUnknownNotebook()
     {
-        $this->get('/notebooks/99/notes/1');
-        $this->assertEquals(404, $this->response->status());
+        $response = $this->controller->getNote($this->getRequest(), new \Slim\Http\Response(), [ 'notebook_id' => 99, 'note_id' => 1 ]);
+        
+        $this->assertEquals(404, $response->getStatusCode());
     }
 
     public function testGetNoteFromDifferentUsersNotebook()
     {
-        $this->get('/notebooks/3/notes/4');
-        $this->assertEquals(404, $this->response->status());
+        $response = $this->controller->getNote($this->getRequest(), new \Slim\Http\Response(), [ 'notebook_id' => 3, 'note_id' => 4 ]);
+        
+        $this->assertEquals(404, $response->getStatusCode());
     }
 
     public function testGetNoteFromDifferentUser()
     {
-        $this->get('/notes/4');
-        $this->assertEquals(404, $this->response->status());
+        $response = $this->controller->getNote($this->getRequest(), new \Slim\Http\Response(), [ 'note_id' => 4 ]);
+        
+        $this->assertEquals(404, $response->getStatusCode());
     }
 
     public function testPostNote()
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/post-notes-expected-1.json');
         
-        $requestBody = '{ "title": "New Note", "type": "Text", "content": "Note content" }';
+        $request = $this->getRequest();
+        $request->getBody()->write('{ "title": "New Note", "type": "Text", "content": "Note content" }');
 
-        $this->post('/api/notebooks/1/notes', $requestBody);
+        $response = $this->controller->postNote($request, new \Slim\Http\Response(), [ 'id' => 1 ]);
+        
         // Assert response
-        $this->assertEquals(200, $this->response->status());
-        $this->assertSame($expected, $this->response->body());
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame($expected, (string)$response->getBody());
 
         // Assert db content
         $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/post-notes-expected-1.xml');
@@ -116,11 +135,12 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testPostInvalidNote()
     {
-        $requestBody = '{ }';
+        $request = $this->getRequest();
+        $request->getBody()->write('{ }');
 
-        // Assert response
-        $this->post('/api/notebooks/1/notes', $requestBody);
-        $this->assertEquals(400, $this->response->status());
+        $response = $this->controller->postNote($request, new \Slim\Http\Response(), [ 'id' => 1 ]);        
+
+        $this->assertEquals(400, $response->getStatusCode());
         // todo: assert message
     
         // Assert db content
@@ -132,11 +152,12 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testPostNoteToInvalidNotebook()
     {
-        $requestBody = '{ "title": "New Note", "type": "Text" }';
+        $request = $this->getRequest();
+        $request->getBody()->write('{ "title": "New Note", "type": "Text" }');
 
-        // Assert response
-        $this->post('/api/notebooks/99/notes', $requestBody);
-        $this->assertEquals(404, $this->response->status());
+        $response = $this->controller->postNote($request, new \Slim\Http\Response(), [ 'id' => 99 ]);        
+
+        $this->assertEquals(404, $response->getStatusCode());
         // TODO: assert message
     
         // Assert db content
@@ -148,11 +169,13 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testPostNoteToNotebookOfDifferentUser()
     {
-        $requestBody = '{ "title": "New Note", "type": "Text" }';
+        $request = $this->getRequest();
+        $request->getBody()->write('{ "title": "New Note", "type": "Text" }');
+
+        $response = $this->controller->postNote($request, new \Slim\Http\Response(), [ 'id' => 3 ]);        
 
         // Assert response
-        $this->post('/api/notebooks/3/notes', $requestBody);
-        $this->assertEquals(404, $this->response->status());
+        $this->assertEquals(404, $response->getStatusCode());
         // TODO: assert message
     
         // Assert db content
@@ -166,13 +189,14 @@ class NoteRoutesTest extends Slim_Framework_TestCase
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/put-notes-expected-1.json');
         
-        $requestBody = '{ "title": "Updated note 1", "type": "Text", "content": "Updated Note content" }';
+        $request = $this->getRequest();
+        $request->getBody()->write('{ "title": "Updated note 1", "type": "Text", "content": "Updated Note content" }');
 
-        $this->put('/api/notebooks/1/notes/1', $requestBody);
+        $response = $this->controller->putNote($request, new \Slim\Http\Response(), [ 'notebook_id' => 1, 'note_id' => 1 ]);        
 
-       // Assert response
-        $this->assertEquals(200, $this->response->status());
-        $this->assertSame($expected, $this->response->body());
+        // Assert response
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame($expected, (string)$response->getBody());
 
         // Assert db content
         $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/put-notes-expected-1.xml');
@@ -187,13 +211,14 @@ class NoteRoutesTest extends Slim_Framework_TestCase
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/post-notes-expected-1.json');
         
-        $requestBody = '{ "title": "New Note", "type": "Text", "content": "Note content" }';
+        $request = $this->getRequest();
+        $request->getBody()->write('{ "title": "New Note", "type": "Text", "content": "Note content" }');
 
-        $this->put('/api/notebooks/1/notes/5', $requestBody);
+        $response = $this->controller->putNote($request, new \Slim\Http\Response(), [ 'notebook_id' => 1, 'note_id' => 5 ]);        
 
         // Assert response
-        $this->assertEquals(200, $this->response->status());
-        $this->assertSame($expected, $this->response->body());
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame($expected, (string)$response->getBody());
 
         // Assert db content
         $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/post-notes-expected-1.xml');
@@ -204,10 +229,12 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testPutInvalidNote()
     {
-        $requestBody = '{ }';
+        $request = $this->getRequest();
+        $request->getBody()->write('{  }');
 
-        $this->put('/api/notebooks/1/notes/1', $requestBody);
-        $this->assertEquals(400, $this->response->status());
+        $response = $this->controller->putNote($request, new \Slim\Http\Response(), [ 'notebook_id' => 1, 'note_id' => 1 ]);        
+
+        $this->assertEquals(400, $response->getStatusCode());
         
         // Assert db content
         $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/notes-seed.xml');
@@ -220,10 +247,12 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testPutNoteOfDifferentUser()
     {
-        $requestBody = '{ "title": "New Note", "type": "Text", "content": "Note content" }';
+        $request = $this->getRequest();
+        $request->getBody()->write('{ "title": "New Note", "type": "Text", "content": "Note content" }');
 
-        $this->put('/api/notebooks/3/notes/4', $requestBody);
-        $this->assertEquals(404, $this->response->status());
+        $response = $this->controller->putNote($request, new \Slim\Http\Response(), [ 'notebook_id' => 3, 'note_id' => 4 ]);        
+
+        $this->assertEquals(404, $response->getStatusCode());
         
         // Assert db content
         $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/notes-seed.xml');
@@ -238,12 +267,13 @@ class NoteRoutesTest extends Slim_Framework_TestCase
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/put-notes-expected-1.json');
         
-        $requestBody = '{ "title": "Updated note 1", "type": "Text", "content": "Updated Note content" }';
+        $request = $this->getRequest();
+        $request->getBody()->write('{ "title": "Updated note 1", "type": "Text", "content": "Updated Note content" }');
 
-        $this->put('/api/notebooks/99/notes/1', $requestBody);
+        $response = $this->controller->putNote($request, new \Slim\Http\Response(), [ 'notebook_id' => 99, 'note_id' => 1 ]);        
 
-       // Assert response
-        $this->assertEquals(404, $this->response->status());
+        // Assert response
+        $this->assertEquals(404, $response->getStatusCode());
         
         // Assert db content
         $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/notes-seed.xml');
@@ -258,13 +288,15 @@ class NoteRoutesTest extends Slim_Framework_TestCase
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/post-notes-expected-1.json');
         
-        $requestBody = '{ "title": "New Note", "type": "Text", "content": "Note content" }';
+        $request = $this->getRequest();
+        $request->getBody()->write('{ "title": "New Note", "type": "Text", "content": "Note content" }');
 
-        $this->put('/api/notes/5', $requestBody);
+        $response = $this->controller->putNote($request, new \Slim\Http\Response(), [ 'note_id' => 5 ]);        
+
 
         // Assert response (400, not 404 as you cannot put a new note without specifying
         // the notebook)
-        $this->assertEquals(400, $this->response->status());
+        $this->assertEquals(400, $response->getStatusCode());
         
         // Assert db content
         $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/notes-seed.xml');
@@ -277,8 +309,9 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testDeleteNote()
     {
-        $this->delete('/api/notes/1');
-        $this->assertEquals(200, $this->response->status());
+        $response = $this->controller->deleteNote($this->getRequest(), new \Slim\Http\Response(), [ 'note_id' => 1 ]);        
+
+        $this->assertEquals(200, $response->getStatusCode());
 
         // Assert db content
         $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/delete-notes-expected-1.xml');
@@ -290,8 +323,9 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testDeleteUnknownNote()
     {
-        $this->delete('/api/notes/99');
-        $this->assertEquals(404, $this->response->status());
+        $response = $this->controller->deleteNote($this->getRequest(), new \Slim\Http\Response(), [ 'note_id' => 99 ]);        
+
+        $this->assertEquals(404, $response->getStatusCode());
         // TODO: assert message
         
         // Assert db content
@@ -305,8 +339,9 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testDeleteNoteOfDifferentUser()
     {
-        $this->delete('/api/notes/4');
-        $this->assertEquals(404, $this->response->status());
+        $response = $this->controller->deleteNote($this->getRequest(), new \Slim\Http\Response(), [ 'note_id' => 4 ]);        
+
+        $this->assertEquals(404, $response->getStatusCode());
         // TODO: assert message
         
         // Assert db content
@@ -320,8 +355,9 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testDeleteNoteInUnknownNotebook()
     {
-        $this->delete('/api/notebooks/99/notes/1');
-        $this->assertEquals(404, $this->response->status());
+        $response = $this->controller->deleteNote($this->getRequest(), new \Slim\Http\Response(), [ 'notebook_id' => 99, 'note_id' => 4 ]);        
+
+        $this->assertEquals(404, $response->getStatusCode());
         // TODO: assert message
         
         // Assert db content
@@ -335,8 +371,9 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testDeleteNoteInNotebookOfDifferentUser()
     {
-        $this->delete('/api/notebooks/3/notes/4');
-        $this->assertEquals(404, $this->response->status());
+        $response = $this->controller->deleteNote($this->getRequest(), new \Slim\Http\Response(), [ 'notebook_id' => 3, 'note_id' => 4 ]);        
+
+        $this->assertEquals(404, $response->getStatusCode());
         // TODO: assert message
         
         // Assert db content

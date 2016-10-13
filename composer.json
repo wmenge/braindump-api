@@ -13,7 +13,8 @@
     "require": {
         "php": ">=5.3",
         "slim/slim": "3.*",
-        "slim/extras": "2.*",
+        "slim/php-view": "^2.1",
+        "slim/flash": "^0.1.0",   
         "j4mie/paris": "1.*",
         "ezyang/htmlpurifier": "@stable",
         "xemlock/htmlpurifier-html5": "dev-master",

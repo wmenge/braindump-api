@@ -2,6 +2,7 @@
 
 namespace Braindump\Api\Lib;
 
+// Refactor out DB config, as this is reallly not instance config, but application config
 class DatabaseFacade
 {
     private $db = null;

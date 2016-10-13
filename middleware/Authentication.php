@@ -1,7 +1,9 @@
-<?php
+<?php namespace Braindump\Api\Admin\Middleware;
 
-namespace Braindump\Api\Admin\Middleware;
+use Psr\Http\Message\RequestInterface as Request;
+use Psr\Http\Message\ResponseInterface as Response;
 
+// Refactor: Add as separate authorization middleware step
 function routeIsAllowed($user, $route)
 {
     $permissions = $user->getMergedPermissions();
@@ -16,61 +18,73 @@ function routeIsAllowed($user, $route)
     return false;
 }
 
+function adminAuthorize(Request $req,  Response $res, callable $next) {
+
+    if (!routeIsAllowed(\Sentry::getUser(), $req->getUri()->getPath())) {
+        return $res->withStatus(403)->withHeader('Location', '/admin');
+    }
+
+    return $next($req, $res);
+}
+
 /***
  * Route middleware implementing form based authentication. To be used 
  * by the Admin web interface
  */
-function adminAuthenticate()
+//function adminAuthenticate()
+function adminAuthenticate(Request $req,  Response $res, callable $next)
 {
-    $app = \Slim\Slim::getInstance();
-    
     // Check if a user is logged in
     if (!\Sentry::check()) {
 
         // Check if http authentication credentials have been passed
-        // (command line client scenario)
-        if ($app->request()->headers('PHP_AUTH_USER') && $app->request()->headers('PHP_AUTH_PW')) {
+        // (command line client scenario)e
+        if ($req->getHeader('PHP_AUTH_USER') && $req->getHeader('PHP_AUTH_PW')) {
             \Sentry::authenticate(
-                [ 'email'    => $app->request()->headers('PHP_AUTH_USER'),
-                  'password' => $app->request()->headers('PHP_AUTH_PW') ]
+                [ 'email'    => $req->getHeader('PHP_AUTH_USER'),
+                  'password' => $req->getHeader('PHP_AUTH_PW') ]
             );
         } else {
-            // otherwise redirect to login page
-            $app->redirect('/admin/login');
+            return $res->withStatus(401)->withHeader('Location', '/admin/login');
         }
     }
 
-    if (!routeIsAllowed(\Sentry::getUser(), $app->environment['PATH_INFO'])) {
-        $app->flash('error', 'No permission');
-        $app->redirect('/admin');
-    }
+    return $next($req, $res);
 }
+
+
+/***
+ * Route middleware implementing basic HTTP authorization. To be used
+ * by API routes
+ */
+function apiAuthorize(Request $req,  Response $res, callable $next) {
+
+    if (!routeIsAllowed(\Sentry::getUser(), $req->getUri()->getPath())) {
+        return $res->withStatus(403, 'No permision');
+    }
+
+    return $next($req, $res);
+};
 
 /***
  * Route middleware implementing basic HTTP authentication. To be used
  * by API routes
  */
-function apiAuthenticate()
+function apiAuthenticate(Request $req,  Response $res, callable $next)
 {
     if (\Sentry::check()) { 
-        return; 
+        return $next($req, $res); 
     }
     
     try {
-        $app = \Slim\Slim::getInstance();
-
         \Sentry::authenticate(
-            [ 'email'    => $app->request()->headers('PHP_AUTH_USER'),
-              'password' => $app->request()->headers('PHP_AUTH_PW') ]
+            [ 'email'    => $req->getHeaderLine('PHP_AUTH_USER'),
+              'password' => $req->getHeaderLine('PHP_AUTH_PW') ]
         );
-
-        if (!routeIsAllowed(\Sentry::getUser(), $app->environment['PATH_INFO'])) {
-            $app->log->info('no permission');
-            $app->halt('403', 'No permision');
-        }
-
+   
     } catch (\Exception $e) {
-        $app->response()->header('WWW-Authenticate', 'Basic realm="Braindump"');
-        $app->halt('401', $e->getMessage());
+        return $res->withHeader('WWW-Authenticate', 'Basic realm="Braindump"')->withStatus(401, $e->getMessage());
     }
+
+    return $next($req, $res);
 }

@@ -2,8 +2,17 @@
 
 namespace Braindump\Api\Test\Integration;
 
+require_once(__DIR__ . '/../../controllers/NotebookController.php');
+
 class NotebookRoutesTest extends Slim_Framework_TestCase
 {
+
+    public function setup()
+    {
+        parent::setUp();
+        $this->controller = new \Braindump\Api\Controller\Notebooks\NotebookController($this->container);
+    }
+
     /**
      * @return PHPUnit_Extensions_Database_DataSet_IDataSet
      */
@@ -12,23 +21,17 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
         return $this->createFlatXMLDataSet(dirname(__FILE__).'/files/notebooks-seed.xml');
     }
 
-    public function testGetRoot()
-    {
-        $expected = file_get_contents(dirname(__FILE__).'/files/get-notebooks-expected-1.json');
-        $this->get('/api');
-        $this->assertEquals(200, $this->response->status());
-        $this->assertSame($expected, $this->response->body());
-    }
-
     public function testGetNotebooks()
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/get-notebooks-expected-1.json');
-        $this->get('/api/notebooks');
-        $this->assertEquals(200, $this->response->status());
-        $this->assertSame($expected, $this->response->body());
+
+        $response = $this->controller->getNotebooks($this->getRequest(), new \Slim\Http\Response());
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame($expected, (string)$response->getBody());
     }
 
-    public function testGetNotebookSampledata()
+/*    public function testGetNotebookSampledata()
     {
         // Additional fixture, start with empty dataset, with one user
         $dbFacade = new \Braindump\Api\Lib\DatabaseFacade(
@@ -43,42 +46,47 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
         
         $expected = file_get_contents(dirname(__FILE__).'/files/get-notebooks-expected-3.json');
         $this->get('/api/notebooks');
-        $this->assertEquals(200, $this->response->status());
-        $this->assertSame($expected, $this->response->body());
-    }
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame($expected, $response->getBody());
+    }*/
 
     public function testGetNotebook()
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/get-notebooks-expected-2.json');
-        $this->get('/api/notebooks/1');
-        $this->assertEquals(200, $this->response->status());
-        $this->assertSame($expected, $this->response->body());
+        
+        $response = $this->controller->getNotebook($this->getRequest(), new \Slim\Http\Response(), [ 'id' => 1 ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame($expected, (string)$response->getBody());
     }
 
     public function testGetUnkownNotebook()
     {
-        $this->get('/api/notebooks/99');
-        $this->assertEquals(404, $this->response->status());
+        $response = $this->controller->getNotebook($this->getRequest(), new \Slim\Http\Response(), [ 'id' => 99 ]);
+
+        $this->assertEquals(404, $response->getStatusCode());
         // TODO: assert message
     }
 
     public function testGetNotebookOfDifferentUser()
     {
-        $this->get('/api/notebooks/3');
-        $this->assertEquals(404, $this->response->status());
+        $response = $this->controller->getNotebook($this->getRequest(), new \Slim\Http\Response(), [ 'id' => 3 ]);
+
+        $this->assertEquals(404, $response->getStatusCode());
     }
 
     public function testPostNotebook()
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/get-notebooks-expected-4.json');
         
-        $requestBody = '{ "title": "New Notebook" }';
+        $request = $this->getRequest();
+        $request->getBody()->write('{ "title": "New Notebook" }');
 
-        $this->post('/api/notebooks', $requestBody);
-        
+        $response = $this->controller->postNotebook($request, new \Slim\Http\Response());
+    
         // Assert response
-        $this->assertEquals(200, $this->response->status());
-        $this->assertSame($expected, $this->response->body());
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame($expected, (string)$response->getBody());
 
         // Assert db content
         $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/post-notebooks-expected-1.xml');
@@ -91,11 +99,13 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
 
     public function testPostInvalidNotebook()
     {
-        $requestBody = '{ }';
+        $request = $this->getRequest();
+        $request->getBody()->write('{ }');
 
+        $response = $this->controller->postNotebook($request, new \Slim\Http\Response());
+    
         // Assert response
-        $this->post('/api/notebooks', $requestBody);
-        $this->assertEquals(400, $this->response->status());
+        $this->assertEquals(400, $response->getStatusCode());
         // TODO: assert message
     
         // Assert db content
@@ -111,13 +121,14 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/get-notebooks-expected-5.json');
         
-        $requestBody = '{ "title": "Updated title" }';
+        $request = $this->getRequest();
+        $request->getBody()->write('{ "title": "Updated title" }');
 
-        $this->put('/api/notebooks/1', $requestBody);
+        $response = $this->controller->putNotebook($request, new \Slim\Http\Response(), [ 'id' => 1 ]);
 
         // Assert response
-        $this->assertEquals(200, $this->response->status());
-        $this->assertSame($expected, $this->response->body());
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame($expected, (string)$response->getBody());
 
         // Assert db content
         $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/put-notebooks-expected-1.xml');
@@ -132,11 +143,13 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/get-notebooks-expected-4.json');
         
-        $requestBody = '{ "title": "New Notebook" }';
+        $request = $this->getRequest();
+        $request->getBody()->write('{ "title": "New Notebook" }');
 
-        $this->put('/api/notebooks/4', $requestBody);
-        $this->assertEquals(200, $this->response->status());
-        $this->assertSame($expected, $this->response->body());
+        $response = $this->controller->putNotebook($request, new \Slim\Http\Response(), [ 'id' => 4 ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame($expected, (string)$response->getBody());
 
         // Assert db content
         $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/post-notebooks-expected-1.xml');
@@ -149,10 +162,12 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
 
     public function testPutInvalidNotebook()
     {
-        $requestBody = '{ }';
+        $request = $this->getRequest();
+        $request->getBody()->write('{ }');
 
-        $this->put('/api/notebooks/1', $requestBody);
-        $this->assertEquals(400, $this->response->status());
+        $response = $this->controller->putNotebook($request, new \Slim\Http\Response(), [ 'id' => 1 ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
         
         // Assert db content
         $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/post-notebooks-expected-2.xml');
@@ -167,11 +182,13 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/get-notebooks-expected-4.json');
         
-        $requestBody = '{ "title": "New Notebook" }';
+        $request = $this->getRequest();
+        $request->getBody()->write('{ "title": "New Notebook" }');
 
-        $this->put('/api/notebooks/3', $requestBody);
-        $this->assertEquals(200, $this->response->status());
-        $this->assertSame($expected, $this->response->body());
+        $response = $this->controller->putNotebook($request, new \Slim\Http\Response(), [ 'id' => 3 ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame($expected, (string)$response->getBody());
 
         // Assert db content
         $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/post-notebooks-expected-1.xml');
@@ -184,8 +201,9 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
 
     public function testDeleteNotebook()
     {
-        $this->delete('/api/notebooks/1');
-        $this->assertEquals(200, $this->response->status());
+        $response = $this->controller->deleteNotebook($this->getRequest(), new \Slim\Http\Response(), [ 'id' => 1 ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
 
         // test also with non-empty notebook
 
@@ -200,8 +218,9 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
 
     public function testDeleteUnknownNotebook()
     {
-        $this->delete('/api/notebooks/99');
-        $this->assertEquals(404, $this->response->status());
+        $response = $this->controller->deleteNotebook($this->getRequest(), new \Slim\Http\Response(), [ 'id' => 99 ]);
+
+        $this->assertEquals(404, $response->getStatusCode());
         // TODO: assert message
         
         // Assert db content
@@ -215,8 +234,9 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
 
     public function testDeleteNotebookOfDifferentUser()
     {
-        $this->delete('/api/notebooks/3');
-        $this->assertEquals(404, $this->response->status());
+        $response = $this->controller->deleteNotebook($this->getRequest(), new \Slim\Http\Response(), [ 'id' => 3 ]);
+
+        $this->assertEquals(404, $response->getStatusCode());
         // TODO: assert message
         
         // Assert db content

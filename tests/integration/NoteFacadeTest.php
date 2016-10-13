@@ -12,8 +12,6 @@ class NoteFacadeTest extends AbstractDbTest
     {
         parent::setUp();
 
-        $mockApp = new \stdClass();
-        $mockApp->braindumpConfig = (require( __DIR__ . '/../../config/braindump-config.php'));
         $this->Facade = new \Braindump\Api\Model\NoteFacade();
 
         \Sentry::$id = 1;

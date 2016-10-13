@@ -9,8 +9,10 @@ echo date("F j, Y, g:i a");
 echo 'Connect to imap server and process messages...' . PHP_EOL;
 
 try {
+    
     // Setup DB connection
     $braindumpConfig = (require __DIR__ . '/../config/braindump-config.php');
+
     ORM::configure($braindumpConfig['database_config']);
 
     $imapFacade = \Braindump\Api\Lib\ImapFacade::createFacade($braindumpConfig['imap_config']);

@@ -30,24 +30,50 @@
     <div class="row">
       <div class="col-sm-12">
 
-        <?php if(!empty($flash['success'])): ?>
+        <?php if(@is_string($flash['success'])): ?>
           <div class="alert alert-success alert-dismissible" role="alert">
             <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             <strong>Success:</strong> <?= $flash['success'] ?>
           </div>
         <?php endif; ?>
-        <?php if(!empty($flash['warning'])): ?>
+        <?php if(@is_string($flash['warning'])): ?>
           <div class="alert alert-warning alert-dismissible" role="alert">
             <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             <strong>Warning:</strong> <?= $flash['warning'] ?>
           </div>
         <?php endif; ?>
-        <?php if(!empty($flash['error'])): ?>
+        <?php if(@is_string($flash['error'])): ?>
           <div class="alert alert-danger alert-dismissible" role="alert">
             <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             <strong>Error:</strong> <?= $flash['error'] ?>
           </div>
         <?php endif; ?>
+
+        <?php if(@is_array($flash['success'])): ?>
+          <?php foreach ($flash['success'] as $message): ?>
+            <div class="alert alert-success alert-dismissible" role="alert">
+              <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <strong>Success:</strong> <?= $message ?>
+            </div>
+          <?php endforeach; ?>
+        <?php endif; ?>
+        <?php if(@is_array($flash['warning'])): ?>
+          <?php foreach ($flash['warning'] as $message): ?>
+            <div class="alert alert-warning alert-dismissible" role="alert">
+              <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <strong>Warning:</strong> <?= $message ?>
+            </div>
+          <?php endforeach; ?>
+        <?php endif; ?>
+        <?php if(@is_array($flash['error'])): ?>
+          <?php foreach ($flash['error'] as $message): ?>
+            <div class="alert alert-danger alert-dismissible" role="alert">
+              <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <strong>Error:</strong> <?= $message ?>
+            </div>
+          <?php endforeach; ?>
+        <?php endif; ?>
+
       </div>
     </div>
 

@@ -1,8 +1,10 @@
-<?php namespace Braindump\Api\Admin;
+<?php namespace Braindump\Api\Controller\Admin;
 
 require_once __DIR__ . '/../../model/NotebookFacade.php';
 
 use Braindump\Api\Model\Notebook as Notebook;
+
+require_once(__DIR__ . '/../../controllers/AdminDataController.php');
 
 // Mocking standard date function to be able to compare file name
 function date($format)
@@ -41,14 +43,21 @@ namespace Braindump\Api\Test\Integration;
     }
 }*/
 
-class ImportExportTest extends Slim_Framework_TestCase
+class ExportTest extends Slim_Framework_TestCase
 {
+    public function setup()
+    {
+        parent::setUp();
+        $this->controller = new \Braindump\Api\Controller\Admin\AdminDataController($this->container);
+    }
+
     /**
      * @return PHPUnit_Extensions_Database_DataSet_IDataSet
      */
     public function getDataSet()
     {
         return $this->createFlatXMLDataSet(dirname(__FILE__).'/files/notes-seed.xml');
+
     }
 
     /**
@@ -57,19 +66,25 @@ class ImportExportTest extends Slim_Framework_TestCase
     public function testGetExportWithoutFiles()
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/export-expected-1.json');
-        $this->get('/admin/export');
 
-        // Mock HTTP Host (empty during unit test)
-        $this->assertEquals('application/json', $this->response->headers['Content-Type']);
-        $this->assertEquals('attachment; filename=export-localhost-0.json', $this->response->headers['Content-Disposition']);
-        $this->assertEquals(200, $this->response->status());
-        $this->assertSame($expected, $this->response->body());
+        $response = $this->controller->getExport($this->getRequest(), new \Slim\Http\Response());
+
+        $this->assertEquals([ 'application/json' ], $response->getHeader('Content-Type'));
+        $this->assertEquals([ 'attachment; filename=export-localhost-0.json' ], $response->getHeader('Content-Disposition'));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame($expected, (string)$response->getBody());
     }
 
 }
 
-class ImportExportWithFilesTest extends Slim_Framework_TestCase
+class ExportWithFilesTest extends Slim_Framework_TestCase
 {
+    public function setup()
+    {
+        parent::setUp();
+        $this->controller = new \Braindump\Api\Controller\Admin\AdminDataController($this->container);
+    }
+
     /**
      * @return PHPUnit_Extensions_Database_DataSet_IDataSet
      */
@@ -81,36 +96,57 @@ class ImportExportWithFilesTest extends Slim_Framework_TestCase
     public function testGetExport()
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/export-expected-2.json');
-        $this->get('/admin/export');
+        
+        $response = $this->controller->getExport($this->getRequest(), new \Slim\Http\Response());
 
         // Mock HTTP Host (empty during unit test)
-        $this->assertEquals('application/json', $this->response->headers['Content-Type']);
-        $this->assertEquals('attachment; filename=export-localhost-0.json', $this->response->headers['Content-Disposition']);
-        $this->assertEquals(200, $this->response->status());
-        $this->assertSame($expected, $this->response->body());
+        $this->assertEquals([ 'application/json' ], $response->getHeader('Content-Type'));
+        $this->assertEquals([ 'attachment; filename=export-localhost-0.json' ], $response->getHeader('Content-Disposition'));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame($expected, (string)$response->getBody());
+    }
+}
+/*
+class ImportWithFilesTest extends Slim_Framework_TestCase
+{
+
+    public function setup()
+    {
+        parent::setUp();
+        $this->controller = new \Braindump\Api\Controller\Admin\AdminDataController($this->container);
     }
 
-    public function testPostImport()
+    public function getDataSet()
+    {
+        return $this->createFlatXMLDataSet(dirname(__FILE__).'/files/notes-with-files-seed.xml');
+        //return $this->createFlatXMLDataSet(dirname(__FILE__).'/files/empty-dataset-seed.xml');
+    }
+
+    /*public function testPostImport()
     {
         // Additional fixture, start with empty dataset
-        /*$dbFacade = new \Braindump\Api\Lib\DatabaseFacade($this->app, \ORM::get_db());
-        $dbFacade->createDatabase();
+        $this->dbFacade->createDatabase();
+        
         $importData = file_get_contents(dirname(__FILE__).'/files/export-expected-1.json');
 
-        $this->post('/admin/import', $importData);
+        $request = $this->getRequest();
+        $request->getBody()->write($importData);
+
+        $response = $this->controller->postImport($request, new \Slim\Http\Response());
         
         // Assert db content
         $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/notes-seed.xml');
 
         $expectedNotebookContent = $dataset->getTable("notebook");
         $notebookTable = $this->getConnection()->createQueryTable('notebook', 'SELECT * FROM notebook');
+        $this->assertTablesEqual($expectedNotebookContent, $notebookTable);
         
         $expectedNoteContent = $dataset->getTable("note");
         $noteTable = $this->getConnection()->createQueryTable('note', 'SELECT * FROM note');
-        //$this->assertTablesEqual($expectedNoteContent, $noteTable);*/
-    }
+        $this->assertTablesEqual($expectedNoteContent, $noteTable);
+    }*/
 
-    public function testPostImportWithInvalidData()
+    /*public function testPostImportWithInvalidData()
     {
 
     }
@@ -118,6 +154,6 @@ class ImportExportWithFilesTest extends Slim_Framework_TestCase
     public function testPostImportWithEmptyData()
     {
 
-    }
+    }*/
 
-}
+//}

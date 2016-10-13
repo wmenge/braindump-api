@@ -18,11 +18,7 @@ class FileFacadeTest extends AbstractDbTest
     protected function setUp()
     {
         parent::setUp();
-
-        $mockApp = new \stdClass();
-        $mockApp->braindumpConfig = (require( __DIR__ . '/../../config/braindump-config.php'));
         $this->Facade = new \Braindump\Api\Model\FileFacade();
-
         \Sentry::$id = 1;
     }
 

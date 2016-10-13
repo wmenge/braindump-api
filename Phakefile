@@ -9,14 +9,10 @@ use AFM\Rsync\Rsync;
 
 desc('Setup Braindump API');
 task('setup', function() {
-        // init app and db
-        $app = new \Slim\Slim(array(
-            'templates.path' => __DIR__ . '/templates',
-        ));
-
-        $app->braindumpConfig = (require __DIR__ . '/config/braindump-config.php');
-
-        ORM::configure($app->braindumpConfig['database_config']);
+        
+        // Setup DB connection
+        $braindumpConfig = (require __DIR__ . '/config/braindump-config.php');
+        ORM::configure($braindumpConfig['database_config']);
 
         $dbFacade = new \Braindump\Api\Lib\DatabaseFacade(
             \ORM::get_db(),

@@ -1,23 +1,9 @@
-<?php
-namespace Braindump\Api;
+<?php namespace Braindump\Api;
 
-require_once(__DIR__ . '/../lib/SentryFacade.php');
+require_once(__DIR__ . '/../controllers/UserController.php');
 
-$app->group('/api', 'Braindump\Api\Admin\Middleware\apiAuthenticate', function () use ($app) {
+$app->group('/api', function () {
 
-    $app->get('/user(/)', function () use ($app) {
+    $this->get('/user[/]', '\Braindump\Api\Controller\User\UserController:getUser');
 
-        $user = \Sentry::getUser();
-
-        $userArray = [
-            'id'         => $user->id,
-            'email'      => $user->email,
-            'activated'  => $user->activated,
-            'last_login' => $user->last_login,
-            'first_name' => $user->first_name,
-            'last_name'  => $user->last_name
-        ];
-
-        outputJson($userArray, $app);
-    });
-});
+})->add('Braindump\Api\Admin\Middleware\apiAuthorize')->add('Braindump\Api\Admin\Middleware\apiAuthenticate');
