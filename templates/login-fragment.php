@@ -11,7 +11,7 @@
       </div>
       <form role="form" action="/admin/login" method="POST">
         <div class="form-group">
-          <input type="email" class="form-control input-lg" name="login" id="login" placeholder="Enter email" value="administrator@braindump-api.local">
+          <input type="email" class="form-control input-lg" name="login" id="login" placeholder="Enter email" value="">
         </div>
         <div class="form-group">
           <input type="password" class="form-control input-lg" name="password" id="password" placeholder="Password">
