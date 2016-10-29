@@ -9,7 +9,7 @@
   </ul>
 
   <ul class="nav navbar-nav pull-right">
-    <li><a href="#"><?= @$user->email ?></a></li>
+    <li><a href="/admin/users/<?= @$user->id ?>"><?= @$user->email ?></a></li>
     <li><a href="/admin/logout">Logout</a></li>
   </ul>
 
