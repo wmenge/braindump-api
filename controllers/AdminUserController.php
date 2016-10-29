@@ -43,65 +43,72 @@ class AdminUserController extends \Braindump\Api\Controller\BaseController {
     public function postUser($request, $response) {
 
         $user = null;
+        $error = false;
 
-        try {
-            // Create the user
-            $user = \Sentry::createUser([
-                'email'      => htmlentities($request->getParam('email'), ENT_QUOTES, 'UTF-8'),
-                'first_name' => htmlentities($request->getParam('first_name'), ENT_QUOTES, 'UTF-8'),
-                'last_name'  => htmlentities($request->getParam('last_name'), ENT_QUOTES, 'UTF-8'),
-                'password'   => 'welcome',
-                'activated'  => true,
-            ]);
+        // validate password (for now, if none supplied, use default password)
+        $password = htmlentities($request->getParam('password'));
+        $password_confirm = htmlentities($request->getParam('password_confirm'));
 
-            $groups = $request->getParam('groups');
+        if (empty($password)) {
+            $password = 'welcome';
+            $flash = [ 'warning' => 'No password entered, default password given' ];
+        } elseif ($password != $password_confirm) {
+            $error = true;
+            $flash = [ 'error' => 'Passwords do not match' ];
+        }
+        
+        if (!$error) {
 
-            // TODO: validate that at least one group is supplied
-            if (is_array($groups)) {
-                foreach ($groups as $id) {
-                    $user->addGroup(\Sentry::findGroupById($id));
+            try {
+
+                // Create the user
+                $user = \Sentry::createUser([
+                    'email'      => htmlentities($request->getParam('email'), ENT_QUOTES, 'UTF-8'),
+                    'first_name' => htmlentities($request->getParam('first_name'), ENT_QUOTES, 'UTF-8'),
+                    'last_name'  => htmlentities($request->getParam('last_name'), ENT_QUOTES, 'UTF-8'),
+                    'password'   => $password,
+                    'activated'  => true,
+                ]);
+
+                $groups = $request->getParam('groups');
+
+                // TODO: validate that at least one group is supplied
+                if (is_array($groups)) {
+                    foreach ($groups as $id) {
+                        $user->addGroup(\Sentry::findGroupById($id));
+                    }
                 }
+
+                $this->flash->addMessage('success', 'Changes have been saved');
+                return $response->withStatus(302)->withHeader('Location', '/admin/users');
+
+            } catch (\Exception $e) {
+                $flash = [ 'error' => $e->getMessage() ];
             }
 
-            //$app->flashNow('success', 'Changes have been saved');
-            
-            return $this->renderer->render(
-                $response, 'admin-page.php',
-                [
-                    'flash'   => ['success' => 'Changes have been saved'],
-                    'menu'    => $this->renderer->fetch('admin-menu-fragment.php'),
-                    'content' => $this->renderer->fetch(
-                        'user-list-fragment.php',
-                        [
-                            'users' => \Sentry::findAllUsers()
-                        ]
-                    )
-                ]
-            );
-
-        } catch (\Exception $e) {
-            //$app->flashNow('error', $e->getMessage());
-
-            // TODO: In an error situation, the Groups checkboxes are not repopulated
-            return $this->renderer->render(
-                $response, 'admin-page.php',
-                [
-                    'flash'   => ['error' => $e->getMessage()],
-                    'menu'    => $this->renderer->fetch('admin-menu-fragment.php'),
-                    'content' => $this->renderer->fetch(
-                        'user-form-fragment.php',
-                        [
-                            'user' => $user,
-                            'groups' => \Sentry::findAllGroups()
-                        ]
-                    )
-                ]
-            );
         }
+                
+        // TODO: In an error situation, the Groups checkboxes are not repopulated
+        return $this->renderer->render(
+            $response, 'admin-page.php',
+            [
+                'flash'   => $flash,
+                'menu'    => $this->renderer->fetch('admin-menu-fragment.php'),
+                'content' => $this->renderer->fetch(
+                    'user-form-fragment.php',
+                    [
+                        'user' => $user,
+                        'groups' => \Sentry::findAllGroups()
+                    ]
+                )
+            ]
+        );
+        
     }
 
     public function putUser($request, $response, $args) {
 
+        $error = false;
         $success = false;
         $flash = null;
 
@@ -112,8 +119,21 @@ class AdminUserController extends \Braindump\Api\Controller\BaseController {
             $user->email      = htmlentities($request->getParam('email'), ENT_QUOTES, 'UTF-8');
             $user->first_name = htmlentities($request->getParam('first_name'), ENT_QUOTES, 'UTF-8');
             $user->last_name  = htmlentities($request->getParam('last_name'), ENT_QUOTES, 'UTF-8');
-            
-            $success = $user->save();
+
+            // validate password
+            $password = htmlentities($request->getParam('password'));
+            $password_confirm = htmlentities($request->getParam('password_confirm'));
+
+            if (!empty($password)) {
+                if ($password != $password_confirm) {
+                    $error = true;
+                    $flash = [ 'error' => 'Passwords do not match' ];
+                } else {
+                    $user->password = $password;
+                } 
+            }
+
+            if (!$error) $success = $user->save();
 
             if ($success) {
                 // TODO: validate that at least one group is supplied
@@ -140,43 +160,28 @@ class AdminUserController extends \Braindump\Api\Controller\BaseController {
             }
 
             if ($success) {
-                $flash = [ 'success' => 'Changes have been saved' ];
+                $this->flash->addMessage('success', 'Changes have been saved');
+                return $response->withStatus(302)->withHeader('Location', '/admin/users');
             }
 
-            return $this->renderer->render(
-                $response, 'admin-page.php',
-                [
-                    'flash'   => $flash,
-                    'menu'    => $this->renderer->fetch('admin-menu-fragment.php'),
-                    'content' => $this->renderer->fetch(
-                        'user-list-fragment.php',
-                        [
-                            'users' => \Sentry::findAllUsers()
-                        ]
-                    )
-                ]
-            );
-
         } catch (\Exception $e) {
-
             $flash = [ 'error' => $e->getMessage() ];
-
-            return $this->renderer->render(
-                $response, 'admin-page.php',
-                [
-                    'flash'   => $flash,
-                    'menu'    => $this->renderer->fetch('admin-menu-fragment.php'),
-                    'content' => $this->renderer->fetch(
-                        'user-form-fragment.php',
-                        [
-                            'user'   => \Sentry::findUserById($id),
-                            'groups' => \Sentry::findAllGroups()
-                        ]
-                    )
-                ]
-            );
         }
 
+        // If we reach this point, something bad must have happened
+        return $this->renderer->render(
+            $response, 'admin-page.php',
+            [
+                'flash'   => $flash,
+                'menu'    => $this->renderer->fetch('admin-menu-fragment.php'),
+                'content' => $this->renderer->fetch(
+                'user-form-fragment.php',
+                [
+                    'user'   => \Sentry::findUserById($args['id']),
+                    'groups' => \Sentry::findAllGroups()
+                ])
+            ]
+        );
     }
 
     public function postThrottle($request, $response, $args) {
