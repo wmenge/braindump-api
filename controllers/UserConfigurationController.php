@@ -28,7 +28,7 @@ class UserConfigurationController extends \Braindump\Api\Controller\BaseControll
             $configuration->email_to_notebook = null;
         }
         
-        return outputJson($configuration->as_array('email_to_notebook'), $response);
+        return $this->outputJson($configuration->as_array('email_to_notebook'), $response);
     }
 
         
@@ -52,7 +52,7 @@ class UserConfigurationController extends \Braindump\Api\Controller\BaseControll
         $configuration->user_id = \Sentry::getUser()->getId();
         $configuration->save();
 
-        return outputJson($configuration->as_array('email_to_notebook'), $response);
+        return $this->outputJson($configuration->as_array('email_to_notebook'), $response);
     }
 
 }

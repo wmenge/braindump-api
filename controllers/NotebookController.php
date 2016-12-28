@@ -11,7 +11,6 @@ class NotebookController extends \Braindump\Api\Controller\BaseController {
     private $notebookFacade;
 
     public function __construct(\Interop\Container\ContainerInterface $ci) {
-    //    $this->noteFacade = new \Braindump\Api\Model\NoteFacade();
         $this->notebookFacade = new \Braindump\Api\Model\NotebookFacade();
         parent::__construct($ci);
     }
@@ -24,7 +23,7 @@ class NotebookController extends \Braindump\Api\Controller\BaseController {
             $list = $this->notebookFacade->getNoteBookList($request->getQueryParam('sort'));
         }
 
-        return outputJson($list, $response);
+        return $this->outputJson($list, $response);
     }
 
     public function getNotebook($request, $response, $args) {
@@ -35,7 +34,7 @@ class NotebookController extends \Braindump\Api\Controller\BaseController {
             return $response->withStatus(404);
         }
 
-        return outputJson($notebook->as_array(), $response);
+        return $this->outputJson($notebook->as_array(), $response);
     }
 
     public function postNotebook($request, $response) {
@@ -57,7 +56,7 @@ class NotebookController extends \Braindump\Api\Controller\BaseController {
 
         $notebook = $this->notebookFacade->getNotebookForId($notebook->id);
 
-        return outputJson($notebook->as_array(), $response);
+        return $this->outputJson($notebook->as_array(), $response);
     }
 
     public function putNotebook($request, $response, $args) {
@@ -83,7 +82,7 @@ class NotebookController extends \Braindump\Api\Controller\BaseController {
 
         $notebook = $this->notebookFacade->getNotebookForId($notebook->id);
 
-        return outputJson($notebook->as_array(), $response);
+        return $this->outputJson($notebook->as_array(), $response);
     }
 
     public function deleteNotebook($request, $response, $args) {

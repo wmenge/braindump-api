@@ -33,6 +33,13 @@ class FileFacade
             ->find_one();
     }
 
+    public function getFilesForUserId($userId)
+    {
+        return File::select_many('logical_filename', 'physical_filename', 'original_filename')
+                ->where_equal('user_id', $userId)
+                ->find_array();
+    }
+
     // Generates a unique logical name for a file
     // (unique for user)
     //

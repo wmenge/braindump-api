@@ -1,6 +1,6 @@
 <?php namespace Braindump\Api\Controller\Admin;
 
-require_once(__DIR__ . '/BaseController.php');
+require_once(__DIR__ . '/AdminBaseController.php');
 
 require_once(__DIR__ . '/../lib/DatabaseFacade.php');
 require_once(__DIR__ . '/../model/NotebookFacade.php');
@@ -13,7 +13,15 @@ use Braindump\Api\Model\Note as Note;
 use Cartalyst\Sentry\Users\Paris\User as User;
 use Braindump\Api\Model\File as File;
 
-class AdminDataController extends \Braindump\Api\Controller\BaseController {
+class AdminDataController extends \Braindump\Api\Controller\AdminBaseController {
+
+
+    public function __construct(\Interop\Container\ContainerInterface $ci) {
+        $this->fileFacade = new \Braindump\Api\Model\FileFacade();
+        File::$config = $ci->get('settings')['braindump']['file_upload_config'];
+        parent::__construct($ci);
+    }
+
 
     public function getExport($request, $response) {
 
@@ -49,9 +57,7 @@ class AdminDataController extends \Braindump\Api\Controller\BaseController {
             }
 
             // Add files to user
-            $files = File::select_many('logical_filename', 'physical_filename', 'original_filename')
-                ->where_equal('user_id', $user['id'])
-                ->find_array();
+            $files = $this->fileFacade->getFilesForUserId($user['id']);
 
             if (is_array($files) && count($files) > 0) {
                 $user['files'] = $files;
@@ -70,7 +76,7 @@ class AdminDataController extends \Braindump\Api\Controller\BaseController {
 
         }
 
-        $response = outputJson(['groups' => $groups, 'users' => $users], $response);
+        $response = $this->outputJson(['groups' => $groups, 'users' => $users], $response);
 
         return $response->withHeader('Content-Disposition', 'attachment; filename=export-' . $_SERVER["HTTP_HOST"] . '-' . date('Y-m-d His') . '.json');
     }
@@ -232,11 +238,13 @@ class AdminDataController extends \Braindump\Api\Controller\BaseController {
     }
 
     public function postSetup($request, $response, $args) {
-
-        // Only perform setup if user has confirmed
+        
+// Only perform setup if user has confirmed
         if ($request->getParsedBody()['confirm'] != 'YES') {
             $this->flash->addMessage('warning', 'Please confirm setup');
             return $response->withStatus(302)->withHeader('Location', '/admin');
+            //$this->flash->addMessage('success', 'Changes have been saved');
+            //    return $response->withStatus(302)->withHeader('Location', '/admin/users');
         }
 
         try {

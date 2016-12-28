@@ -14,49 +14,10 @@ function outputJson($data, $response)
 
 namespace Braindump\Api\Controller\Admin;
 
-function outputJson($data, $response)
-{
-    return \Braindump\Api\outputJson($data, $response);
-}
-
 function base64_encode($content)
 {
     return $content;
 }
-
-namespace Braindump\Api\Controller\Notes;
-
-function outputJson($data, $response)
-{
-    return \Braindump\Api\outputJson($data, $response);
-}
-
-namespace Braindump\Api\Controller\Notebooks;
-
-function outputJson($data, $response)
-{
-    return \Braindump\Api\outputJson($data, $response);
-}
-
-namespace Braindump\Api\Controller\User;
-
-function outputJson($data, $response)
-{
-    return \Braindump\Api\outputJson($data, $response);
-}
-
-/*
-namespace Braindump\Api\Admin\Middleware;
-
-function adminAuthenticate()
-{
-    // mock implementation
-}
-
-function apiAuthenticate()
-{
-    // mock implementation
-}*/
 
 namespace Braindump\Api\Model;
 

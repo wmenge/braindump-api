@@ -20,7 +20,7 @@ class NoteController extends \Braindump\Api\Controller\BaseController {
     public function getNotes($request, $response, $args) {
 
         if (empty($args['id'])) {
-            outputJson($this->noteFacade->getNoteList($request->getQueryParam('sort'), $request->getQueryParam('q')), $response);
+            return $this->outputJson($this->noteFacade->getNoteList($request->getQueryParam('sort'), $request->getQueryParam('q')), $response);
         } else {
             // Check if notebook exists, return 404 if it doesn't
             $notebook = $this->notebookFacade->getNotebookForId($args['id']);
@@ -29,10 +29,8 @@ class NoteController extends \Braindump\Api\Controller\BaseController {
                 return $response->withStatus(404);
             }
 
-            outputJson($this->noteFacade->getNoteListForNoteBook($notebook, $request->getQueryParam('sort'), $request->getQueryParam('q')), $response);
-
+            return $this->outputJson($this->noteFacade->getNoteListForNoteBook($notebook, $request->getQueryParam('sort'), $request->getQueryParam('q')), $response);
         }
-        return $response;
     }
 
     public function getNote($request, $response, $args) {
@@ -60,8 +58,7 @@ class NoteController extends \Braindump\Api\Controller\BaseController {
             return $response->withStatus(302)->withHeader('Location', sprintf('/notebooks/%s/notes/%s', $note->notebook_id, $note->id));
         }
 
-        outputJson($note->as_array(), $response);
-        return $response;
+        return $this->outputJson($note->as_array(), $response);
     }
 
     public function postNote($request, $response, $args) {
@@ -77,7 +74,6 @@ class NoteController extends \Braindump\Api\Controller\BaseController {
 
         if (!Note::isValid($input)) {
             return $response->withStatus(400);
-            //$app->halt(400, 'Invalid input');
         }
 
         $note = Note::create();
@@ -87,8 +83,7 @@ class NoteController extends \Braindump\Api\Controller\BaseController {
 
         $note = $this->noteFacade->getNoteForId($note->id());
 
-        outputJson($note->as_array(), $response);
-        return $response;
+        return $this->outputJson($note->as_array(), $response);
     }
 
     public function putNote($request, $response, $args) {
@@ -137,8 +132,7 @@ class NoteController extends \Braindump\Api\Controller\BaseController {
 
         $note = $this->noteFacade->getNoteForId($note->id());
 
-        outputJson($note->as_array(), $response);
-        return $response;
+        return $this->outputJson($note->as_array(), $response);
     }
 
     public function deleteNote($request, $response, $args) {

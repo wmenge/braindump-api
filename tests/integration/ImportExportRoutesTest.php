@@ -69,7 +69,7 @@ class ExportTest extends Slim_Framework_TestCase
 
         $response = $this->controller->getExport($this->getRequest(), new \Slim\Http\Response());
 
-        $this->assertEquals([ 'application/json' ], $response->getHeader('Content-Type'));
+        $this->assertEquals([ 'application/json;charset=utf-8' ], $response->getHeader('Content-Type'));
         $this->assertEquals([ 'attachment; filename=export-localhost-0.json' ], $response->getHeader('Content-Disposition'));
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame($expected, (string)$response->getBody());
@@ -100,7 +100,7 @@ class ExportWithFilesTest extends Slim_Framework_TestCase
         $response = $this->controller->getExport($this->getRequest(), new \Slim\Http\Response());
 
         // Mock HTTP Host (empty during unit test)
-        $this->assertEquals([ 'application/json' ], $response->getHeader('Content-Type'));
+        $this->assertEquals([ 'application/json;charset=utf-8' ], $response->getHeader('Content-Type'));
         $this->assertEquals([ 'attachment; filename=export-localhost-0.json' ], $response->getHeader('Content-Disposition'));
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame($expected, (string)$response->getBody());
