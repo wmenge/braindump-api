@@ -61,6 +61,14 @@ class SentryFacadeMock
     }
 }
 
+namespace Braindump\Api\Test\Integration;
+
+class FlashMessagesMock
+{
+
+
+}
+
 // Create the Sentry alias
 class_alias('Braindump\Api\Model\SentryFacadeMock', 'Sentry');
 
@@ -145,6 +153,8 @@ abstract class Slim_Framework_TestCase extends AbstractDbTest
         $this->container = $app->getContainer();
         $this->container['renderer'] = new \Slim\Views\PhpRenderer(__DIR__ . '/../templates/');
         $this->container['flash'] = function () { return new \Slim\Flash\Messages(); };
+        $this->container['flash'] = function () { return new FlashMessagesMock(); };
+        
 
         parent::setUp();
     }
