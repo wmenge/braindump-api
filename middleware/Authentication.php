@@ -39,10 +39,10 @@ function adminAuthenticate(Request $req,  Response $res, callable $next)
 
         // Check if http authentication credentials have been passed
         // (command line client scenario)e
-        if ($req->getHeader('PHP_AUTH_USER') && $req->getHeader('PHP_AUTH_PW')) {
+        if ($req->getHeaderLine('PHP_AUTH_USER') && $req->getHeaderLine('PHP_AUTH_PW')) {
             \Sentry::authenticate(
-                [ 'email'    => $req->getHeader('PHP_AUTH_USER'),
-                  'password' => $req->getHeader('PHP_AUTH_PW') ]
+                [ 'email'    => $req->getHeaderLine('PHP_AUTH_USER'),
+                  'password' => $req->getHeaderLine('PHP_AUTH_PW') ]
             );
         } else {
             return $res->withStatus(401)->withHeader('Location', '/admin/login');
