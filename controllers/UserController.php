@@ -19,7 +19,7 @@ class UserController extends \Braindump\Api\Controller\BaseController {
             'last_name'  => $user->last_name
         ];
 
-        return outputJson($userArray, $response);
+        return $this->outputJson($userArray, $response);
     }
 
     public function putUser($request, $response) {
