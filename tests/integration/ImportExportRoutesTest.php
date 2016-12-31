@@ -20,7 +20,7 @@ namespace Braindump\Api\Test\Integration;
  * Creating large JSON exports with json_encode will not work
  * as it needs the serialized data in memory and constructs a json
  * string in memory.
- * Using cncommerce/json-stream allows to construct a json document as
+ * Using bcncommerce/json-stream allows to construct a json document as
  * a sstream.
  * This test is not a proper unit test but a test to check that the stream
  * approach works on large documents
@@ -28,6 +28,12 @@ namespace Braindump\Api\Test\Integration;
  */
 /*class LargeExport extends Slim_Framework_TestCase
 {
+    public function setup()
+    {
+        parent::setUp();
+        $this->controller = new \Braindump\Api\Controller\Admin\AdminDataController($this->container);
+    }
+
     public function getDataSet()
     {
         return $this->createFlatXMLDataSet(dirname(__FILE__).'/files/notes-seed.xml');
@@ -35,19 +41,41 @@ namespace Braindump\Api\Test\Integration;
 
     public function testLargeExport()
     {
-        for ($i = 0; $i < 100000; $i++) {
+        // Create a big number of notes
+        for ($i = 0; $i < 100; $i++) {
+
             $notebook = \Braindump\Api\Model\Notebook::create();
             $notebook->title = $i;
+            $notebook->user_id = 1;
+            
             $notebook->save();
+
+            for ($j = 0; $j < 100; $j++) {
+
+                $note = \Braindump\Api\Model\Note::create();
+                $note->title = $j;
+                $note->type = \Braindump\Api\Model\Note::TYPE_TEXT;
+                $note->user_id = 1;
+                $note->notebook_id = $notebook->id;
+                $note->content = str_repeat("Lorem Ipsum ", 10000);
+
+                $note->save();
+            }
         }
+
+        $response = $this->controller->getExport($this->getRequest(), new \Slim\Http\Response());
+        
+        // assert response object is about 1 Gb
+        $this->assertEquals(1203253165, $response->getBody()->getSize());
+        
+        //print_r(mb_strlen($response->getBody(), '8bit'));
     }
 }*/
 
 class ExportTest extends Slim_Framework_TestCase
 {
     public function setup()
-    {
-        parent::setUp();
+    {   parent::setUp();
         $this->controller = new \Braindump\Api\Controller\Admin\AdminDataController($this->container);
     }
 

@@ -4,9 +4,57 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f042bd08a0ecfb0d95f50aecb259c56c",
-    "content-hash": "a960f553dbf7ba154f26ab13755315e8",
+    "hash": "8d736391d4cacdc63a59a0f87c88892b",
+    "content-hash": "0c0a67fb69bc61a85b2b754ba836fc60",
     "packages": [
+        {
+            "name": "bcncommerce/json-stream",
+            "version": "0.3.0",
+            "target-dir": "Bcn/Component/Json",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/skolodyazhnyy/json-stream.git",
+                "reference": "9ce2aa962bc881fb0222246ba2d6d6e52d1ea5aa"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/skolodyazhnyy/json-stream/zipball/9ce2aa962bc881fb0222246ba2d6d6e52d1ea5aa",
+                "reference": "9ce2aa962bc881fb0222246ba2d6d6e52d1ea5aa",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3"
+            },
+            "require-dev": {
+                "bcncommerce/stream-wrapper": "dev-master",
+                "phpunit/phpunit": "~3.7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Bcn\\Component\\Json\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergey Kolodyazhnyy",
+                    "email": "sergey.kolodyazhnyy@gmail.com"
+                }
+            ],
+            "description": "A bundle of tools to work with JSON in PHP",
+            "keywords": [
+                "json",
+                "parser",
+                "reader",
+                "streaming",
+                "writer"
+            ],
+            "time": "2014-04-27 23:53:40"
+        },
         {
             "name": "cartalyst/sentry",
             "version": "v2.1.6",

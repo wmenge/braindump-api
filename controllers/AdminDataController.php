@@ -12,9 +12,98 @@ use Braindump\Api\Model\Notebook as Notebook;
 use Braindump\Api\Model\Note as Note;
 use Cartalyst\Sentry\Users\Paris\User as User;
 use Braindump\Api\Model\File as File;
+use Bcn\Component\Json\Writer as Writer;
+
+// Temporary solution: allow writer to obey JSON_PRETTY_PRINTER and JSON_NUMERIC_CHECK
+class BraindumpWriter extends Writer {
+
+    protected $options = 0;
+    protected $streamEmpty = true;
+
+    public function __construct($stream, $options = 0)
+    {
+        parent::__construct($stream, $options);
+        $this->options = $options;
+    }
+
+    protected function streamWrite($value)
+    {
+        parent::streamWrite($value);
+        $this->streamEmpty = false;
+    }
+
+    protected function key($key)
+    {
+        parent::key($key);
+        if (($this->options & JSON_PRETTY_PRINT)) $this->streamWrite(' ');
+    }
+
+
+    public function scalar($value)
+    {
+        $this->streamWrite(json_encode($value, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | $this->options));
+        return $this;
+    }
+
+    public function leave()
+    {
+        if (($this->options & JSON_PRETTY_PRINT) && !$this->streamEmpty && count($this->parents) > 0) {
+            $this->streamWrite(PHP_EOL);
+            $this->streamWrite(str_repeat("    ", count($this->parents) - 1));
+        }
+
+        return parent::leave();
+    }
+
+    protected function prefix($key)
+    {
+        switch ($this->context) {
+            case self::CONTEXT_OBJECT_START:
+                $this->streamWrite("{");
+
+                if (($this->options & JSON_PRETTY_PRINT)) {
+                    $this->streamWrite(PHP_EOL);
+                    $this->streamWrite(str_repeat("    ", count($this->parents)));
+                }
+
+                $this->key($key);
+                $this->context = self::CONTEXT_OBJECT;
+                break;
+            case self::CONTEXT_ARRAY_START:
+                $this->streamWrite("[");
+
+                if (($this->options & JSON_PRETTY_PRINT)) {
+                    $this->streamWrite(PHP_EOL);
+                    $this->streamWrite(str_repeat("    ", count($this->parents)));
+                }
+
+                $this->context = self::CONTEXT_ARRAY;
+                break;
+            case self::CONTEXT_OBJECT:
+                $this->streamWrite(',');
+                
+                if (($this->options & JSON_PRETTY_PRINT)) {
+                    $this->streamWrite(PHP_EOL);
+                    $this->streamWrite(str_repeat("    ", count($this->parents)));
+                }
+
+                $this->key($key);
+                break;
+            case self::CONTEXT_ARRAY:
+                $this->streamWrite(',');
+                if (($this->options & JSON_PRETTY_PRINT)) {
+                    $this->streamWrite(PHP_EOL);
+                    $this->streamWrite(str_repeat("    ", count($this->parents)));
+                }
+
+                break;
+        }  
+
+              
+    }
+}
 
 class AdminDataController extends \Braindump\Api\Controller\AdminBaseController {
-
 
     public function __construct(\Interop\Container\ContainerInterface $ci) {
         $this->fileFacade = new \Braindump\Api\Model\FileFacade();
@@ -22,63 +111,132 @@ class AdminDataController extends \Braindump\Api\Controller\AdminBaseController 
         parent::__construct($ci);
     }
 
-
     public function getExport($request, $response) {
 
-        $groups = \ORM::for_table('groups')
-            ->select_many('name', 'permissions', 'created_at', 'updated_at')
-            ->find_array();
+        // ooh boy this smells! slim uses PSR 7 Stream objects, while the JSON writer expects a stream resource
+        // The body object has a stream propertye, but it is protected
+        $reflectionClass = new \ReflectionClass('Slim\Http\Stream');
+        $reflectionProperty = $reflectionClass->getProperty('stream');
+        $reflectionProperty->setAccessible(true);
+        $resource = $reflectionProperty->getValue($response->getBody());
 
-        $users = \ORM::for_table('users')->find_array();
+        $writer = new BraindumpWriter($resource, JSON_PRETTY_PRINT | JSON_NUMERIC_CHECK);
+
+        $writer->enter(Writer::TYPE_OBJECT);                // enter root object
+
+        $groups = \ORM::for_table('groups')
+                    ->select_many('name', 'permissions', 'created_at', 'updated_at')
+                    ->find_array();
+
+        $writer->write("groups", $groups);    // enter items array
+
+        $users = \ORM::for_table('users')->find_result_set();
         
+        $writer->enter("users", Writer::TYPE_ARRAY);
+
         foreach ($users as &$user) {
+
+            $writer->enter(null, Writer::TYPE_OBJECT);
+
+            $userValues = $user->as_array();
+
+            // add user properties
+            foreach($userValues as $key => $value) {
+                if ($key != "id") $writer->write($key, $value);
+            }
+        
             // Add groups to user
             $sentryUser = \Sentry::findUserById($user['id']);
 
             // Get the user groups
             $sentryGroups = $sentryUser->getGroups();
 
+            $writer->enter('groups', Writer::TYPE_ARRAY);
+
             foreach ($sentryGroups as $group) {
-                $user['groups'][] = $group->name;
+                $writer->write(null, $group->name);
             }
+
+            $writer->leave(); // groups
 
             // Add notebooks to user
-            $user['notebooks'] = Notebook::select_many('id', 'title', 'created', 'updated')
+            $notebooks = Notebook::select_many('id', 'title', 'created', 'updated')
                 ->where_equal('user_id', $user['id'])
-                ->find_array();
-            
-            foreach ($user['notebooks'] as &$notebook) {
-                // Add notes to notebook
-                $notebook['notes'] = Note::select_many('title', 'created', 'updated', 'url', 'type', 'content')
-                    ->where_equal('notebook_id', $notebook['id'])
-                    ->find_array();
+                ->find_result_set();
 
-                unset($notebook['id']);
+            $writer->enter('notebooks', Writer::TYPE_ARRAY);
+
+            foreach ($notebooks as &$notebook) {
+
+                $writer->enter(null, Writer::TYPE_OBJECT);
+
+                $notebookValues = $notebook->as_array();
+
+                foreach($notebookValues as $key => $value) {
+                   if ($key != "id") $writer->write($key, $value);
+                }
+
+                // Add notes to notebook
+                $notes = Note::select_many('title', 'created', 'updated', 'url', 'type', 'content')
+                    ->where_equal('notebook_id', $notebook['id'])
+                    ->find_result_set();
+
+                $writer->enter('notes', Writer::TYPE_ARRAY);
+
+                foreach ($notes as &$note) {
+
+                    $writer->enter(null, Writer::TYPE_OBJECT);
+
+                    $noteValues = $note->as_array();
+
+                    foreach($noteValues as $key => $value) {
+                       if ($key != "id") $writer->write($key, $value);
+                    }
+
+                    $writer->leave(); // note
+                }
+
+                $writer->leave(); // notes
+                
+                $writer->leave(); // notebook
             }
+
+            $writer->leave(); // notebooks
 
             // Add files to user
             $files = $this->fileFacade->getFilesForUserId($user['id']);
 
             if (is_array($files) && count($files) > 0) {
-                $user['files'] = $files;
-            
-                // Add content of files to entries (todo: memory issues on larger sets)
-                foreach ($user['files'] as &$fileEntry) {
-                    //$file = new File();
+
+                $writer->enter('files', Writer::TYPE_ARRAY);
+
+                foreach ($files as &$fileEntry)
+                {
+                    $writer->enter(null, Writer::TYPE_OBJECT);
+
+                    $writer->write("logical_filename", $fileEntry['logical_filename']);
+                    $writer->write("original_filename", $fileEntry['original_filename']);
+                    
                     $file = File::create();
                     $file->physical_filename = $fileEntry['physical_filename'];
-                    unset($fileEntry['physical_filename']);
-                    $fileEntry['content'] = base64_encode($file->getContents());
-                }
-            }
-            
-            unset($user['id']);
 
+                    $writer->write("content", base64_encode($file->getContents()));
+
+                    $writer->leave(); // file                
+                }
+
+                $writer->leave(); // files
+            }
+
+            $writer->leave(); // user
         }
 
-        $response = $this->outputJson(['groups' => $groups, 'users' => $users], $response);
+        $writer->leave(); // users
 
-        return $response->withHeader('Content-Disposition', 'attachment; filename=export-' . $_SERVER["HTTP_HOST"] . '-' . date('Y-m-d His') . '.json');
+        $writer->leave(); // global object
+
+        return $response->withHeader('Content-Type', 'application/json;charset=utf-8')
+                        ->withHeader('Content-Disposition', 'attachment; filename=export-' . $_SERVER["HTTP_HOST"] . '-' . date('Y-m-d His') . '.json');
     }
 
     public function postImport($request, $response) {

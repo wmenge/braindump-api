@@ -20,7 +20,8 @@
         "xemlock/htmlpurifier-html5": "dev-master",
         "cartalyst/sentry": "2.1.*",
         "tedivm/fetch": "@stable",
-        "jaz303/phake": "dev-master"
+        "jaz303/phake": "dev-master",
+        "bcncommerce/json-stream": "^0.3.0"
     },
     "require-dev": {
         "mockery/mockery": "0.9.*@dev"
