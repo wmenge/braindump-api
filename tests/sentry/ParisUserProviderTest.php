@@ -33,7 +33,7 @@ class ParisUserProviderTest extends \Braindump\Api\Test\Integration\AbstractDbTe
     public function setup()
     {
         parent::setUp();
-        $this->hasher = $this->getMock('Cartalyst\Sentry\Hashing\HasherInterface', array('hash', 'checkhash'));
+        $this->hasher = $this->createMock('Cartalyst\Sentry\Hashing\HasherInterface', array('hash', 'checkhash'));
         $this->hasher->method('hash')->willReturn('hashed_password_here');
         $this->provider = new Provider($this->hasher);
         User::setHasher($this->hasher);

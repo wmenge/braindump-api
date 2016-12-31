@@ -41,7 +41,7 @@ class ParisUserTest extends \Braindump\Api\Test\Integration\AbstractDbTest
 
     public function testUserPasswordCallsPasswordAttribute()
     {
-        $hasher = $this->getMock('Cartalyst\Sentry\Hashing\HasherInterface', array('hash', 'checkhash'));
+        $hasher = $this->createMock('Cartalyst\Sentry\Hashing\HasherInterface', array('hash', 'checkhash'));
 
         $hasher->method('hash')
                ->with($this->equalTo('unhashed_password_here'))->willReturn('hashed_password_here');
@@ -56,7 +56,7 @@ class ParisUserTest extends \Braindump\Api\Test\Integration\AbstractDbTest
 
     public function testUserPasswordCallsPasswordAttributeDuringHydrate()
     {
-        $hasher = $this->getMock('Cartalyst\Sentry\Hashing\HasherInterface', array('hash', 'checkhash'));
+        $hasher = $this->createMock('Cartalyst\Sentry\Hashing\HasherInterface', array('hash', 'checkhash'));
 
         $hasher->method('hash')
                ->with($this->equalTo('unhashed_password_here'))->willReturn('hashed_password_here');
@@ -633,7 +633,7 @@ class ParisUserTest extends \Braindump\Api\Test\Integration\AbstractDbTest
 
     public function testRecordingLogin()
     {
-        $hasher = $this->getMock('Cartalyst\Sentry\Hashing\HasherInterface', array('hash', 'checkhash'));
+        $hasher = $this->createMock('Cartalyst\Sentry\Hashing\HasherInterface', array('hash', 'checkhash'));
         $hasher->method('hash')->willReturn('hashed_bazbat');
         User::setHasher($hasher);
 

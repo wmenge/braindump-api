@@ -12,7 +12,7 @@ class SortHelperTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->orm = $this->getMock('\MockORMFacade', ['order_by_asc', 'order_by_desc']);
+        $this->orm = $this->createMock('\ORM', ['order_by_asc', 'order_by_desc']);
         $this->orm->method('order_by_asc')->willReturn($this->orm);
         $this->orm->method('order_by_desc')->willReturn($this->orm);
     }

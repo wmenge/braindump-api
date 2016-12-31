@@ -14,7 +14,7 @@ class UserConfigurationTest extends \PHPUnit_Framework_TestCase
     {
         $this->config = UserConfiguration::create();
 
-        $notebookFacadeStub = $this->getMock('\Braindump\Api\Model\NotebookFacade', ['getNotebookForId']);
+        $notebookFacadeStub = $this->createMock('\Braindump\Api\Model\NotebookFacade', ['getNotebookForId']);
         
         // Create a map of arguments to return values.
         $map = [
