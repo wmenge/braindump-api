@@ -22,7 +22,7 @@ class UserConfigurationRoutesTest extends Slim_Framework_TestCase
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/get-configuration-expected-1.json');
 
-        $response = $this->controller->getConfiguration($this->getRequest(), new \Slim\Http\Response());
+        $response = $this->controller->getConfiguration($this->getRequestMock(), new \Slim\Http\Response());
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame($expected, (string)$response->getBody());

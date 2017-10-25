@@ -27,7 +27,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
     {
         $expected = file_get_contents(dirname(__FILE__) . $file);
         
-        $response = $this->controller->getNotes($this->getRequest($headers), new \Slim\Http\Response(), $args);
+        $response = $this->controller->getNotes($this->getRequestMock($headers), new \Slim\Http\Response(), $args);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame($expected, (string)$response->getBody());
@@ -45,14 +45,14 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testGetNotesForUnknownNotebook()
     {
-        $response = $this->controller->getNotes($this->getRequest(), new \Slim\Http\Response(), [ 'id' => 99 ]);
+        $response = $this->controller->getNotes($this->getRequestMock(), new \Slim\Http\Response(), [ 'id' => 99 ]);
 
         $this->assertEquals(404, $response->getStatusCode());
     }
 
     public function testGetNotesForNotebookBelongingToDifferentUser()
     {
-        $response = $this->controller->getNotes($this->getRequest(), new \Slim\Http\Response(), [ 'id' => 3 ]);
+        $response = $this->controller->getNotes($this->getRequestMock(), new \Slim\Http\Response(), [ 'id' => 3 ]);
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -60,7 +60,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/get-notes-expected-5.json');
         
-        $response = $this->controller->getNote($this->getRequest(), new \Slim\Http\Response(), [ 'note_id' => 1 ]);
+        $response = $this->controller->getNote($this->getRequestMock(), new \Slim\Http\Response(), [ 'note_id' => 1 ]);
         
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame($expected, (string)$response->getBody());
@@ -68,7 +68,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testGetUnkownNote()
     {
-        $response = $this->controller->getNote($this->getRequest(), new \Slim\Http\Response(), [ 'note_id' => 99 ]);
+        $response = $this->controller->getNote($this->getRequestMock(), new \Slim\Http\Response(), [ 'note_id' => 99 ]);
         
         $this->assertEquals(404, $response->getStatusCode());
         // TODO: assert message
@@ -79,7 +79,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/get-notes-expected-5.json');
         
-        $response = $this->controller->getNote($this->getRequest(), new \Slim\Http\Response(), [ 'notebook_id' => 1, 'note_id' => 1 ]);
+        $response = $this->controller->getNote($this->getRequestMock(), new \Slim\Http\Response(), [ 'notebook_id' => 1, 'note_id' => 1 ]);
         
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame($expected, (string)$response->getBody());
@@ -87,28 +87,28 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testGetNoteInWrongNotebook()
     {
-        $response = $this->controller->getNote($this->getRequest(), new \Slim\Http\Response(), [ 'notebook_id' => 2, 'note_id' => 1 ]);
+        $response = $this->controller->getNote($this->getRequestMock(), new \Slim\Http\Response(), [ 'notebook_id' => 2, 'note_id' => 1 ]);
         
         $this->assertEquals(302, $response->getStatusCode());
     }
 
     public function testGetNoteInUnknownNotebook()
     {
-        $response = $this->controller->getNote($this->getRequest(), new \Slim\Http\Response(), [ 'notebook_id' => 99, 'note_id' => 1 ]);
+        $response = $this->controller->getNote($this->getRequestMock(), new \Slim\Http\Response(), [ 'notebook_id' => 99, 'note_id' => 1 ]);
         
         $this->assertEquals(404, $response->getStatusCode());
     }
 
     public function testGetNoteFromDifferentUsersNotebook()
     {
-        $response = $this->controller->getNote($this->getRequest(), new \Slim\Http\Response(), [ 'notebook_id' => 3, 'note_id' => 4 ]);
+        $response = $this->controller->getNote($this->getRequestMock(), new \Slim\Http\Response(), [ 'notebook_id' => 3, 'note_id' => 4 ]);
         
         $this->assertEquals(404, $response->getStatusCode());
     }
 
     public function testGetNoteFromDifferentUser()
     {
-        $response = $this->controller->getNote($this->getRequest(), new \Slim\Http\Response(), [ 'note_id' => 4 ]);
+        $response = $this->controller->getNote($this->getRequestMock(), new \Slim\Http\Response(), [ 'note_id' => 4 ]);
         
         $this->assertEquals(404, $response->getStatusCode());
     }
@@ -117,7 +117,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/post-notes-expected-1.json');
         
-        $request = $this->getRequest();
+        $request = $this->getRequestMock();
         $request->getBody()->write('{ "title": "New Note", "type": "Text", "content": "Note content" }');
 
         $response = $this->controller->postNote($request, new \Slim\Http\Response(), [ 'id' => 1 ]);
@@ -135,7 +135,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testPostInvalidNote()
     {
-        $request = $this->getRequest();
+        $request = $this->getRequestMock();
         $request->getBody()->write('{ }');
 
         $response = $this->controller->postNote($request, new \Slim\Http\Response(), [ 'id' => 1 ]);        
@@ -152,7 +152,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testPostNoteToInvalidNotebook()
     {
-        $request = $this->getRequest();
+        $request = $this->getRequestMock();
         $request->getBody()->write('{ "title": "New Note", "type": "Text" }');
 
         $response = $this->controller->postNote($request, new \Slim\Http\Response(), [ 'id' => 99 ]);        
@@ -169,7 +169,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testPostNoteToNotebookOfDifferentUser()
     {
-        $request = $this->getRequest();
+        $request = $this->getRequestMock();
         $request->getBody()->write('{ "title": "New Note", "type": "Text" }');
 
         $response = $this->controller->postNote($request, new \Slim\Http\Response(), [ 'id' => 3 ]);        
@@ -189,7 +189,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/put-notes-expected-1.json');
         
-        $request = $this->getRequest();
+        $request = $this->getRequestMock();
         $request->getBody()->write('{ "title": "Updated note 1", "type": "Text", "content": "Updated Note content" }');
 
         $response = $this->controller->putNote($request, new \Slim\Http\Response(), [ 'notebook_id' => 1, 'note_id' => 1 ]);        
@@ -211,7 +211,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/post-notes-expected-1.json');
         
-        $request = $this->getRequest();
+        $request = $this->getRequestMock();
         $request->getBody()->write('{ "title": "New Note", "type": "Text", "content": "Note content" }');
 
         $response = $this->controller->putNote($request, new \Slim\Http\Response(), [ 'notebook_id' => 1, 'note_id' => 5 ]);        
@@ -229,7 +229,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testPutInvalidNote()
     {
-        $request = $this->getRequest();
+        $request = $this->getRequestMock();
         $request->getBody()->write('{  }');
 
         $response = $this->controller->putNote($request, new \Slim\Http\Response(), [ 'notebook_id' => 1, 'note_id' => 1 ]);        
@@ -247,7 +247,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testPutNoteOfDifferentUser()
     {
-        $request = $this->getRequest();
+        $request = $this->getRequestMock();
         $request->getBody()->write('{ "title": "New Note", "type": "Text", "content": "Note content" }');
 
         $response = $this->controller->putNote($request, new \Slim\Http\Response(), [ 'notebook_id' => 3, 'note_id' => 4 ]);        
@@ -267,7 +267,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/put-notes-expected-1.json');
         
-        $request = $this->getRequest();
+        $request = $this->getRequestMock();
         $request->getBody()->write('{ "title": "Updated note 1", "type": "Text", "content": "Updated Note content" }');
 
         $response = $this->controller->putNote($request, new \Slim\Http\Response(), [ 'notebook_id' => 99, 'note_id' => 1 ]);        
@@ -288,7 +288,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/post-notes-expected-1.json');
         
-        $request = $this->getRequest();
+        $request = $this->getRequestMock();
         $request->getBody()->write('{ "title": "New Note", "type": "Text", "content": "Note content" }');
 
         $response = $this->controller->putNote($request, new \Slim\Http\Response(), [ 'note_id' => 5 ]);        
@@ -309,7 +309,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testDeleteNote()
     {
-        $response = $this->controller->deleteNote($this->getRequest(), new \Slim\Http\Response(), [ 'note_id' => 1 ]);        
+        $response = $this->controller->deleteNote($this->getRequestMock(), new \Slim\Http\Response(), [ 'note_id' => 1 ]);        
 
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -323,7 +323,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testDeleteUnknownNote()
     {
-        $response = $this->controller->deleteNote($this->getRequest(), new \Slim\Http\Response(), [ 'note_id' => 99 ]);        
+        $response = $this->controller->deleteNote($this->getRequestMock(), new \Slim\Http\Response(), [ 'note_id' => 99 ]);        
 
         $this->assertEquals(404, $response->getStatusCode());
         // TODO: assert message
@@ -339,7 +339,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testDeleteNoteOfDifferentUser()
     {
-        $response = $this->controller->deleteNote($this->getRequest(), new \Slim\Http\Response(), [ 'note_id' => 4 ]);        
+        $response = $this->controller->deleteNote($this->getRequestMock(), new \Slim\Http\Response(), [ 'note_id' => 4 ]);        
 
         $this->assertEquals(404, $response->getStatusCode());
         // TODO: assert message
@@ -355,7 +355,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testDeleteNoteInUnknownNotebook()
     {
-        $response = $this->controller->deleteNote($this->getRequest(), new \Slim\Http\Response(), [ 'notebook_id' => 99, 'note_id' => 4 ]);        
+        $response = $this->controller->deleteNote($this->getRequestMock(), new \Slim\Http\Response(), [ 'notebook_id' => 99, 'note_id' => 4 ]);        
 
         $this->assertEquals(404, $response->getStatusCode());
         // TODO: assert message
@@ -371,7 +371,7 @@ class NoteRoutesTest extends Slim_Framework_TestCase
 
     public function testDeleteNoteInNotebookOfDifferentUser()
     {
-        $response = $this->controller->deleteNote($this->getRequest(), new \Slim\Http\Response(), [ 'notebook_id' => 3, 'note_id' => 4 ]);        
+        $response = $this->controller->deleteNote($this->getRequestMock(), new \Slim\Http\Response(), [ 'notebook_id' => 3, 'note_id' => 4 ]);        
 
         $this->assertEquals(404, $response->getStatusCode());
         // TODO: assert message

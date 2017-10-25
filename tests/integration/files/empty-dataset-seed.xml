@@ -1,2 +1,9 @@
 <?xml version="1.0" ?>
-<dataset></dataset>
+<dataset>
+	<groups />
+    <users /> 
+    <users_groups />
+    <notebook />
+    <note />
+    <file />
+</dataset>

@@ -19,6 +19,28 @@ function base64_encode($content)
     return $content;
 }
 
+function filesize($filename)
+{
+    return 1;
+}
+
+function md5_file($filename) {
+    return '1';
+}
+
+function finfo_file($resource, $path) {
+    return 'application/pdf';
+}
+
+$unique_id = 0;
+
+function uniqid() {
+    global $unique_id;
+    $unique_id++;
+    return 'unique_name' . $unique_id;
+    
+}
+
 namespace Braindump\Api\Model;
 
 function file_get_contents($filename)
@@ -27,7 +49,6 @@ function file_get_contents($filename)
 }
 
 // Mock Sentry class 
-// (Try to remove from integration tests)
 class SentryFacadeMock
 {
     public static $id = 1;
@@ -59,14 +80,38 @@ class SentryFacadeMock
     {
         return true;
     }
+
+    public static function createGroup($groupArrray) {
+        
+        $group = \Cartalyst\Sentry\Groups\Paris\Group::create();
+        $group->hydrate($groupArrray);
+        $group->save();
+
+        return $group;
+    }
+
+    public static function createUser($userArray) {
+
+        $user = \Cartalyst\Sentry\Users\Paris\User::create();
+        $user->hydrate($userArray);
+        $user->save();
+
+        return $user;
+    }
+
+    public static function findGroupByName($name) {
+        return \Cartalyst\Sentry\Groups\Paris\Group::where_equal('name', $name)->find_one();
+    }
 }
 
 namespace Braindump\Api\Test\Integration;
 
+// Todo: Convert to mock that can be asserted to be called with error or success mesagges
 class FlashMessagesMock
 {
+    public static function addMessage($arg1, $arg2) {
 
-
+    }
 }
 
 // Create the Sentry alias
@@ -148,19 +193,17 @@ abstract class Slim_Framework_TestCase extends AbstractDbTest
             'debug'          => false,
             'mode'           => 'testing',
         ]);
-
         
         $this->container = $app->getContainer();
         $this->container['renderer'] = new \Slim\Views\PhpRenderer(__DIR__ . '/../templates/');
-        $this->container['flash'] = function () { return new \Slim\Flash\Messages(); };
         $this->container['flash'] = function () { return new FlashMessagesMock(); };
         
-
         parent::setUp();
     }
 
-    protected function getRequest($headers = []) {
+    protected function getRequestMock($headers = []) {
         $environment = \Slim\Http\Environment::mock($headers);
-        return Request::createFromEnvironment($environment);
+        $body = new RequestBody();
+        return Request::createFromEnvironment($environment)->withBody($body);
     }
 }
