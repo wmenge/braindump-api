@@ -16,7 +16,7 @@
     "users": [
         {
             "email": "administrator@braindump-api.local",
-            "password": "",
+            "password": "test",
             "permissions": "",
             "activated": 1,
             "activation_code": null,
@@ -81,7 +81,7 @@
         },
         {
             "email": "user@braindump-api.local",
-            "password": "",
+            "password": "test",
             "permissions": "",
             "activated": 1,
             "activation_code": null,

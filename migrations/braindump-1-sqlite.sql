@@ -2,40 +2,6 @@ PRAGMA foreign_keys = false;
 PRAGMA ignore_check_constraints = false;
 
 -- ----------------------------
---  Table structure for "note"
--- ----------------------------
-DROP TABLE IF EXISTS "note";
-CREATE TABLE "note" (
-	 "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-	 "notebook_id" integer NOT NULL REFERENCES "notebook" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
-	 "title" text NOT NULL,
-	 "created" integer NOT NULL,
-	 "updated" integer NOT NULL,
-	 "url" text,
-	 "type" text NOT NULL CHECK (type IN ('HTML', 'Text')),
-	 "content" text,
-	 "user_id" integer REFERENCES "users" ("id") ON UPDATE CASCADE ON DELETE CASCADE	 
-);
-
-CREATE INDEX IF NOT EXISTS "user" ON "note" ( "user_id" );
-CREATE INDEX IF NOT EXISTS "notebook_id" ON "note" ( "notebook_id" );
-
--- ----------------------------
---  Table structure for "notebook"
--- ----------------------------
-DROP TABLE IF EXISTS "notebook";
-CREATE TABLE IF NOT EXISTS "notebook" (
-	 "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-	 "title" text NOT NULL,
-	 "created" integer NOT NULL,
-	 "updated" integer NOT NULL,
-	 "user_id" integer REFERENCES "users" ("id") ON UPDATE CASCADE ON DELETE CASCADE
-);
-
-CREATE INDEX IF NOT EXISTS "user" ON "notebook" ( "user_id" );
-CREATE UNIQUE INDEX IF NOT EXISTS "unique_title" ON "notebook" ( "title", "user_id" );
-
--- ----------------------------
 --  Table structure for "groups"
 -- ----------------------------
 DROP TABLE IF EXISTS "groups";
@@ -110,3 +76,37 @@ CREATE TABLE "users_groups" (
 
 PRAGMA foreign_keys = true;
 PRAGMA ignore_check_constraints = false;
+
+-- ----------------------------
+--  Table structure for "note"
+-- ----------------------------
+DROP TABLE IF EXISTS "note";
+CREATE TABLE "note" (
+   "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+   "notebook_id" integer NOT NULL REFERENCES "notebook" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
+   "title" text NOT NULL,
+   "created" integer NOT NULL,
+   "updated" integer NOT NULL,
+   "url" text,
+   "type" text NOT NULL CHECK (type IN ('HTML', 'Text')),
+   "content" text,
+   "user_id" integer REFERENCES "users" ("id") ON UPDATE CASCADE ON DELETE CASCADE   
+);
+
+CREATE INDEX IF NOT EXISTS "user" ON "note" ( "user_id" );
+CREATE INDEX IF NOT EXISTS "notebook_id" ON "note" ( "notebook_id" );
+
+-- ----------------------------
+--  Table structure for "notebook"
+-- ----------------------------
+DROP TABLE IF EXISTS "notebook";
+CREATE TABLE IF NOT EXISTS "notebook" (
+   "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+   "title" text NOT NULL,
+   "created" integer NOT NULL,
+   "updated" integer NOT NULL,
+   "user_id" integer REFERENCES "users" ("id") ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS "user" ON "notebook" ( "user_id" );
+CREATE UNIQUE INDEX IF NOT EXISTS "unique_title" ON "notebook" ( "title", "user_id" );
