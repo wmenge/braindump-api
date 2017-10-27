@@ -260,11 +260,15 @@ class AdminDataController extends \Braindump\Api\Controller\AdminBaseController 
 
     public function postImport($request, $response) {
 
+        // change execution time limit
+        set_time_limit (600);
+
         $groups = 0;
         $users = 0;
         $notebooks = 0;
         $notes = 0;
         $files = 0;
+        $resource = null;
 
         if ($request->getBody()->getSize() > 0) {
 
@@ -340,7 +344,7 @@ class AdminDataController extends \Braindump\Api\Controller\AdminBaseController 
 
                     if (!Notebook::isValid((object)$notebookArray)) {
                         \ORM::get_db()->rollback();
-
+                        error_log('Invalid data: ' . var_export($notebookArray, true));
                         $this->flash->addMessage('error', 'Invalid data');
                         return $response->withStatus(302)->withHeader('Location', '/admin');
                     }
@@ -364,6 +368,7 @@ class AdminDataController extends \Braindump\Api\Controller\AdminBaseController 
 
                         if (!Note::isValid((object)$noteArray)) {
                             \ORM::get_db()->rollback();
+                            error_log('Invalid data: ' . var_export($noteArray, true));
                             $this->flash->addMessage('error', 'Invalid data');
                             return $response->withStatus(302)->withHeader('Location', '/admin');
                         }
@@ -402,6 +407,7 @@ class AdminDataController extends \Braindump\Api\Controller\AdminBaseController 
                         
                         if (!file_put_contents($path, base64_decode($fileArray['content']))) {
                             \ORM::get_db()->rollback();
+                            error_log('Invalid data: ' . var_export($fileArray, true));
                             $this->flash->addMessage('error', 'Invalid data');
                             return $response->withStatus(302)->withHeader('Location', '/admin');
                         }
@@ -417,6 +423,7 @@ class AdminDataController extends \Braindump\Api\Controller\AdminBaseController 
 
                         if (!File::isValid($fileObj)) {
                             \ORM::get_db()->rollback();
+                            error_log('Invalid data: ' . var_export($fileObj, true));
                             $this->flash->addMessage('error', 'Invalid data');
                             return $response->withStatus(302)->withHeader('Location', '/admin');
                         }
@@ -437,179 +444,6 @@ class AdminDataController extends \Braindump\Api\Controller\AdminBaseController 
 
                 $reader->leave(); // user
             }
-
-            /*\ORM::get_db()->beginTransaction();
-
-            // TODO: What about currently logged in users?
-            // ...delete existing data...
-            \ORM::for_table('note')->delete_many();
-            \ORM::for_table('notebook')->delete_many();
-            \ORM::for_table('throttle')->delete_many();
-            \ORM::for_table('users_groups')->delete_many();
-            \ORM::for_table('users')->delete_many();
-            \ORM::for_table('groups')->delete_many();
-            \ORM::for_table('file')->delete_many();
-
-            // ...create groups...
-            $groups = $reader->read("groups");
-            print_r($groups);
-
-            foreach ($groups as $group) {
-                \Sentry::createGroup((array)$group);
-            }
-
-            $reader->enter("users", Reader::TYPE_ARRAY);
-
-            // ...create users....
-            while ($reader->enter()) {
-
-                //print_r($reader);
-
-                $sentryUser = \Cartalyst\Sentry\Users\Paris\User::create();
-        print_r('///BEFORE USER///');
-
-
-                // Read user attributes (Expected that flat properties are provided before nested arrays/object)
-                while($token = $reader->readToken()) {
-                    print_r($token);
-                    $sentryUser->set($token['key'], $token['content']);
-                    $reader->next();
-                }
-print_r('///AFTER USER///');
-
-
-
-                //print_r('hallo');
-
-                //print_r($user->as_array());
-
-                $sentryUser->save();
-               
-                // Bad hack: Password and activation code are already hashed
-                //           Sentry will rehash them, revert this
-                //$userArray = $sentryUser->as_array();
-                //$userArray['id'] = $sentryUser->id;
-                //$sentryUser->hydratePlain($userArray);
-                //$sentryUser->save();
-               
-                // ... assign groups to suers
-                //if (property_exists($user, 'groups')) {
-                $groups = $reader->read("groups");
-
-                foreach ($groups as $groupName) {
-                    $sentryUser->addGroup(\Sentry::findGroupByName($groupName));
-                }
-
-                $reader->enter("notebooks");
-
-                // ...recreate notebooks and notes for each user
-                while ($reader->enter()) {
-
-                    $notebookArray = []; //new \stdClass(); //Notebook::create();
-
-                    print_r('///BEFORE NOTEBOOK///');
-
-                    while($token = $reader->readToken()) {
-                        print_r($token);
-                        $notebookArray[$token['key']] = $token['content'];
-                        $reader->next();
-                    }
-
-                    print_r('///AFTER NOTEBOOK///');
-
-        
-                    if (!Notebook::isValid((object)$notebookArray)) {
-                        \ORM::get_db()->rollback();
-
-                        $this->flash->addMessage('error', 'Invalid data');
-                        return $response->withStatus(302)->withHeader('Location', '/admin');
-                    }
-
-                    $notebook = Notebook::create();
-                    $notebook->map((object)$notebookArray, true);
-
-                    $notebook->user_id = $sentryUser->id;
-                    $notebook->save();
-                    $notebooks++;
-
-                    $reader->enter("notes");
-
-                    //foreach ($notebookRecord->notes as $noteRecord) {
-                    while ($reader->enter()) {
-
-                        print_r('note!!!');
-
-                        $noteArray = [];//new \stdClass(); //Notebook::create();
-
-                        while($token = $reader->readToken()) {
-                            $noteArray[$token['key']] = $token['content'];
-                            $reader->next();
-                        }
-
-                        print_r($noteArray);
-
-                        if (!Note::isValid((object)$noteArray)) {
-                            \ORM::get_db()->rollback();
-                            $this->flash->addMessage('error', 'Invalid data');
-                            return $response->withStatus(302)->withHeader('Location', '/admin');
-                        }
-
-                        $note = Note::create();
-                        $note->map($notebook, (object)$noteArray, true);
-                        $note->user_id = $sentryUser->id;
-                        $note->save(false);
-                        $notes++;
-
-                        //$reader->leave(); // note
-                    }
-
-                    //$reader->leave(); // notes
-
-                }
-
-                $reader->leave(); // notebooks
-
-            }
-
-            $reader->leave(); // users
-
-
-            // recreate files
-            /*if (property_exists($user, 'files')) {
-                foreach ($user->files as $fileRecord) {
-
-                    // Store file (assume trusted)
-                    $filename = uniqid();
-                    $path = File::$config['upload_directory'] . $filename;
-                    
-                    if (!file_put_contents($path, base64_decode($fileRecord->content))) {
-                        \ORM::get_db()->rollback();
-                        $this->flash->addMessage('error', 'Invalid data');
-                        return $response->withStatus(302)->withHeader('Location', '/admin');
-                    }
-                    
-                    $fileObj = $input = (object)[
-                        'logical_filename'  => $fileRecord->logical_filename,
-                        'physical_filename' => $filename,
-                        'original_filename'  => $fileRecord->original_filename,
-                        'mime_type'         => finfo_file(finfo_open(FILEINFO_MIME_TYPE), $path),
-                        'hash'              => md5_file($path),
-                        'size'              => filesize($path),
-                    ];
-
-                    if (!File::isValid($fileObj)) {
-                        \ORM::get_db()->rollback();
-                        $this->flash->addMessage('error', 'Invalid data');
-                        return $response->withStatus(302)->withHeader('Location', '/admin');
-                    }
-
-                    $file = File::create();
-                    $file->map($fileObj);
-                    $file->user_id = $sentryUser->id;
-                    $file->save();
-                    $files++;
-                }
-            }*/
 
             $reader->leave(); // object
 

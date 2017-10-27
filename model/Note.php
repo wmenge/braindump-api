@@ -60,7 +60,7 @@ class Note extends \Model
         return
             is_object($data) &&
             property_exists($data, 'title') &&
-            is_string($data->title) &&
+            is_scalar($data->title) &&
             !empty($data->title) &&
             property_exists($data, 'type') &&
             in_array($data->type, [Note::TYPE_TEXT, Note::TYPE_HTML]);

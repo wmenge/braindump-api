@@ -41,7 +41,7 @@ class Notebook extends \Model
         return
             is_object($data) &&
             property_exists($data, 'title') &&
-            is_string($data->title) &&
+            is_scalar($data->title) &&
             !empty($data->title);
     }
 
