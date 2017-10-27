@@ -38,7 +38,8 @@ $app->refererringRoute = function () use ($app) {
 
 ORM::configure($container->get('settings')['braindump']['database_config']);
 
-$app->get('/', function ($request, $response) {
+$app->get('/', function ($request, $response) use ($app) {
+	$container = $app->getContainer();
 	$redirectToClient = $container->get('settings')['braindump']['redirect_to_client'];
 
 	if ($redirectToClient) {
