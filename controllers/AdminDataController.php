@@ -642,7 +642,7 @@ print_r('///AFTER USER///');
 
             // Create a default user
             $user = \Sentry::createUser([
-                'email'      => 'administrator@braindump-api.local',
+                'email'      => $ci->get('settings')['braindump']['initial_admin_user'],
                 'first_name' => 'Braindump',
                 'last_name'  => 'Administrator',
                 'password'   => 'welcome',

@@ -10,34 +10,53 @@ use AFM\Rsync\Rsync;
 desc('Setup Braindump API');
 task('setup', function() {
         
-        // Setup DB connection
-        $braindumpConfig = (require __DIR__ . '/config/braindump-config.php');
-        ORM::configure($braindumpConfig['database_config']);
+    // Setup DB connection
+    $braindumpConfig = (require __DIR__ . '/config/braindump-config.php');
+    ORM::configure($braindumpConfig['database_config']);
 
-        $dbFacade = new \Braindump\Api\Lib\DatabaseFacade(
-            \ORM::get_db(),
-            (require( __DIR__ . '/migrations/migration-config.php')));
-        
-        // Todo: first create an export of the db
-        \ORM::get_db()->beginTransaction();
-        $dbFacade->createDatabase();
+    $dbFacade = new \Braindump\Api\Lib\DatabaseFacade(
+        \ORM::get_db(),
+        (require( __DIR__ . '/migrations/migration-config.php')));
+    
+    // Todo: first create an export of the db
+    \ORM::get_db()->beginTransaction();
+    $dbFacade->createDatabase();
 
-        // Create a defauld user
-        $user = \Sentry::createUser([
-            'email'      => 'administrator@braindump-api.local',
-            'first_name' => 'Braindump',
-            'last_name'  => 'Administrator',
-            'password'   => 'welcome',
-            'activated'  => true,
-        ]);
+    // Create a default user
+    $user = \Sentry::createUser([
+        'email'      => $braindumpConfig['initial_admin_user'],
+        'first_name' => 'Braindump',
+        'last_name'  => 'Administrator',
+        'password'   => 'welcome',
+        'activated'  => true,
+    ]);
 
-        $user->addGroup(\Sentry::findGroupByName('Administrators'));
+    $user->addGroup(\Sentry::findGroupByName('Administrators'));
 
-        \ORM::get_db()->commit();
-        echo 'Setup task has been performed' . PHP_EOL;
-    });
+    \ORM::get_db()->commit();
+    echo 'Setup task has been performed' . PHP_EOL;
+});
 
-desc('Sync Braindump API');
+desc('Reset Administrator user');
+task('reset_admin', function() {
+
+    // Setup DB connection
+    $braindumpConfig = (require __DIR__ . '/config/braindump-config.php');
+    ORM::configure($braindumpConfig['database_config']);
+
+    $user = \Sentry::findUserByLogin($braindumpConfig['initial_admin_user']);
+
+    $user->password = 'welcome';
+    $user->save();
+
+    $throttle = \Sentry::findThrottlerByUserId($user->id);
+    $throttle->unsuspend();
+    $throttle->unban();
+    echo 'Administrator has been reset' . PHP_EOL;
+
+});
+
+/*desc('Sync Braindump API');
 task('sync', function() {
     //rsync -avz -e 'ssh' --exclude-from 'rsync_exclude.txt' '/www/braindump/' 'wmenge@10.0.0.2:/mnt/sdb2/www/vhosts/braindump'
     // pakeRSync::sync_to_server(__DIR__, '10.0.0.2', '/mnt/sdb2/www/vhosts/braindump-api', 'wmenge');
@@ -54,4 +73,4 @@ task('sync', function() {
     //$rsync->setOptionalParameters(['Wilco'=>'test']);
     echo $rsync->getCommand($origin, $target) . PHP_EOL;
     $rsync->sync($origin, $target);
-});
+});*/

@@ -30,6 +30,10 @@ Currently, storing and retrieving simple HTML notes is supported. If this projec
 * Paste images/attachments
 * Security (Encryption of notes)
 
+Run Phakefiles locally
+----------------------
+vendor/bin/phake taskname
+
 ###Data Model
 
 ####Notebook
