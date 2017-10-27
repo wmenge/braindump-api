@@ -39,7 +39,14 @@ $app->refererringRoute = function () use ($app) {
 ORM::configure($container->get('settings')['braindump']['database_config']);
 
 $app->get('/', function ($request, $response) {
-    return $response->withStatus(302)->withHeader('Location', '/admin');
+	$redirectToClient = $container->get('settings')['braindump']['redirect_to_client'];
+
+	if ($redirectToClient) {
+	    return $response->withStatus(302)->withHeader('Location', '/client');
+	} else {
+    	return $response->withStatus(302)->withHeader('Location', '/admin');
+	}
+
 });
 
 require_once '../routes/admin.php';

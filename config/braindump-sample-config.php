@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'redirect_to_client' => true,
     'client_cors_domain' => 'http://braindump-client.local',
     'database_config' => [ 'connection_string' => 'sqlite:' . __DIR__ . '/../data/braindump.sqlite3' ],
     'imap_config' => [
