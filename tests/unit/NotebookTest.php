@@ -31,7 +31,7 @@ class NotebookTest extends \PHPUnit_Framework_TestCase
             ['Invalid string', false],
             [['field' => 'an array with a string'], false],
             [(object)['field' => 'an obect with an incorrect property'], false],
-            [(object)['title' => 42], false],
+            [(object)['title' => 42], true],
             [(object)['title' => 'a notebook with a title'], true],
         ];
     }
@@ -53,7 +53,7 @@ class NotebookTest extends \PHPUnit_Framework_TestCase
             ['Invalid string', []],
             [['field' => 'an array with a string'], []],
             [(object)['field' => 'an obect with an incorrect property'], []],
-            [(object)['title' => 42], []],
+            [(object)['title' => 42], ['title' => '42']],
             [(object)['title' => 'Notebook title'], ['title' => 'Notebook title']],
         ];
     }
