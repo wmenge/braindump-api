@@ -1,7 +1,5 @@
 <?php namespace Braindump\Api\Controller;
 
-//require_once __DIR__ . '/BaseController.php';
-//require_once(__DIR__ . '/../model/FileFacade.php');
 require_once __DIR__ . '/../vendor/autoload.php';
 
 // todo: refactor into Upload
@@ -10,58 +8,80 @@ use Cartalyst\Sentry\Users\UserNotFoundException;
 
 class Oauth2Controller extends \Braindump\Api\Controller\BaseController {
 
-    private $provider;
+    private $configurations;
 
     public function __construct(\Interop\Container\ContainerInterface $ci) {
-        $this->provider = $this->getGitHubProvider();
+        $this->configurations = $ci->get('settings')['braindump']['oauth2'];
         parent::__construct($ci);
     }
 
-    // TODO: Proper dependency injections
-    private function getGitHubProvider() {
-        return new \League\OAuth2\Client\Provider\Github([
-            'clientId'          => '771d2819203a7ea0b664',
-            'clientSecret'      => 'ef6ea43a050a90d03d2e1b5e5d15037606432c17',
-            'redirectUri'       => 'http://localhost:8080/oauth2/callback',
-        ]);
+    private function getProvider($name) {
+        switch ($name) {
+            case "github":
+                return $this->getGitHubProvider($this->configurations[$name]);
+                break;
+            case "google":
+                return $this->getGoogleProvider($this->configurations[$name]);
+                break;
+            default:
+                exit('Oh dear...');
+                break;
+        }
     }
-   
-    public function login($request, $response, $args) {
 
+    private function getGitHubProvider($configuration) {
+        return new \League\OAuth2\Client\Provider\Github($configuration);
+    }
+
+    private function getGoogleProvider($configuration) {
+        return new \League\OAuth2\Client\Provider\Google($configuration);
+    }   
+
+    public function login($request, $response, $args) {
+        $providerName = $args['provider'];
+        
+        // TODO: If logging in with different provider, first log out
         if (isset($_SESSION['access_token'])) {
-            $this->loginWithAccessToken(unserialize($_SESSION['access_token']));
+            $token = unserialize($_SESSION['access_token']);
+            $this->loginWithAccessToken($providerName, $token);
         } else {
             // If we don't have an authorization code then get one
-            $authUrl = $this->provider->getAuthorizationUrl();
-            $_SESSION['oauth2state'] = $this->provider->getState();
+            $provider = $this->getProvider($providerName);
+            $authUrl = $provider->getAuthorizationUrl();
+            $_SESSION['oauth2state'] = $provider->getState();
             header('Location: '.$authUrl);
             exit;
         }
     }
 
-
     public function callback($request, $response, $args) {
+
+        $providerName = $args['provider'];
+
         if (empty($_GET['state']) || ($_GET['state'] !== $_SESSION['oauth2state'])) {
             unset($_SESSION['oauth2state']);
             exit('Invalid state');
         } else {
+            $provider = $this->getProvider($providerName);
+
             // Try to get an access token (using the authorization code grant)
-            $token = $this->provider->getAccessToken('authorization_code', [
+            $token = $provider->getAccessToken('authorization_code', [
                 'code' => $_GET['code']
             ]);
 
             $_SESSION['access_token'] = serialize($token);
 
-            $this->loginWithAccessToken($token);
+            $this->loginWithAccessToken($providerName, $token);
         }
     }
 
-    private function loginWithAccessToken($accessToken) {
+    private function loginWithAccessToken($providerName, $accessToken) {
         // Optional: Now you have a token you can look up a users profile data
         try {
+            $provider = $this->getProvider($providerName);
             // We got an access token, let's now get the user's details
-            $resourseOwner = $this->provider->getResourceOwner($accessToken);
-            $login = sprintf('github.com:%s', $resourseOwner->getId());
+            $resourseOwner = $provider->getResourceOwner($accessToken);
+            $login = sprintf('%s:%s', $providerName, $resourseOwner->getId());
             
             $user = null;
 
@@ -89,5 +109,18 @@ class Oauth2Controller extends \Braindump\Api\Controller\BaseController {
         header('Location: /');
         exit;
     }
+
+    public function logout($request, $response) {
+
+        try {
+            \Sentry::logout();
+            session_destroy();
+        } catch (\Exception $e) {
+          /// $this->flash->addMessage('error', $e->getMessage());
+        }
+
+        header('Location: /');
+        exit;
+   }
 
 }

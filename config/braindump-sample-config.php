@@ -35,4 +35,17 @@ return [
             'text/plain'                                                                => 'attachment'
         ],
      ],
+     'oauth2' => [
+        'yourprovider' => [
+            'clientId'           => 'someid',
+            'clientSecret'       => 'somesecret',
+            'redirectUri'        => 'redirecturl',
+        ],
+        'anotherprovider' => [
+            'clientId'           => 'someid',
+            'clientSecret'       => 'somesecret',
+            'redirectUri'        => 'redirecturl',
+            'someObscureSetting' => 'someObscureValue',
+        ]
+     ]
 ];

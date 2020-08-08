@@ -25,10 +25,13 @@
         <h3>Or..</h3>
       </div>
 
-      <form action="/oauth2/login">
+      <form action="/oauth2/github/login">
         <button type="submit" class="btn btn-primary btn-lg">Log in with GitHub</button>
       </form>
 
+      <form action="/oauth2/google/login">
+        <button type="submit" class="btn btn-primary btn-lg">Log in with Google</button>
+      </form>
     </div>
 
   </div>

@@ -33,6 +33,7 @@ class AdminLoginController extends \Braindump\Api\Controller\AdminBaseController
 
         try {
             \Sentry::logout();
+            session_destroy();
         } catch (\Exception $e) {
            $this->flash->addMessage('error', $e->getMessage());
         }
