@@ -20,6 +20,17 @@
       </form>
     </div>
 
+    <div class="jumbotron">
+      <div class="page-header">
+        <h3>Or..</h3>
+      </div>
+
+      <form action="/oauth2/login">
+        <button type="submit" class="btn btn-primary btn-lg">Log in with GitHub</button>
+      </form>
+
+    </div>
+
   </div>
 
   <div class="col-sm-3"></div>

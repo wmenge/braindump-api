@@ -65,15 +65,6 @@ class UserProvider implements UserProviderInterface {
         }
 
         return $user;
-
-        /*$model = $this->createModel();
-
-        if ( ! $user = $model->newQuery()->find($id))
-        {
-            throw new UserNotFoundException("A user could not be found with ID [$id].");
-        }
-
-        return $user;*/
     }
 
     /**

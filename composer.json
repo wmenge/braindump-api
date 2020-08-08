@@ -21,7 +21,8 @@
         "cartalyst/sentry": "2.1.*",
         "tedivm/fetch": "@stable",
         "jaz303/phake": "dev-master",
-        "bcncommerce/json-stream": "^0.3.0"
+        "bcncommerce/json-stream": "^0.3.0",
+        "league/oauth2-github": "^2.0"
     },
     "require-dev": {
         "mockery/mockery": "0.9.*@dev"

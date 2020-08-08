@@ -10,7 +10,7 @@ DROP TABLE IF EXISTS "users_temp";
 CREATE TABLE "users_temp" (
   "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
   "login" text NOT NULL UNIQUE,
-  "password" text NOT NULL,
+  "password" text,
   "permissions" text,
   "activated" integer NOT NULL DEFAULT 0,
   "activation_code" text,
