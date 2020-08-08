@@ -41,7 +41,7 @@ function adminAuthenticate(Request $req,  Response $res, callable $next)
         // (command line client scenario)e
         if ($req->getHeaderLine('PHP_AUTH_USER') && $req->getHeaderLine('PHP_AUTH_PW')) {
             \Sentry::authenticate(
-                [ 'email'    => $req->getHeaderLine('PHP_AUTH_USER'),
+                [ 'login'    => $req->getHeaderLine('PHP_AUTH_USER'),
                   'password' => $req->getHeaderLine('PHP_AUTH_PW') ]
             );
         } else {
@@ -78,7 +78,7 @@ function apiAuthenticate(Request $req,  Response $res, callable $next)
     
     try {
         \Sentry::authenticate(
-            [ 'email'    => $req->getHeaderLine('PHP_AUTH_USER'),
+            [ 'login'    => $req->getHeaderLine('PHP_AUTH_USER'),
               'password' => $req->getHeaderLine('PHP_AUTH_PW') ]
         );
    

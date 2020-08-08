@@ -13,7 +13,7 @@
       <?php foreach ($users as $user): ?>
         <tr>
           <td>
-              <strong><?= $user->first_name ?> <?= $user->last_name ?> 
+              <strong><?= $user->name ?>
 
               <?php if (\Sentry::findThrottlerByUserId($user->id)->isBanned() == 1): ?>
                 <span class="label label-danger">Banned</span></strong>
@@ -25,7 +25,7 @@
                 <span class="label label-info">Inactive</span></strong>
               <?php endif; ?>
 
-              <br /> <small><?= $user->email ?></small></h4>
+              <br /> <small><?= $user->login ?></small></h4>
           </td>
           <td>
             <?= implode(', ', array_map(function ($entry) {

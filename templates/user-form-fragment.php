@@ -20,18 +20,13 @@
         <div class="panel-body">
 
             <div class="form-group">
-                <label for="email">E-mail</label>
-                <input type="text" value="<?= @$user->email ?>" class="form-control" id="email" name="email" placeholder="Enter E-mail" required>
+                <label for="login">Login</label>
+                <input type="text" value="<?= @$user->login ?>" class="form-control" id="login" name="login" placeholder="Enter Login" required>
             </div>
 
             <div class="form-group">
-                <label for="first_name">First name</label>
-                <input type="text" value="<?= @$user->first_name ?>" class="form-control" id="first_name" name="first_name" placeholder="Enter first name" required>
-            </div>
-
-            <div class="form-group">
-                <label for="last_name">Last name</label>
-                <input type="text" value="<?= @$user->last_name ?>" class="form-control" id="last_name" name="last_name" placeholder="Enter last name" required>
+                <label for="name">Name</label>
+                <input type="text" value="<?= @$user->name ?>" class="form-control" id="name" name="name" placeholder="Enter Name" required>
             </div>
 
         </div>
@@ -41,12 +36,12 @@
         <div class="panel-body">
 
             <div class="form-group">
-                <label for="last_name">Password:</label>
+                <label for="password">Password:</label>
                 <input type="password" class="form-control" id="password" name="password" placeholder="Enter new password">
             </div>
 
             <div class="form-group">
-                <label for="last_name">Confirm password:</label>
+                <label for="password">Confirm password:</label>
                 <input type="password" class="form-control" id="password_confirm" name="password_confirm" placeholder="Confirm new password">
             </div>
 

@@ -63,7 +63,7 @@ class User extends \Cartalyst\Sentry\Paris\DateTimeModel implements UserInterfac
      *
      * @var string
      */
-    protected static $loginAttribute = 'email';
+    protected static $loginAttribute = 'login';
 
     /**
      * The hasher the model uses.
@@ -117,9 +117,7 @@ class User extends \Cartalyst\Sentry\Paris\DateTimeModel implements UserInterfac
      */
     public function getLoginName()
     {
-        // temporary
-        return 'email';
-     //   return static::$loginAttribute;
+        return static::$loginAttribute;
     }
 
     /**

@@ -63,9 +63,8 @@ class AdminUserController extends \Braindump\Api\Controller\AdminBaseController 
 
                 // Create the user
                 $user = \Sentry::createUser([
-                    'email'      => htmlentities($request->getParam('email'), ENT_QUOTES, 'UTF-8'),
-                    'first_name' => htmlentities($request->getParam('first_name'), ENT_QUOTES, 'UTF-8'),
-                    'last_name'  => htmlentities($request->getParam('last_name'), ENT_QUOTES, 'UTF-8'),
+                    'login'      => htmlentities($request->getParam('login'), ENT_QUOTES, 'UTF-8'),
+                    'name' => htmlentities($request->getParam('name'), ENT_QUOTES, 'UTF-8'),
                     'password'   => $password,
                     'activated'  => true,
                 ]);
@@ -116,9 +115,8 @@ class AdminUserController extends \Braindump\Api\Controller\AdminBaseController 
 
             $user = \Sentry::findUserById($args['id']);
 
-            $user->email      = htmlentities($request->getParam('email'), ENT_QUOTES, 'UTF-8');
-            $user->first_name = htmlentities($request->getParam('first_name'), ENT_QUOTES, 'UTF-8');
-            $user->last_name  = htmlentities($request->getParam('last_name'), ENT_QUOTES, 'UTF-8');
+            $user->login      = htmlentities($request->getParam('login'), ENT_QUOTES, 'UTF-8');
+            $user->name = htmlentities($request->getParam('name'), ENT_QUOTES, 'UTF-8');
 
             // validate password
             $password = htmlentities($request->getParam('password'));

@@ -476,9 +476,8 @@ class AdminDataController extends \Braindump\Api\Controller\AdminBaseController 
 
             // Create a default user
             $user = \Sentry::createUser([
-                'email'      => $ci->get('settings')['braindump']['initial_admin_user'],
-                'first_name' => 'Braindump',
-                'last_name'  => 'Administrator',
+                'login'      => $ci->get('settings')['braindump']['initial_admin_user'],
+                'name' => 'Braindump Administrator',
                 'password'   => 'welcome',
                 'activated'  => true,
             ]);

@@ -24,9 +24,8 @@ task('setup', function() {
 
     // Create a default user
     $user = \Sentry::createUser([
-        'email'      => $braindumpConfig['initial_admin_user'],
-        'first_name' => 'Braindump',
-        'last_name'  => 'Administrator',
+        'login'      => $braindumpConfig['initial_admin_user'],
+        'name' => 'Braindump Administrator',
         'password'   => 'welcome',
         'activated'  => true,
     ]);

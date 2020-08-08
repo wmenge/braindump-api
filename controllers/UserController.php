@@ -12,11 +12,10 @@ class UserController extends \Braindump\Api\Controller\BaseController {
 
         $userArray = [
             'id'         => $user->id,
-            'email'      => $user->email,
+            'login'      => $user->login,
             'activated'  => $user->activated,
             'last_login' => $user->last_login,
-            'first_name' => $user->first_name,
-            'last_name'  => $user->last_name
+            'name'       => $user->name
         ];
 
         return $this->outputJson($userArray, $response);
