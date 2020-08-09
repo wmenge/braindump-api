@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/BaseController.php';
 
-class AdminBaseController extends BaseController {
+class HtmlBaseController extends BaseController {
 
     protected $flash;
     

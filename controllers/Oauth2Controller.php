@@ -39,15 +39,18 @@ class Oauth2Controller extends \Braindump\Api\Controller\BaseController {
 
     public function login($request, $response, $args) {
         $providerName = $args['provider'];
+        $referer = $request->getParam('referer');
+        if (empty($referer)) $referer = '/';
         
         // TODO: If logging in with different provider, first log out
         if (isset($_SESSION['access_token'])) {
             $token = unserialize($_SESSION['access_token']);
-            $this->loginWithAccessToken($providerName, $token);
+            $this->loginWithAccessToken($providerName, $token, $referer);
         } else {
             // If we don't have an authorization code then get one
             $provider = $this->getProvider($providerName);
             $authUrl = $provider->getAuthorizationUrl();
+            $_SESSION['loginreferer'] = $referer;
             $_SESSION['oauth2state'] = $provider->getState();
             header('Location: '.$authUrl);
             exit;
@@ -70,12 +73,14 @@ class Oauth2Controller extends \Braindump\Api\Controller\BaseController {
             ]);
 
             $_SESSION['access_token'] = serialize($token);
+            $referer = $_SESSION['loginreferer'];
+            unset($_SESSION['loginreferer']);
 
-            $this->loginWithAccessToken($providerName, $token);
+            $this->loginWithAccessToken($providerName, $token, $referer);
         }
     }
 
-    private function loginWithAccessToken($providerName, $accessToken) {
+    private function loginWithAccessToken($providerName, $accessToken, $referer) {
         // Optional: Now you have a token you can look up a users profile data
         try {
             $provider = $this->getProvider($providerName);
@@ -106,21 +111,8 @@ class Oauth2Controller extends \Braindump\Api\Controller\BaseController {
             exit('Oh dear...');
         }
 
-        header('Location: /');
+        header('Location: ' . $referer);
         exit;
     }
-
-    public function logout($request, $response) {
-
-        try {
-            \Sentry::logout();
-            session_destroy();
-        } catch (\Exception $e) {
-          /// $this->flash->addMessage('error', $e->getMessage());
-        }
-
-        header('Location: /');
-        exit;
-   }
 
 }

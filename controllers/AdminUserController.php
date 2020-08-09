@@ -1,8 +1,8 @@
 <?php namespace Braindump\Api\Controller\Admin;
 
-require_once __DIR__ . '/AdminBaseController.php';
+require_once __DIR__ . '/HtmlBaseController.php';
 
-class AdminUserController extends \Braindump\Api\Controller\AdminBaseController {
+class AdminUserController extends \Braindump\Api\Controller\HtmlBaseController {
 
     public function getUsers($request, $response) {
 

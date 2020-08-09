@@ -1,6 +1,6 @@
 <?php namespace Braindump\Api\Controller\Admin;
 
-require_once(__DIR__ . '/AdminBaseController.php');
+require_once(__DIR__ . '/HtmlBaseController.php');
 
 require_once(__DIR__ . '/../lib/DatabaseFacade.php');
 require_once(__DIR__ . '/../model/NotebookFacade.php');
@@ -119,7 +119,7 @@ class BraindumpReader extends Reader {
 
 }
 
-class AdminDataController extends \Braindump\Api\Controller\AdminBaseController {
+class AdminDataController extends \Braindump\Api\Controller\HtmlBaseController {
 
     public function __construct(\Interop\Container\ContainerInterface $ci) {
         $this->fileFacade = new \Braindump\Api\Model\FileFacade();

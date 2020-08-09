@@ -10,7 +10,7 @@
 
   <ul class="nav navbar-nav pull-right">
     <li><a href="/admin/users/<?= @$user->id ?>"><?= @$user->name ?></a></li>
-    <li><a href="/admin/logout">Logout</a></li>
+    <li><a href="/logout">Logout</a></li>
   </ul>
 
 </div>

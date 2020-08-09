@@ -56,6 +56,6 @@ require_once '../routes/notebook.php';
 require_once '../routes/user.php';
 require_once '../routes/user_configuration.php';
 require_once '../routes/file.php';
-require_once '../routes/oauth.php';
+require_once '../routes/authentication.php';
 
 $app->run();

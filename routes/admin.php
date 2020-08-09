@@ -1,18 +1,9 @@
 <?php namespace Braindump\Api\Admin;
 
 require_once(__DIR__ . '/../controllers/AdminController.php');
-require_once(__DIR__ . '/../controllers/AdminLoginController.php');
 require_once(__DIR__ . '/../controllers/AdminDataController.php');
 require_once(__DIR__ . '/../controllers/AdminUserController.php');
         
-$app->group('/admin', function () {
-
-    $this->get('/login', '\Braindump\Api\Controller\Admin\AdminLoginController:getLogin');
-    $this->post('/login', '\Braindump\Api\Controller\Admin\AdminLoginController:postLogin');
-    $this->get('/logout', '\Braindump\Api\Controller\Admin\AdminLoginController:getLogout');
-
-});
-
 $app->group('/admin', function () {
 
     $this->get('[/]', '\Braindump\Api\Controller\Admin\AdminController:getRoot');

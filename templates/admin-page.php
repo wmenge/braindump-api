@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>BrainDump - Administration</title>
+  <title>BrainDump</title>
 
   <!-- Bootstrap -->
   <link rel='stylesheet prefetch' href='/libs/bootstrap/3.2.0/css/bootstrap.min.css'>
@@ -18,7 +18,6 @@
     <div class="navbar-header">
       <span class="navbar-brand">
         <span id="brain">Brain</span><span id="dump">Dump</span>
-        | Administration
       </span>
     </div>
 
