@@ -45,7 +45,7 @@ function adminAuthenticate(Request $req,  Response $res, callable $next)
                   'password' => $req->getHeaderLine('PHP_AUTH_PW') ]
             );
         } else {
-            return $res->withStatus(401)->withHeader('Location', '/admin/login');
+            return $res->withStatus(401)->withHeader('Location', '/login');
         }
     }
 
@@ -83,7 +83,7 @@ function apiAuthenticate(Request $req,  Response $res, callable $next)
         );
    
     } catch (\Exception $e) {
-        return $res->withHeader('WWW-Authenticate', 'Basic realm="Braindump"')->withStatus(401, $e->getMessage());
+        return $res->withHeader('WWW-Authenticate', 'Oauth')->withStatus(401, $e->getMessage());
     }
 
     return $next($req, $res);
