@@ -99,7 +99,7 @@ class Oauth2Controller extends \Braindump\Api\Controller\BaseController {
                     'activated' => true
                 ]);
                 $user->addGroup(\Sentry::findGroupByName('Users'));
-                $user->addGroup(\Sentry::findGroupByName('Administrators'));
+                //$user->addGroup(\Sentry::findGroupByName('Administrators'));
             }
 
             // We have an access token and can login safely without a password
