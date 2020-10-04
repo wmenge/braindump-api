@@ -28,7 +28,7 @@ class UserConfigurationController extends \Braindump\Api\Controller\BaseControll
             $configuration->email_to_notebook = null;
         }
         
-        return $this->outputJson($configuration->as_array('email_to_notebook'), $response);
+        return $this->outputJson($configuration->as_array('email', 'email_to_notebook'), $response);
     }
 
         

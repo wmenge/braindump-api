@@ -15,7 +15,7 @@
     ],
     "users": [
         {
-            "email": "administrator@braindump-api.local",
+            "login": "administrator@braindump-api.local",
             "password": "test",
             "permissions": "",
             "activated": 1,
@@ -24,8 +24,7 @@
             "last_login": null,
             "persist_code": null,
             "reset_password_code": null,
-            "first_name": "Brain",
-            "last_name": "Dump",
+            "name": "Brain Dump",
             "created_at": 0,
             "updated_at": 0,
             "groups": [
@@ -73,7 +72,7 @@
             ]
         },
         {
-            "email": "user@braindump-api.local",
+            "login": "user@braindump-api.local",
             "password": "test",
             "permissions": "",
             "activated": 1,
@@ -82,8 +81,7 @@
             "last_login": null,
             "persist_code": null,
             "reset_password_code": null,
-            "first_name": "User",
-            "last_name": "Boy",
+            "name": "User Boy",
             "created_at": 0,
             "updated_at": 0,
             "groups": [

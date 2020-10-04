@@ -35,6 +35,12 @@ DROP TABLE IF EXISTS "users";
 
 ALTER TABLE "users_temp" RENAME TO "users";
 
+-- ----------------------------
+--  Add email to user config
+-- ----------------------------
+
+ALTER TABLE "user_configuration" ADD COLUMN "email" text;
+
 PRAGMA foreign_keys = true;
 PRAGMA ignore_check_constraints = false;
 

@@ -42,7 +42,6 @@ class BraindumpWriter extends Writer {
         if (($this->options & JSON_PRETTY_PRINT)) $this->streamWrite(' ');
     }
 
-
     public function scalar($value)
     {
         $this->streamWrite(json_encode($value, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | $this->options));
@@ -123,7 +122,9 @@ class AdminDataController extends \Braindump\Api\Controller\HtmlBaseController {
 
     public function __construct(\Interop\Container\ContainerInterface $ci) {
         $this->fileFacade = new \Braindump\Api\Model\FileFacade();
-        File::$config = $ci->get('settings')['braindump']['file_upload_config'];
+        $this->settings = $ci->get('settings');
+        File::$config = $this->settings['braindump']['file_upload_config'];
+
         parent::__construct($ci);
     }
 
@@ -476,7 +477,7 @@ class AdminDataController extends \Braindump\Api\Controller\HtmlBaseController {
 
             // Create a default user
             $user = \Sentry::createUser([
-                'login'      => $ci->get('settings')['braindump']['initial_admin_user'],
+                'login'      => $this->settings['braindump']['initial_admin_user'],
                 'name' => 'Braindump Administrator',
                 'password'   => 'welcome',
                 'activated'  => true,

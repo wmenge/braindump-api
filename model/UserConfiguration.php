@@ -45,6 +45,7 @@ class UserConfiguration extends \Model
         // check https://phpbestpractices.org
         // and http://stackoverflow.com/questions/129677
         if (UserConfiguration::isValid($data)) {
+            $this->email = filter_var($data->email, FILTER_SANITIZE_EMAIL);
             $this->email_to_notebook = filter_var($data->email_to_notebook, FILTER_SANITIZE_NUMBER_INT);
         }
     }
