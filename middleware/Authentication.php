@@ -75,16 +75,6 @@ function apiAuthenticate(Request $req,  Response $res, callable $next)
     if (\Sentry::check()) { 
         return $next($req, $res); 
     }
-    
-    try {
-        \Sentry::authenticate(
-            [ 'login'    => $req->getHeaderLine('PHP_AUTH_USER'),
-              'password' => $req->getHeaderLine('PHP_AUTH_PW') ]
-        );
-   
-    } catch (\Exception $e) {
-        return $res->withHeader('WWW-Authenticate', 'Oauth')->withStatus(401, $e->getMessage());
-    }
 
-    return $next($req, $res);
+    return $res->withStatus(401);
 }
