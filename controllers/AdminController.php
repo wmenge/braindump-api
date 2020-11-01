@@ -31,7 +31,10 @@ class AdminController extends \Braindump\Api\Controller\HtmlBaseController {
               'noteCount'       => Note::count(),
               'userCount'       => User::count(),
               'fileCount'       => File::count(),
-              'user'            => \Sentry::getUser(), ];
+              'user'            => \Sentry::getUser(),
+              'clientUrl'       => $this->ci->get('settings')['braindump']['client_cors_domain'],
+              'canAccessClient' => \Sentry::getUser()->inGroup(\Sentry::findGroupByName('Users'))
+            ];
               
         } catch (\Exception $e) {
             //$message = [ 'error' => $e->getMessage() ];
