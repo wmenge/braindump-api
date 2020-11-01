@@ -11,11 +11,12 @@ class UserController extends \Braindump\Api\Controller\BaseController {
         $user = \Sentry::getUser();
 
         $userArray = [
-            'id'         => $user->id,
-            'login'      => $user->login,
-            'activated'  => $user->activated,
-            'last_login' => $user->last_login,
-            'name'       => $user->name
+            'id'          => $user->id,
+            'login'       => $user->login,
+            'activated'   => $user->activated,
+            'last_login'  => $user->last_login,
+            'name'        => $user->name,
+            'isAdministrator' => $user->inGroup(\Sentry::findGroupByName('Administrators'))
         ];
 
         return $this->outputJson($userArray, $response);
