@@ -10,7 +10,7 @@ class Oauth2Controller extends \Braindump\Api\Controller\BaseController {
 
     private $configurations;
 
-    public function __construct(\Interop\Container\ContainerInterface $ci) {
+    public function __construct($ci) {
         $this->configurations = $ci->get('settings')['braindump']['oauth2'];
         parent::__construct($ci);
     }

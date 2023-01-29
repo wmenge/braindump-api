@@ -10,7 +10,7 @@ class BaseController {
     // move to di container?
     protected $dbFacade;
 
-    public function __construct(\Interop\Container\ContainerInterface $ci) {
+    public function __construct($ci) {
         $this->ci = $ci;
         $this->renderer = $this->ci->get('renderer');
         

@@ -10,7 +10,7 @@ class NotebookController extends \Braindump\Api\Controller\BaseController {
 
     private $notebookFacade;
 
-    public function __construct(\Interop\Container\ContainerInterface $ci) {
+    public function __construct($ci) {
         $this->notebookFacade = new \Braindump\Api\Model\NotebookFacade();
         parent::__construct($ci);
     }
