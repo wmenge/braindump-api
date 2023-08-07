@@ -3,6 +3,7 @@
 require_once(__DIR__ . '/../controllers/CredentialsLoginController.php');
 require_once(__DIR__ . '/../controllers/Oauth2Controller.php');
 
+// TODO: When logged in, redirect to /
 $app->group('', function () {
     $this->get('/login', '\Braindump\Api\Controller\Html\CredentialsLoginController:getLogin');
     $this->post('/login', '\Braindump\Api\Controller\Html\CredentialsLoginController:postLogin');

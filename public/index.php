@@ -28,14 +28,6 @@ $container['renderer'] = new \Slim\Views\PhpRenderer(__DIR__ . '/../templates/',
 // TODO: make sure they are only used by REST Routes
 $app->add('\Braindump\Api\Middleware\AttachHeaders');
 
-$app->refererringRoute = function () use ($app) {
-    if (strpos($app->environment['HTTP_REFERER'], $app->environment['HTTP_ORIGIN']) !== false) {
-        return str_replace($app->environment['HTTP_ORIGIN'], '', $app->environment['HTTP_REFERER']);
-    } else {
-        return "/";
-    }
-};
-
 ORM::configure($container->get('settings')['braindump']['database_config']);
 
 $app->get('/', function ($request, $response) use ($app) {
