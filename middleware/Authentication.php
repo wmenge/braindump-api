@@ -21,7 +21,7 @@ function routeIsAllowed($user, $route)
 function adminAuthorize(Request $req,  Response $res, callable $next) {
 
     if (!routeIsAllowed(\Sentry::getUser(), $req->getUri()->getPath())) {
-        return $res->withStatus(403)->withHeader('Location', '/admin');
+        return $res->withStatus(403);
     }
 
     return $next($req, $res);
@@ -31,7 +31,6 @@ function adminAuthorize(Request $req,  Response $res, callable $next) {
  * Route middleware implementing form based authentication. To be used 
  * by the Admin web interface
  */
-//function adminAuthenticate()
 function adminAuthenticate(Request $req,  Response $res, callable $next)
 {
     // Check if a user is logged in
@@ -45,7 +44,7 @@ function adminAuthenticate(Request $req,  Response $res, callable $next)
                   'password' => $req->getHeaderLine('PHP_AUTH_PW') ]
             );
         } else {
-            return $res->withStatus(401)->withHeader('Location', '/login');
+            return $res->withStatus(302)->withHeader('Location', '/login');
         }
     }
 
