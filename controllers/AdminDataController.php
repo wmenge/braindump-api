@@ -120,7 +120,7 @@ class BraindumpReader extends Reader {
 
 class AdminDataController extends \Braindump\Api\Controller\HtmlBaseController {
 
-    public function __construct(\Interop\Container\ContainerInterface $ci) {
+    public function __construct(\Psr\Container\ContainerInterface $ci) {
         $this->fileFacade = new \Braindump\Api\Model\FileFacade();
         $this->settings = $ci->get('settings');
         File::$config = $this->settings['braindump']['file_upload_config'];

@@ -11,7 +11,7 @@ class NoteController extends \Braindump\Api\Controller\BaseController {
     private $noteFacade;// = new \Braindump\Api\Model\NoteFacade();
     private $notebookFacade;
 
-    public function __construct(\Interop\Container\ContainerInterface $ci) {
+    public function __construct(\Psr\Container\ContainerInterface $ci) {
         $this->noteFacade = new \Braindump\Api\Model\NoteFacade();
         $this->notebookFacade = new \Braindump\Api\Model\NotebookFacade();
         parent::__construct($ci);

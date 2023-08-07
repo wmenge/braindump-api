@@ -13,7 +13,7 @@ class UserConfigurationController extends \Braindump\Api\Controller\BaseControll
    
     private $configurationFacade;
 
-    public function __construct(\Interop\Container\ContainerInterface $ci) {
+    public function __construct(\Psr\Container\ContainerInterface $ci) {
         $this->configurationFacade = new \Braindump\Api\Model\UserConfigurationFacade();
         UserConfiguration::setNotebookFacade(new \Braindump\Api\Model\NotebookFacade());
         parent::__construct($ci);
