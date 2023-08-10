@@ -129,8 +129,8 @@ class Note extends \Model
 
                     // Bad hack: remove alt tag
                     $this->content = str_replace(' alt="remove-me" /', '', $this->content);
-
-
+                    
+                    $this->content = mb_convert_encoding($this->content, 'HTML-ENTITIES', 'UTF-8');
                 } elseif ($this->type == Note::TYPE_TEXT) {
                     $this->content = htmlentities($data->content, ENT_QUOTES, 'UTF-8');
                 } else {
