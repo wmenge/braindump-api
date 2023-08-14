@@ -15,7 +15,7 @@ return [
         'processedFolder' => 'Processed'
      ],
      'file_upload_config' => [
-        'upload_directory' => __DIR__ . '/../data/uploads',
+        'upload_directory' => __DIR__ . '/../data/uploads/',
         'mime_types' => [
             'application/msword'                                                        => 'attachment',
             'application/pdf'                                                           => 'inline',

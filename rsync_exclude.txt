@@ -4,3 +4,6 @@
 *.sqlite3
 *.sublime-project
 *.sublime-workspace
+braindump-config.php
+php.ini
+data/uploads/*
