@@ -20,5 +20,6 @@ $app->group('/admin', function () {
     $this->delete('/users/{id}', '\Braindump\Api\Controller\Admin\AdminUserController:deleteUser');
 
     $this->get('/info', function($req, $res) { phpinfo(); });
+    $this->get('/xdebug_info', function($req, $res) { xdebug_info(); });
         
 })->add('Braindump\Api\Middleware\Authentication:adminAuthorize')->add('Braindump\Api\Middleware\Authentication:adminAuthenticate');;
