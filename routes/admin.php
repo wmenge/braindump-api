@@ -1,8 +1,6 @@
-<?php namespace Braindump\Api\Admin;
+<?php
 
-require_once(__DIR__ . '/../controllers/AdminController.php');
-require_once(__DIR__ . '/../controllers/AdminDataController.php');
-require_once(__DIR__ . '/../controllers/AdminUserController.php');
+use Braindump\Api\Middleware\Authentication;
         
 $app->group('/admin', function () {
 
@@ -23,4 +21,4 @@ $app->group('/admin', function () {
 
     $this->get('/info', function($req, $res) { phpinfo(); });
         
-})->add('Braindump\Api\Admin\Middleware\adminAuthorize')->add('Braindump\Api\Admin\Middleware\adminAuthenticate');;
+})->add('Braindump\Api\Middleware\Authentication:adminAuthorize')->add('Braindump\Api\Middleware\Authentication:adminAuthenticate');;

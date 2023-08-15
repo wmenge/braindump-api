@@ -1,8 +1,4 @@
 <?php
-namespace Braindump\Api;
-
-require_once(__DIR__ . '/../controllers/NotebookController.php');
-
 $app->group('/api', function () {
 
     $this->get('/notebooks[/]', '\Braindump\Api\Controller\Notebooks\NotebookController:getNotebooks');
@@ -11,4 +7,4 @@ $app->group('/api', function () {
     $this->put('/notebooks/{id}[/]', '\Braindump\Api\Controller\Notebooks\NotebookController:putNotebook');
     $this->delete('/notebooks/{id}[/]', '\Braindump\Api\Controller\Notebooks\NotebookController:deleteNotebook');
 
-})->add('Braindump\Api\Admin\Middleware\apiAuthorize')->add('Braindump\Api\Admin\Middleware\apiAuthenticate');
+})->add('Braindump\Api\Middleware\Authentication:apiAuthorize')->add('Braindump\Api\Middleware\Authentication:apiAuthenticate');

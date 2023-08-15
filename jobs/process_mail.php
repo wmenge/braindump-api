@@ -1,7 +1,6 @@
 <?php
 
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../lib/ImapFacade.php';
 
 date_default_timezone_set('Europe/Amsterdam');
 

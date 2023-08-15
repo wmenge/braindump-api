@@ -1,11 +1,9 @@
 <?php
 include './vendor/autoload.php';
-require_once(__DIR__ . '/lib/SentryFacade.php');
-require_once(__DIR__ . '/lib/DatabaseFacade.php');
 
-class_alias('Braindump\Api\Lib\Sentry\Facade\SentryFacade', 'Sentry');
-
+use Braindump\Api\Lib\Sentry\Facade\SentryFacade as Sentry;
 use AFM\Rsync\Rsync;
+use Braindump\Api\model\Sentry\Paris\Group;
 
 desc('Setup Braindump API');
 task('setup', function() {
@@ -23,14 +21,14 @@ task('setup', function() {
     $dbFacade->createDatabase();
 
     // Create a default user
-    $user = \Sentry::createUser([
+    $user = Sentry::createUser([
         'login'      => $braindumpConfig['initial_admin_user'],
         'name' => 'Braindump Administrator',
         'password'   => 'welcome',
         'activated'  => true,
     ]);
 
-    $user->addGroup(\Sentry::findGroupByName('Administrators'));
+    $user->addGroup(Sentry::findGroupByName('Administrators'));
 
     \ORM::get_db()->commit();
     echo 'Setup task has been performed' . PHP_EOL;
@@ -43,12 +41,12 @@ task('reset_admin', function() {
     $braindumpConfig = (require __DIR__ . '/config/braindump-config.php');
     ORM::configure($braindumpConfig['database_config']);
 
-    $user = \Sentry::findUserByLogin($braindumpConfig['initial_admin_user']);
+    $user = Sentry::findUserByLogin($braindumpConfig['initial_admin_user']);
 
     $user->password = 'welcome';
     $user->save();
 
-    $throttle = \Sentry::findThrottlerByUserId($user->id);
+    $throttle = Sentry::findThrottlerByUserId($user->id);
     $throttle->unsuspend();
     $throttle->unban();
     echo 'Administrator has been reset' . PHP_EOL;

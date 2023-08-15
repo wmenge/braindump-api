@@ -1,7 +1,4 @@
-<?php namespace Braindump\Api\Oauth;
-
-require_once(__DIR__ . '/../controllers/CredentialsLoginController.php');
-require_once(__DIR__ . '/../controllers/Oauth2Controller.php');
+<?php
 
 // TODO: When logged in, redirect to /
 $app->group('', function () {

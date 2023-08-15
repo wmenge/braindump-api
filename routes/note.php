@@ -1,7 +1,4 @@
 <?php
-namespace Braindump\Api;
-
-require_once(__DIR__ . '/../controllers/NoteController.php');
 
 $app->group('/api', function () {
 
@@ -19,4 +16,4 @@ $app->group('/api', function () {
     $this->delete('/notes/{note_id}[/]', '\Braindump\Api\Controller\Notes\NoteController:deleteNote');
     $this->delete('/notebooks/{notebook_id}/notes/{note_id}[/]', '\Braindump\Api\Controller\Notes\NoteController:deleteNote');
     
-})->add('Braindump\Api\Admin\Middleware\apiAuthorize')->add('Braindump\Api\Admin\Middleware\apiAuthenticate');
+})->add('Braindump\Api\Middleware\Authentication:apiAuthorize')->add('Braindump\Api\Middleware\Authentication:apiAuthenticate');

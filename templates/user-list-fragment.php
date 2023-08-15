@@ -1,3 +1,7 @@
+<?php
+  use Braindump\Api\Lib\Sentry\Facade\SentryFacade as Sentry;
+?>
+
 <div class="row">
 
   <div class="col-sm-12">
@@ -15,9 +19,9 @@
           <td>
               <strong><?= $user->name ?>
 
-              <?php if (\Sentry::findThrottlerByUserId($user->id)->isBanned() == 1): ?>
+              <?php if (Sentry::findThrottlerByUserId($user->id)->isBanned() == 1): ?>
                 <span class="label label-danger">Banned</span></strong>
-              <?php elseif (\Sentry::findThrottlerByUserId($user->id)->isSuspended() == 1): ?>
+              <?php elseif (Sentry::findThrottlerByUserId($user->id)->isSuspended() == 1): ?>
                 <span class="label label-warning">Suspended</span></strong>
               <?php elseif ($user->activated == 1): ?>
                 <span class="label label-success">Active</span></strong>
@@ -39,7 +43,7 @@
               <input type="hidden" name="_METHOD" value="DELETE"/>
               <button type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button>
             </form>
-            <?php if (\Sentry::findThrottlerByUserId($user->id)->isSuspended() == 1): ?>
+            <?php if (Sentry::findThrottlerByUserId($user->id)->isSuspended() == 1): ?>
               <form style="display: inline;" role="form" action="/admin/users/<?= @$user->id ?>/throttle/unsuspend" method="POST">
                 <button type="submit" class="btn btn-default">Unsuspend</span></button>
               </form>
@@ -49,7 +53,7 @@
               </form>  
             <?php endif; ?>
 
-            <?php if (\Sentry::findThrottlerByUserId($user->id)->isBanned() == 1): ?>
+            <?php if (Sentry::findThrottlerByUserId($user->id)->isBanned() == 1): ?>
               <form style="display: inline;" role="form" action="/admin/users/<?= @$user->id ?>/throttle/unban" method="POST">
                 <button type="submit" class="btn btn-default">Unban</span></button>
               </form>

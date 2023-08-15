@@ -1,11 +1,7 @@
 <?php
 require '../vendor/autoload.php';
 
-require '../lib/SentryFacade.php';
-class_alias('Braindump\Api\Lib\Sentry\Facade\SentryFacade', 'Sentry');
-
-require '../middleware/AttachHeaders.php';
-require '../middleware/Authentication.php';
+use Braindump\Api\Middleware\AttachHeaders;
 
 date_default_timezone_set('Europe/Amsterdam');
 session_start();
@@ -26,7 +22,7 @@ $container['renderer'] = new \Slim\Views\PhpRenderer(__DIR__ . '/../templates/',
 
 // Correct headers Used by REST API
 // TODO: make sure they are only used by REST Routes
-$app->add('\Braindump\Api\Middleware\AttachHeaders');
+$app->add('Braindump\Api\Middleware\AttachHeaders');
 
 ORM::configure($container->get('settings')['braindump']['database_config']);
 
