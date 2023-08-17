@@ -1,10 +1,6 @@
 <?php namespace Braindump\Api\Controller\Admin;
 
-require_once __DIR__ . '/../../model/NotebookFacade.php';
-
 use Braindump\Api\Model\Notebook as Notebook;
-
-require_once(__DIR__ . '/../../controllers/AdminDataController.php');
 
 // Mocking standard date function to be able to compare file name
 function date($format)
@@ -28,7 +24,7 @@ namespace Braindump\Api\Test\Integration;
  */
 class LargeExport extends Slim_Framework_TestCase
 {
-    public function setup()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->controller = new \Braindump\Api\Controller\Admin\AdminDataController($this->container);
@@ -37,7 +33,7 @@ class LargeExport extends Slim_Framework_TestCase
         $hasher = $this->createMock('Cartalyst\Sentry\Hashing\HasherInterface', array('hash', 'checkhash'));
         $hasher->method('hash')
                ->with($this->equalTo('test'))->willReturn('test');
-        \Cartalyst\Sentry\Users\Paris\User::setHasher($hasher);
+        \Braindump\Api\Model\Sentry\Paris\User::setHasher($hasher);
     }
 
     public function getDataSet()
@@ -133,7 +129,7 @@ class LargeExport extends Slim_Framework_TestCase
 
 class ExportTest extends Slim_Framework_TestCase
 {
-    public function setup()
+    protected function setUp(): void
     {   parent::setUp();
         $this->controller = new \Braindump\Api\Controller\Admin\AdminDataController($this->container);
     }
@@ -165,7 +161,7 @@ class ExportTest extends Slim_Framework_TestCase
 
 class ExportWithFilesTest extends Slim_Framework_TestCase
 {
-    public function setup()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->controller = new \Braindump\Api\Controller\Admin\AdminDataController($this->container);
@@ -196,7 +192,7 @@ class ExportWithFilesTest extends Slim_Framework_TestCase
 class ImportTest extends Slim_Framework_TestCase
 {
 
-    public function setup()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->controller = new \Braindump\Api\Controller\Admin\AdminDataController($this->container);
@@ -205,7 +201,7 @@ class ImportTest extends Slim_Framework_TestCase
         $hasher = $this->createMock('Cartalyst\Sentry\Hashing\HasherInterface', array('hash', 'checkhash'));
         $hasher->method('hash')
                ->with($this->equalTo('test'))->willReturn('test');
-        \Cartalyst\Sentry\Users\Paris\User::setHasher($hasher);
+        \Braindump\Api\Model\Sentry\Paris\User::setHasher($hasher);
     }
 
     public function getDataSet()
@@ -232,7 +228,7 @@ class ImportTest extends Slim_Framework_TestCase
         $groupTable = $this->getConnection()->createQueryTable('groups', 'SELECT * FROM groups');
         $this->assertTablesEqual($expectedGroupContent, $groupTable);
 */
-        $userTable = $this->getConnection()->createQueryTable('users', 'SELECT id, email, password, permissions, activated, activated_at, first_name, last_name, created_at, updated_at FROM users');
+        $userTable = $this->getConnection()->createQueryTable('users', 'SELECT id, login, password, permissions, activated, activated_at, name, created_at, updated_at FROM users');
         $this->assertTablesEqual($expectedUserContent, $userTable);
         
         $expectedNotebookContent = $dataset->getTable("notebook");
@@ -267,7 +263,7 @@ class ImportTest extends Slim_Framework_TestCase
         $groupTable = $this->getConnection()->createQueryTable('groups', 'SELECT * FROM groups');
         $this->assertTablesEqual($expectedGroupContent, $groupTable);
 */
-        $userTable = $this->getConnection()->createQueryTable('users', 'SELECT id, email, password, permissions, activated, activated_at, first_name, last_name, created_at, updated_at FROM users');
+        $userTable = $this->getConnection()->createQueryTable('users', 'SELECT id, login, password, permissions, activated, activated_at, name, created_at, updated_at FROM users');
         $this->assertTablesEqual($expectedUserContent, $userTable);
         
         $expectedNotebookContent = $dataset->getTable("notebook");

@@ -1,4 +1,4 @@
-<phpunit bootstrap="tests/bootstrap.php">
+<phpunit bootstrap="tests/bootstrap.php" stderr="true">
     <php>
       <server name='HTTP_HOST' value='localhost' />
     </php>

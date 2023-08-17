@@ -4,8 +4,8 @@
     <groups id="1" name="Administrators" permissions="" created_at="0" updated_at="0" />
     <groups id="2" name="Users" permissions="" created_at="0" updated_at="0" />
 
-    <users id="1" email="administrator@braindump-api.local" password="test" permissions="" activated="1" activated_at="0" first_name="Brain" last_name="Dump" created_at="0" updated_at="0" />
-    <users id="2" email="user@braindump-api.local" password="test" permissions="" activated="1" activated_at="0" first_name="User" last_name="Boy" created_at="0" updated_at="0" />
+    <users id="1" login="administrator@braindump-api.local" password="test" permissions="" activated="1" activated_at="0" name="Brain Dump" created_at="0" updated_at="0" />
+    <users id="2" login="user@braindump-api.local" password="test" permissions="" activated="1" activated_at="0" name="User Boy" created_at="0" updated_at="0" />
     
     <users_groups id="1" user_id="1" group_id="1" />
     <users_groups id="2" user_id="2" group_id="2" />

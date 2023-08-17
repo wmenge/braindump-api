@@ -48,7 +48,7 @@ class ImapFacade
     {
         $sender = (object)$message->getAddresses('sender');
            
-        $user = \Cartalyst\Sentry\Users\Paris\User::where('email', $sender->address)->find_one();
+        $user = \Braindump\Api\Model\Sentry\Paris\User::where('email', $sender->address)->find_one();
         
         if (!empty($user)) {
 

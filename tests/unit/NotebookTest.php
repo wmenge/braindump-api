@@ -1,16 +1,13 @@
 <?php
 namespace Braindump\Api\Test\Unit;
 
-require_once __DIR__ . '/../../vendor/autoload.php';
-require_once __DIR__ . '/../../model/Notebook.php';
-
 use Braindump\Api\Model\Notebook as Notebook;
 
-class NotebookTest extends \PHPUnit_Framework_TestCase
+class NotebookTest extends \PHPUnit\Framework\TestCase
 {
     protected $notebook;
 
-    protected function setUp()
+    protected function setup(): void
     {
         $this->notebook = Notebook::create();
     }

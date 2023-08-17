@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <dataset>
     <groups id="123" name="foo" permissions="" created_at="0" updated_at="0" />
-    <users id="123" email="foo@bar.com" password="hashed_password" />
+    <users id="123" login="foo@bar.com" password="hashed_password" />
     <users_groups id="1" user_id="123" group_id="123" />
 </dataset>

@@ -1,8 +1,6 @@
 <?php namespace Cartalyst\Sentry\Tests;
 
-require_once(__DIR__ . '../../../model/Sentry/Paris/Group.php');
-
-use Cartalyst\Sentry\Groups\Paris\Group;
+use Braindump\Api\Model\Sentry\Paris\Group;
 
 /***
  * Based on Eloquent tests of https://github.com/cartalyst/sentry/
@@ -21,7 +19,7 @@ class ParisGroupTest extends \Braindump\Api\Test\Integration\AbstractDbTest
 
     public function testGroupId()
     {
-        $group = \Model::factory(Group::CLASS_NAME)->create();
+        $group = \Model::factory(Group::class)->create();
         $group->id = 123;
 
         $this->assertEquals(123, $group->getId());
@@ -29,7 +27,7 @@ class ParisGroupTest extends \Braindump\Api\Test\Integration\AbstractDbTest
 
     public function testGroupName()
     {
-        $group = \Model::factory(Group::CLASS_NAME)->create();
+        $group = \Model::factory(Group::class)->create();
         $group->name = 'foo';
 
         $this->assertEquals('foo', $group->getName());
@@ -69,7 +67,7 @@ class ParisGroupTest extends \Braindump\Api\Test\Integration\AbstractDbTest
 
     public function testPermissionsAreMergedAndRemovedProperly()
     {
-        $group = \Model::factory(Group::CLASS_NAME)->create();
+        $group = \Model::factory(Group::class)->create();
         $group->permissions = array(
             'foo' => 1,
             'bar' => 1,
@@ -92,7 +90,7 @@ class ParisGroupTest extends \Braindump\Api\Test\Integration\AbstractDbTest
 
     public function testPermissionsAreCastAsAnArrayWhenTheModelIs()
     {
-        $group = \Model::factory(Group::CLASS_NAME)->create();
+        $group = \Model::factory(Group::class)->create();
         $group->name = 'foo';
         $group->permissions = array(
             'bar' => 1,
@@ -119,7 +117,7 @@ class ParisGroupTest extends \Braindump\Api\Test\Integration\AbstractDbTest
     {
         $json = '{"foo":1,"bar:1';
         
-        $group = \Model::factory(Group::CLASS_NAME)->create();
+        $group = \Model::factory(Group::class)->create();
 
         $group->getPermissionsAttribute($json);
     }
@@ -130,7 +128,7 @@ class ParisGroupTest extends \Braindump\Api\Test\Integration\AbstractDbTest
     public function testSettingPermissionsWhenPermissionsAreStrings()
     {
         
-        $group = \Model::factory(Group::CLASS_NAME)->create();
+        $group = \Model::factory(Group::class)->create();
         $group->permissions = array(
             'admin'    => '1',
             'foo'      => '0',
@@ -148,7 +146,7 @@ class ParisGroupTest extends \Braindump\Api\Test\Integration\AbstractDbTest
      */
     public function testSettingPermissionsWhenAllPermissionsAreZero()
     {
-        $group = \Model::factory(Group::CLASS_NAME)->create();
+        $group = \Model::factory(Group::class)->create();
 
         $group->permissions = array(
             'admin'     => 0,
@@ -160,8 +158,8 @@ class ParisGroupTest extends \Braindump\Api\Test\Integration\AbstractDbTest
     // TODO: verify that db will be hit during validation
     /*public function testValidation()
     {
-        //$group = m::mock('Cartalyst\Sentry\Groups\Paris\Group[newQuery]');
-        $group = \Model::factory(Group::CLASS_NAME)->create();
+        //$group = m::mock('Braindump\Api\Model\Sentry\Paris\Group[newQuery]');
+        $group = \Model::factory(Group::class)->create();
 
         $group->name = 'foo';
 
@@ -179,7 +177,7 @@ class ParisGroupTest extends \Braindump\Api\Test\Integration\AbstractDbTest
      */
     public function testValidationThrowsExceptionForMissingName()
     {
-        $group = \Model::factory(Group::CLASS_NAME)->create();
+        $group = \Model::factory(Group::class)->create();
         $group->validate();
     }
 
@@ -188,7 +186,7 @@ class ParisGroupTest extends \Braindump\Api\Test\Integration\AbstractDbTest
      */
     public function testValidationThrowsExceptionForDuplicateNameOnNonExistent()
     {
-        $group = \Model::factory(Group::CLASS_NAME)->create();
+        $group = \Model::factory(Group::class)->create();
         $group->name = 'foo';
 
         $group->validate();
@@ -199,16 +197,19 @@ class ParisGroupTest extends \Braindump\Api\Test\Integration\AbstractDbTest
      */
     public function testValidationThrowsExceptionForDuplicateNameOnExistent()
     {
-        $group = \Model::factory(Group::CLASS_NAME)->create();
+        $group = \Model::factory(Group::class)->create();
         $group->id   = 124;
         $group->name = 'foo';
 
         $group->validate();
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testValidationDoesNotThrowAnExceptionIfPersistedGroupIsThisGroup()
     {
-        $group = \Model::factory(Group::CLASS_NAME)->create();
+        $group = \Model::factory(Group::class)->create();
         $group->id   = 123;
         $group->name = 'foo';
 
@@ -217,7 +218,7 @@ class ParisGroupTest extends \Braindump\Api\Test\Integration\AbstractDbTest
 
     public function testPermissionsWithArrayCastingAndJsonCasting()
     {
-        $group = \Model::factory(Group::CLASS_NAME)->create();
+        $group = \Model::factory(Group::class)->create();
         $group->name = 'foo';
         $group->permissions = array(
             'foo' => 1,
@@ -240,16 +241,18 @@ class ParisGroupTest extends \Braindump\Api\Test\Integration\AbstractDbTest
 
     public function testDeletingGroupDetachesAllUserRelationships()
     {
-        /*$relationship = m::mock('StdClass');
+        $this->markTestSkipped('testDeletingGroupDetachesAllUserRelationships skipped');
+
+        $relationship = m::mock('StdClass');
         $relationship->shouldReceive('detach')->once();
 
         //$group = m::mock('Cartalyst\Sentry\Groups\EloqueParisnt\Group[users]');
         //$group = new Group;
-        $group = \Model::factory(Group::CLASS_NAME)->create();
+        $group = \Model::factory(Group::class)->create();
 
         $group->shouldReceive('users')->once()->andReturn($relationship);
 
-        $group->delete();*/
+        $group->delete();
     }
 
 }

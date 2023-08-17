@@ -1,10 +1,8 @@
 <?php namespace Cartalyst\Sentry\Tests;
 
-require_once(__DIR__ . '../../../model/Sentry/Paris/GroupProvider.php');
-
-use Cartalyst\Sentry\Groups\Paris\Group as Group;
-use Cartalyst\Sentry\Groups\Paris\GroupProvider;
-use PHPUnit_Framework_TestCase;
+use Braindump\Api\Model\Sentry\Paris\Group as Group;
+use Braindump\Api\Model\Sentry\Paris\GroupProvider;
+use \PHPUnit\Framework\TestCase;
 
 /***
  * Integration tests of Paris interface of Sentry authentication moduel.
@@ -65,7 +63,7 @@ class ParisGroupProviderTest extends \Braindump\Api\Test\Integration\AbstractDbT
     {
         $provider = new GroupProvider();
         
-        $compareGroup = \Model::factory(Group::CLASS_NAME)->create();
+        $compareGroup = \Model::factory(Group::class)->create();
         $compareGroup->name = 'bar';
 
         

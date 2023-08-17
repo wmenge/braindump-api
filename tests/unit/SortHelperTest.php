@@ -1,16 +1,12 @@
 <?php namespace Braindump\Api\Test\Unit;
 
-require_once __DIR__ . '/../../vendor/autoload.php';
-require_once __DIR__ . '/../../lib/SortHelper.php';
-require_once __DIR__ . '/MockORMHelper.php';
-
 use Braindump\Api\Lib\SortHelper as SortHelper;
 
-class SortHelperTest extends \PHPUnit_Framework_TestCase
+class SortHelperTest extends \PHPUnit\Framework\TestCase
 {
     protected $orm;
 
-    protected function setUp()
+    protected function setup(): void
     {
         $this->orm = $this->createMock('\ORM', ['order_by_asc', 'order_by_desc']);
         $this->orm->method('order_by_asc')->willReturn($this->orm);

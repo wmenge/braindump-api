@@ -9,13 +9,11 @@ function time()
 
 namespace Braindump\Api\Test\Integration;
 
-require_once __DIR__ . '/../../model/NotebookFacade.php';
-
 class NotebookFacadeTest extends AbstractDbTest
 {
     protected $Facade;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->Facade = new \Braindump\Api\Model\NotebookFacade();

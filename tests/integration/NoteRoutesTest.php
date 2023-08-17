@@ -1,10 +1,8 @@
 <?php namespace Braindump\Api\Test\Integration;
 
-require_once(__DIR__ . '/../../controllers/NoteController.php');
-
 class NoteRoutesTest extends Slim_Framework_TestCase
 {
-    public function setup()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->controller = new \Braindump\Api\Controller\Notes\NoteController($this->container);

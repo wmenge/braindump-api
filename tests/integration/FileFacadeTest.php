@@ -1,21 +1,11 @@
 <?php
-/*namespace Braindump\Api\Model;
-
-// Mocking standard time function to be able to compare DB content
-function time()
-{
-    return 0;
-}*/
-
 namespace Braindump\Api\Test\Integration;
-
-require_once __DIR__ . '/../../model/FileFacade.php';
 
 class FileFacadeTest extends AbstractDbTest
 {
     protected $Facade;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->Facade = new \Braindump\Api\Model\FileFacade();

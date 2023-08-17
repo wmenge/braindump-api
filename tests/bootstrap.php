@@ -83,7 +83,7 @@ class SentryFacadeMock
 
     public static function createGroup($groupArrray) {
         
-        $group = \Cartalyst\Sentry\Groups\Paris\Group::create();
+        $group = \Braindump\Api\Model\Sentry\Paris\Group::create();
         $group->hydrate($groupArrray);
         $group->save();
 
@@ -92,7 +92,7 @@ class SentryFacadeMock
 
     public static function createUser($userArray) {
 
-        $user = \Cartalyst\Sentry\Users\Paris\User::create();
+        $user = \Braindump\Api\Model\Sentry\Paris\User::create();
         $user->hydrate($userArray);
         $user->save();
 
@@ -100,7 +100,7 @@ class SentryFacadeMock
     }
 
     public static function findGroupByName($name) {
-        return \Cartalyst\Sentry\Groups\Paris\Group::where_equal('name', $name)->find_one();
+        return \Braindump\Api\Model\Sentry\Paris\Group::where_equal('name', $name)->find_one();
     }
 }
 
@@ -115,6 +115,7 @@ class FlashMessagesMock
 }
 
 // Create the Sentry alias
+class_alias('Braindump\Api\Model\SentryFacadeMock', 'Braindump\Api\Lib\Sentry\Facade\SentryFacade');
 class_alias('Braindump\Api\Model\SentryFacadeMock', 'Sentry');
 
 namespace Braindump\Api\Test\Integration;
@@ -140,7 +141,6 @@ ini_set('display_startup_errors', 1);
 date_default_timezone_set('UTC');
 
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../lib/DatabaseFacade.php';
 
 use Slim\App;
 use Slim\Http\Environment;
@@ -150,13 +150,13 @@ use Slim\Http\RequestBody;
 use Slim\Http\Response;
 use Slim\Http\Uri;
 
-abstract class AbstractDbTest extends \PHPUnit_Extensions_Database_TestCase
+abstract class AbstractDbTest extends \PHPUnit\DbUnit\TestCase
 {
     // only instantiate PHPUnit_Extensions_Database_DB_IDatabaseConnection once per test
     private static $conn = null;
     protected $dbFacade = null;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->dbFacade = new \Braindump\Api\Lib\DatabaseFacade(
             \ORM::get_db(),
@@ -185,7 +185,7 @@ abstract class AbstractDbTest extends \PHPUnit_Extensions_Database_TestCase
 abstract class Slim_Framework_TestCase extends AbstractDbTest
 {
     // Run for each unit test to setup our slim app environment
-    public function setup()
+    protected function setUp(): void
     {
         // Initialize our own copy of the slim application
         $app = new \Slim\App([
@@ -197,7 +197,30 @@ abstract class Slim_Framework_TestCase extends AbstractDbTest
         $this->container = $app->getContainer();
         $this->container['renderer'] = new \Slim\Views\PhpRenderer(__DIR__ . '/../templates/');
         $this->container['flash'] = function () { return new FlashMessagesMock(); };
-        
+        $this->container['settings'] =  ['braindump' =>     
+        [
+            'file_upload_config' => [
+                'upload_directory' => __DIR__ . '/../data/uploads/',
+                'mime_types' => [
+                    'application/msword'                                                        => 'attachment',
+                    'application/pdf'                                                           => 'inline',
+                    'application/vnd.ms-excel'                                                  => 'attachment',
+                    'application/vnd.ms-powerpointtd'                                           => 'attachment',
+                    'application/vnd.openxmlformats-officedocument.presentationml.presentation' => 'attachment',
+                    'application/vnd.openxmlformats-officedocument.presentationml.slideshow'    => 'attachment',
+                    'application/vnd.openxmlformats-officedocument.presentationml.template'     => 'attachment',
+                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'         => 'attachment',
+                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'   => 'attachment',
+                    'application/vnd.openxmlformats-officedocument.wordprocessingml.template'   => 'attachment',
+                    'application/zip'                                                           => 'attachment',
+                    'image/gif'                                                                 => 'inline',
+                    'image/jpg'                                                                 => 'inline',
+                    'image/png'                                                                 => 'inline',
+                    'text/html'                                                                 => 'attachment',
+                    'text/plain'                                                                => 'attachment'
+                ]
+             ]]];
+
         parent::setUp();
     }
 

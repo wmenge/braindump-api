@@ -1,6 +1,6 @@
 <?php namespace Braindump\Api\Model;
 
-use Cartalyst\Sentry\Users\Paris\User;
+use Braindump\Api\Model\Sentry\Paris\User;
 
 class UserConfiguration extends \Model
 {
@@ -34,6 +34,7 @@ class UserConfiguration extends \Model
         return
             is_object($data) &&
             property_exists($data, 'email_to_notebook') &&
+            property_exists($data, 'email') &&
             is_integer($data->email_to_notebook) &&
             // checks wether the notebook id given is from a notebook belonging to this user
             is_object(UserConfiguration::$notebookFacade->getNotebookForId($data->email_to_notebook));
@@ -45,8 +46,12 @@ class UserConfiguration extends \Model
         // check https://phpbestpractices.org
         // and http://stackoverflow.com/questions/129677
         if (UserConfiguration::isValid($data)) {
-            $this->email = filter_var($data->email, FILTER_SANITIZE_EMAIL);
-            $this->email_to_notebook = filter_var($data->email_to_notebook, FILTER_SANITIZE_NUMBER_INT);
+            if (property_exists($data, 'email')) {
+                $this->email = filter_var($data->email, FILTER_SANITIZE_EMAIL);
+            }
+            if (property_exists($data, 'email_to_notebook')) {
+                $this->email_to_notebook = filter_var($data->email_to_notebook, FILTER_SANITIZE_NUMBER_INT);
+            }
         }
     }
 }

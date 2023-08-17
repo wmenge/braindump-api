@@ -2,12 +2,10 @@
 
 namespace Braindump\Api\Test\Integration;
 
-require_once(__DIR__ . '/../../controllers/NotebookController.php');
-
 class NotebookRoutesTest extends Slim_Framework_TestCase
 {
 
-    public function setup()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->controller = new \Braindump\Api\Controller\Notebooks\NotebookController($this->container);

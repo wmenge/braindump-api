@@ -1,14 +1,10 @@
 <?php namespace Cartalyst\Sentry\Tests;
 
-require_once(__DIR__ . '../../../model/Sentry/Paris/UserProvider.php');
-
 use Mockery as m;
-use Cartalyst\Sentry\Users\Paris\UserProvider as Provider;
-use Cartalyst\Sentry\Users\Paris\User;
+use Braindump\Api\Model\Sentry\Paris\UserProvider as Provider;
+use Braindump\Api\Model\Sentry\Paris\User;
 use Cartalyst\Sentry\Hashing\HasherInterface;
-use UserModelStub1;
-use UserModelStub2;
-use PHPUnit_Framework_TestCase;
+use \PHPUnit\Framework\TestCase;
 
 class ParisUserProviderTest extends \Braindump\Api\Test\Integration\AbstractDbTest
 {
@@ -20,17 +16,7 @@ class ParisUserProviderTest extends \Braindump\Api\Test\Integration\AbstractDbTe
         return $this->createFlatXMLDataSet(dirname(__FILE__) . '/files/users-seed.xml');
     }
 
-    /**
-     * Setup resources and dependencies.
-     *
-     * @return void
-     */
-    public static function setUpBeforeClass()
-    {
-        require_once __DIR__.'/stubs/users/UserModelStubs.php';
-    }
-
-    public function setup()
+    protected function setup(): void
     {
         parent::setUp();
         $this->hasher = $this->createMock('Cartalyst\Sentry\Hashing\HasherInterface', array('hash', 'checkhash'));
@@ -41,14 +27,14 @@ class ParisUserProviderTest extends \Braindump\Api\Test\Integration\AbstractDbTe
 
     public function testFindingById()
     {
-        $user = $user = \Model::factory(User::CLASS_NAME)->create();
+        $user = $user = \Model::factory(User::class)->create();
         $user->id = '1';
-        $user->email = 'test@test.com';
+        $user->login = 'test@test.com';
         $user->password = 'test';
         $user->save();
 
         $this->assertEquals($user->id, $this->provider->findById(1)->id);
-        $this->assertEquals($user->email, $this->provider->findById(1)->email);
+        $this->assertEquals($user->login, $this->provider->findById(1)->login);
     }
 
     /**
@@ -63,7 +49,7 @@ class ParisUserProviderTest extends \Braindump\Api\Test\Integration\AbstractDbTe
     {
         $user = $this->provider->findById(123);
         $this->assertEquals($user->id, $this->provider->findByLogin('foo@bar.com')->id);
-        $this->assertEquals($user->email, $this->provider->findByLogin('foo@bar.com')->email);
+        $this->assertEquals($user->login, $this->provider->findByLogin('foo@bar.com')->login);
     }
 
     /**
@@ -87,7 +73,7 @@ class ParisUserProviderTest extends \Braindump\Api\Test\Integration\AbstractDbTe
      */
     public function testFindingByCredentialsFailsWhenModelIsNull()
     {
-        $result = $this->provider->findByCredentials([ 'email' => 'fooval' ]);
+        $result = $this->provider->findByCredentials([ 'login' => 'fooval' ]);
     }
 
     /**
@@ -97,14 +83,14 @@ class ParisUserProviderTest extends \Braindump\Api\Test\Integration\AbstractDbTe
      */
     public function testFindingByCredentialsFailsForBadPassword()
     {
-        $actualUser= \Model::factory(User::CLASS_NAME)->create();
+        $actualUser= \Model::factory(User::class)->create();
 
-        $actualUser->email = 'foo2@bar.com';
+        $actualUser->login = 'foo2@bar.com';
         $actualUser->password = 'test';
         $actualUser->save();
         
         $result = $this->provider->findByCredentials(array(
-            'email'      => 'foo2@bar.com',
+            'login'      => 'foo2@bar.com',
             'password' => 'unhashed_passwordval',
         ));
 
@@ -113,17 +99,17 @@ class ParisUserProviderTest extends \Braindump\Api\Test\Integration\AbstractDbTe
 
     public function testFindingByCredentials()
     {
-        $actualUser= \Model::factory(User::CLASS_NAME)->create();
-        $actualUser->email = 'test@test.com';
+        $actualUser= \Model::factory(User::class)->create();
+        $actualUser->login = 'test@test.com';
         $actualUser->password = 'test';
         $actualUser->save();
 
         $result = $this->provider->findByCredentials(array(
-            'email' => 'test@test.com'
+            'login' => 'test@test.com'
         ));
 
         $this->assertEquals($actualUser->id, $result->id);
-        $this->assertEquals($actualUser->email, $result->email);
+        $this->assertEquals($actualUser->login, $result->login);
     }
 
     /**
@@ -150,14 +136,14 @@ class ParisUserProviderTest extends \Braindump\Api\Test\Integration\AbstractDbTe
 
     public function testFindByActivationCode()
     {
-        $user= \Model::factory(User::CLASS_NAME)->create();
+        $user= \Model::factory(User::class)->create();
         $user->id = 1;
         $user->activation_code = 'foo';
-        $user->email = 'test@test.com';
+        $user->login = 'test@test.com';
         $user->password = 'test';
         $user->save();
 
-        $this->assertEquals($user->email, $this->provider->findByActivationCode('foo')->email);
+        $this->assertEquals($user->login, $this->provider->findByActivationCode('foo')->login);
     }
 
     /**
@@ -170,14 +156,14 @@ class ParisUserProviderTest extends \Braindump\Api\Test\Integration\AbstractDbTe
 
     public function testFindByResetPasswordCode()
     {
-        $user= \Model::factory(User::CLASS_NAME)->create();
+        $user= \Model::factory(User::class)->create();
         $user->id = 1;
         $user->reset_password_code = 'foo';
-        $user->email = 'test@test.com';
+        $user->login = 'test@test.com';
         $user->password = 'test';
         $user->save();
 
-        $this->assertEquals($user->email, $this->provider->findByResetPasswordCode('foo')->email);
+        $this->assertEquals($user->login, $this->provider->findByResetPasswordCode('foo')->login);
     }
 
     /**
@@ -191,36 +177,23 @@ class ParisUserProviderTest extends \Braindump\Api\Test\Integration\AbstractDbTe
     public function testCreatingUser()
     {
         $attributes = array(
-            'email'    => 'bar@foo.com',
+            'login'    => 'bar@foo.com',
             'password' => 'foo_bar_baz',
         );
 
-        $user = \Model::factory(User::CLASS_NAME)->create();
+        $user = \Model::factory(User::class)->create();
 
         $user->hydrate($attributes);
 
         $createdUser = $this->provider->create($attributes);
-        $this->assertEquals($user->email, $createdUser->email);
+        $this->assertEquals($user->login, $createdUser->login);
     }
 
     public function testGettingEmptyUserInterface()
     {
-        $user = \Model::factory(User::CLASS_NAME)->create();
+        $user = \Model::factory(User::class)->create();
 
         $this->assertEquals($user, $this->provider->getEmptyUser());
-    }
-
-    public function testSettingModel()
-    {
-        $provider = new Provider(
-            $hasher = m::mock('Cartalyst\Sentry\Hashing\HasherInterface'),
-            'UserModelStub1'
-        );
-
-        $this->assertInstanceOf('UserModelStub1', $provider->createModel());
-
-        $provider->setModel('UserModelStub2');
-        $this->assertInstanceOf('UserModelStub2', $provider->createModel());
     }
 
     public function testFindingAllUsers()
@@ -234,7 +207,7 @@ class ParisUserProviderTest extends \Braindump\Api\Test\Integration\AbstractDbTe
     {
         $user = $this->provider->findById(123);
 
-        $group = m::mock('Cartalyst\Sentry\Groups\Paris\Group');
+        $group = m::mock('Braindump\Api\Model\Sentry\Paris\Group');
         $group->shouldReceive('users')->once()->andReturn([ $user ]);
 
         $this->assertEquals([ $user ], $this->provider->findAllInGroup($group));
@@ -242,9 +215,9 @@ class ParisUserProviderTest extends \Braindump\Api\Test\Integration\AbstractDbTe
 
     public function testFindingAllUsersWithAccess()
     {
-        $user1= \Model::factory(User::CLASS_NAME)->create();
+        $user1= \Model::factory(User::class)->create();
         $user1->id = 1;
-        $user1->email = 'test@test.com';
+        $user1->login = 'test@test.com';
         $user1->password = 'test';
         $user1->permissions = $permissions = [ 'foo' => 1, 'bar' => 1 ]; // = array('foo', 'bar'));
         $user1->save();
@@ -260,10 +233,10 @@ class ParisUserProviderTest extends \Braindump\Api\Test\Integration\AbstractDbTe
 
     public function testFindingAllUsersWithAnyAccess()
     {
-        $user1 = \Model::factory(User::CLASS_NAME)->create();
+        $user1 = \Model::factory(User::class)->create();
         $user1->id = 1;
         $user1->reset_password_code = 'foo';
-        $user1->email = 'test@test.com';
+        $user1->login = 'test@test.com';
         $user1->password = 'test';
         $user1->permissions = [ 'foo' => 1 ]; // = array('foo', 'bar'));
         $user1->save();

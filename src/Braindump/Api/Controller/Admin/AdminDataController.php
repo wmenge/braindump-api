@@ -304,7 +304,7 @@ class AdminDataController extends \Braindump\Api\Controller\HtmlBaseController {
 
             while($reader->enter(null, Reader::TYPE_OBJECT)) {
 
-                $sentryUser = \CartalystSentry\Users\Paris\User::create();
+                $sentryUser = \Braindump\Api\Model\Sentry\Paris\User::create();
 
                 while($token = $reader->readToken()) {
                    $sentryUser->set($token['key'], $token['content']);

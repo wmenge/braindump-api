@@ -1,14 +1,12 @@
 <?php namespace Braindump\Api\Test\Integration;
 
-require_once __DIR__ . '/../../model/NoteFacade.php';
-
 use Braindump\Api\Model\Notebook as Notebook;
 
 class NoteFacadeTest extends AbstractDbTest
 {
     protected $Facade;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

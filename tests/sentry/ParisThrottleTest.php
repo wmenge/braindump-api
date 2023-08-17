@@ -1,12 +1,10 @@
 <?php namespace Cartalyst\Sentry\Tests;
 
-require_once(__DIR__ . '../../../model/Sentry/Paris/Throttle.php');
-
 use Mockery as m;
-use Cartalyst\Sentry\Throttling\Paris\Throttle as Throttle;
-use Cartalyst\Sentry\Paris\ExtendedDateTime as ExtendedDateTime;
+use Braindump\Api\Model\Sentry\Paris\Throttle as Throttle;
+use Braindump\Api\Model\Sentry\Paris\ExtendedDateTime as ExtendedDateTime;
 use DateTime;
-use PHPUnit_Framework_TestCase;
+use \PHPUnit\Framework\TestCase;
 
 /***
  * Based on Eloquent tests of https://github.com/cartalyst/sentry/
@@ -26,7 +24,7 @@ class ParisThrottleTest extends \Braindump\Api\Test\Integration\AbstractDbTest
         $user = m::mock('StdClass');
         $user->shouldReceive('find_one')->once()->andReturn('foo');
 
-        $throttle = m::mock('Cartalyst\Sentry\Throttling\Paris\Throttle[user]');
+        $throttle = m::mock('Braindump\Api\Model\Sentry\Paris\Throttle[user]');
         $throttle->shouldReceive('user')->once()->andReturn($user);
 
         $this->assertEquals('foo', $throttle->getUser());
@@ -40,7 +38,7 @@ class ParisThrottleTest extends \Braindump\Api\Test\Integration\AbstractDbTest
 
     public function testGettingLoginAttemptsWhenNoAttemptHasBeenMadeBefore()
     {
-        $throttle = \Model::factory(Throttle::CLASS_NAME)->create();
+        $throttle = \Model::factory(Throttle::class)->create();
         
         $this->assertEquals(0, $throttle->getLoginAttempts());
         $throttle->attempts = 1;
@@ -49,7 +47,7 @@ class ParisThrottleTest extends \Braindump\Api\Test\Integration\AbstractDbTest
 
     public function testGettingLoginAttemptsResetsIfSuspensionTimeHasPassedSinceLastAttempt()
     {
-        $throttle = \Model::factory(Throttle::CLASS_NAME)->create();
+        $throttle = \Model::factory(Throttle::class)->create();
         $throttle->user_id = 123;
 
         // Let's simulate that the suspension time
@@ -71,7 +69,7 @@ class ParisThrottleTest extends \Braindump\Api\Test\Integration\AbstractDbTest
 
     public function testSuspend()
     {
-        $throttle = \Model::factory(Throttle::CLASS_NAME)->create();
+        $throttle = \Model::factory(Throttle::class)->create();
         $throttle->user_id = 123;
         
         $this->assertNull($throttle->suspended_at);
@@ -83,7 +81,7 @@ class ParisThrottleTest extends \Braindump\Api\Test\Integration\AbstractDbTest
 
     public function testUnsuspend()
     {
-        $throttle = \Model::factory(Throttle::CLASS_NAME)->create();
+        $throttle = \Model::factory(Throttle::class)->create();
         $throttle->user_id = 123;
         
         $lastAttemptAt = new DateTime;

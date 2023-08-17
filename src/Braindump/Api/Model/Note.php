@@ -102,7 +102,6 @@ class Note extends \Model
                     // Allow image tags without alt (should really be fixed on trix level)
                     $config->set('Attr.DefaultImageAlt', 'remove-me');
 
-
                     $def = $config->getHTMLDefinition(true);
 
                     // Allow flow(block)-level children in anchor
@@ -125,6 +124,7 @@ class Note extends \Model
                     $purifier = new \HTMLPurifier($config);
 
                     $this->content = $purifier->purify($data->content);
+                    //$this->content = $data->content;
 
                     // Bad hack: remove alt tag
                     $this->content = str_replace(' alt="remove-me" /', '', $this->content);

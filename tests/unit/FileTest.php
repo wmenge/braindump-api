@@ -1,9 +1,6 @@
 <?php
 namespace Braindump\Api\Test\Unit;
 
-require_once __DIR__ . '/../../vendor/autoload.php';
-require_once __DIR__ . '/../../model/File.php';
-
 use Braindump\Api\Model\File as File;
 
 // Mock config
@@ -14,11 +11,11 @@ File::$config = [
         ]
      ];
 
-class FileTest extends \PHPUnit_Framework_TestCase
+class FileTest extends \PHPUnit\Framework\TestCase
 {
     protected $file;
 
-    protected function setUp()
+    protected function setup(): void
     {
         $this->file = File::create();
     }
