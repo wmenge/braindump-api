@@ -13,10 +13,13 @@ class NotebookController extends \Braindump\Api\Controller\BaseController {
    
     public function getNotebooks($request, $response) {
 
-        $list = $this->notebookFacade->getNoteBookList($request->getQueryParam('sort'));
+        $queryParams = $request->getQueryParams();
+        $sort = isset($queryParams['sort']) ? $queryParams['sort'] : null;
+
+        $list = $this->notebookFacade->getNoteBookList($sort);
         if (empty($list)) {
             $this->notebookFacade->createSampleData();
-            $list = $this->notebookFacade->getNoteBookList($request->getQueryParam('sort'));
+            $list = $this->notebookFacade->getNoteBookList($sort);
         }
 
         return $this->outputJson($list, $response);

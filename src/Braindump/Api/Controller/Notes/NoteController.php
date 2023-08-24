@@ -15,8 +15,12 @@ class NoteController extends \Braindump\Api\Controller\BaseController {
    
     public function getNotes($request, $response, $args) {
 
+        $queryParams = $request->getQueryParams();
+        $sort = isset($queryParams['sort']) ? $queryParams['sort'] : null;
+        $query = isset($queryParams['q']) ? $queryParams['q'] : null;
+
         if (empty($args['id'])) {
-            return $this->outputJson($this->noteFacade->getNoteList($request->getQueryParam('sort'), $request->getQueryParam('q')), $response);
+            return $this->outputJson($this->noteFacade->getNoteList($sort, $query), $response);
         } else {
             // Check if notebook exists, return 404 if it doesn't
             $notebook = $this->notebookFacade->getNotebookForId($args['id']);
@@ -25,7 +29,7 @@ class NoteController extends \Braindump\Api\Controller\BaseController {
                 return $response->withStatus(404);
             }
 
-            return $this->outputJson($this->noteFacade->getNoteListForNoteBook($notebook, $request->getQueryParam('sort'), $request->getQueryParam('q')), $response);
+            return $this->outputJson($this->noteFacade->getNoteListForNoteBook($notebook, $sort, $query), $response);
         }
     }
 

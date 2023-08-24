@@ -1,8 +1,10 @@
 <?php
 
-$app->group('/api', function () {
+use Slim\Routing\RouteCollectorProxy;
 
-    $this->get('/files/{name}', '\Braindump\Api\Controller\File\FileController:getFile');
-    $this->any('/files[/]', '\Braindump\Api\Controller\File\FileController:postFile');
+$app->group('/api', function (RouteCollectorProxy $group) {
+
+    $group->get('/files/{name}', '\Braindump\Api\Controller\File\FileController:getFile');
+    $group->any('/files', '\Braindump\Api\Controller\File\FileController:postFile');
     
 })->add('Braindump\Api\Middleware\Authentication:apiAuthorize')->add('Braindump\Api\Middleware\Authentication:apiAuthenticate');

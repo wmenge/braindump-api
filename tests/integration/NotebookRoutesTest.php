@@ -23,7 +23,7 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/get-notebooks-expected-1.json');
 
-        $response = $this->controller->getNotebooks($this->getRequestMock(), new \Slim\Http\Response());
+        $response = $this->controller->getNotebooks($this->getRequestMock(), new \Slim\Psr7\Response());
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame($expected, (string)$response->getBody());
@@ -52,7 +52,7 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/get-notebooks-expected-2.json');
         
-        $response = $this->controller->getNotebook($this->getRequestMock(), new \Slim\Http\Response(), [ 'id' => 1 ]);
+        $response = $this->controller->getNotebook($this->getRequestMock(), new \Slim\Psr7\Response(), [ 'id' => 1 ]);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame($expected, (string)$response->getBody());
@@ -60,7 +60,7 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
 
     public function testGetUnkownNotebook()
     {
-        $response = $this->controller->getNotebook($this->getRequestMock(), new \Slim\Http\Response(), [ 'id' => 99 ]);
+        $response = $this->controller->getNotebook($this->getRequestMock(), new \Slim\Psr7\Response(), [ 'id' => 99 ]);
 
         $this->assertEquals(404, $response->getStatusCode());
         // TODO: assert message
@@ -68,7 +68,7 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
 
     public function testGetNotebookOfDifferentUser()
     {
-        $response = $this->controller->getNotebook($this->getRequestMock(), new \Slim\Http\Response(), [ 'id' => 3 ]);
+        $response = $this->controller->getNotebook($this->getRequestMock(), new \Slim\Psr7\Response(), [ 'id' => 3 ]);
 
         $this->assertEquals(404, $response->getStatusCode());
     }
@@ -80,7 +80,7 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
         $request = $this->getRequestMock();
         $request->getBody()->write('{ "title": "New Notebook" }');
 
-        $response = $this->controller->postNotebook($request, new \Slim\Http\Response());
+        $response = $this->controller->postNotebook($request, new \Slim\Psr7\Response());
     
         // Assert response
         $this->assertEquals(200, $response->getStatusCode());
@@ -100,7 +100,7 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
         $request = $this->getRequestMock();
         $request->getBody()->write('{ }');
 
-        $response = $this->controller->postNotebook($request, new \Slim\Http\Response());
+        $response = $this->controller->postNotebook($request, new \Slim\Psr7\Response());
     
         // Assert response
         $this->assertEquals(400, $response->getStatusCode());
@@ -122,7 +122,7 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
         $request = $this->getRequestMock();
         $request->getBody()->write('{ "title": "Updated title" }');
 
-        $response = $this->controller->putNotebook($request, new \Slim\Http\Response(), [ 'id' => 1 ]);
+        $response = $this->controller->putNotebook($request, new \Slim\Psr7\Response(), [ 'id' => 1 ]);
 
         // Assert response
         $this->assertEquals(200, $response->getStatusCode());
@@ -144,7 +144,7 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
         $request = $this->getRequestMock();
         $request->getBody()->write('{ "title": "New Notebook" }');
 
-        $response = $this->controller->putNotebook($request, new \Slim\Http\Response(), [ 'id' => 4 ]);
+        $response = $this->controller->putNotebook($request, new \Slim\Psr7\Response(), [ 'id' => 4 ]);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame($expected, (string)$response->getBody());
@@ -163,7 +163,7 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
         $request = $this->getRequestMock();
         $request->getBody()->write('{ }');
 
-        $response = $this->controller->putNotebook($request, new \Slim\Http\Response(), [ 'id' => 1 ]);
+        $response = $this->controller->putNotebook($request, new \Slim\Psr7\Response(), [ 'id' => 1 ]);
 
         $this->assertEquals(400, $response->getStatusCode());
         
@@ -183,7 +183,7 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
         $request = $this->getRequestMock();
         $request->getBody()->write('{ "title": "New Notebook" }');
 
-        $response = $this->controller->putNotebook($request, new \Slim\Http\Response(), [ 'id' => 3 ]);
+        $response = $this->controller->putNotebook($request, new \Slim\Psr7\Response(), [ 'id' => 3 ]);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame($expected, (string)$response->getBody());
@@ -199,7 +199,7 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
 
     public function testDeleteNotebook()
     {
-        $response = $this->controller->deleteNotebook($this->getRequestMock(), new \Slim\Http\Response(), [ 'id' => 1 ]);
+        $response = $this->controller->deleteNotebook($this->getRequestMock(), new \Slim\Psr7\Response(), [ 'id' => 1 ]);
 
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -216,7 +216,7 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
 
     public function testDeleteUnknownNotebook()
     {
-        $response = $this->controller->deleteNotebook($this->getRequestMock(), new \Slim\Http\Response(), [ 'id' => 99 ]);
+        $response = $this->controller->deleteNotebook($this->getRequestMock(), new \Slim\Psr7\Response(), [ 'id' => 99 ]);
 
         $this->assertEquals(404, $response->getStatusCode());
         // TODO: assert message
@@ -232,7 +232,7 @@ class NotebookRoutesTest extends Slim_Framework_TestCase
 
     public function testDeleteNotebookOfDifferentUser()
     {
-        $response = $this->controller->deleteNotebook($this->getRequestMock(), new \Slim\Http\Response(), [ 'id' => 3 ]);
+        $response = $this->controller->deleteNotebook($this->getRequestMock(), new \Slim\Psr7\Response(), [ 'id' => 3 ]);
 
         $this->assertEquals(404, $response->getStatusCode());
         // TODO: assert message

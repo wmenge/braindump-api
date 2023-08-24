@@ -26,8 +26,9 @@ class AdminController extends \Braindump\Api\Controller\HtmlBaseController {
               'userCount'       => User::count(),
               'fileCount'       => File::count(),
               'user'            => Sentry::getUser(),
-              'clientUrl'       => $this->ci->get('settings')['braindump']['client_cors_domain'],
-              'canAccessClient' => Sentry::getUser()->inGroup(Sentry::findGroupByName('Users'))
+              'clientUrl'       => $this->ci->get('settings')['client_cors_domain'],
+              //'canAccessClient' => true,
+              //'canAccessClient' => Sentry::getUser()->inGroup(Sentry::findGroupByName('Users'))
             ];
               
         } catch (\Exception $e) {
@@ -35,7 +36,7 @@ class AdminController extends \Braindump\Api\Controller\HtmlBaseController {
         }
 
         return $this->renderer->render($response, 'admin-page.php', [
-            //'flash'   => $message,
+            'flash'   => $message,
             'menu'    => $this->renderer->fetch('admin-menu-fragment.php', $menuData),
             'content' => $this->renderer->fetch('admin-fragment.php', $data)
         ]);

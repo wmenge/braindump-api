@@ -10,7 +10,7 @@ class FileController extends \Braindump\Api\Controller\BaseController {
     public function __construct(\Psr\Container\ContainerInterface $ci) {
         
         $this->fileFacade = new \Braindump\Api\Model\FileFacade();
-        File::$config = $ci->get('settings')['braindump']['file_upload_config'];
+        File::$config = $ci->get('settings')['file_upload_config'];
         parent::__construct($ci);
 
     }

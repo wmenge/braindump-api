@@ -1,5 +1,7 @@
 <?php namespace Braindump\Api;
 
+session_start();
+
 // replace with slims default helper (except for export)
 function outputJson($data, $response)
 {
@@ -143,12 +145,13 @@ date_default_timezone_set('UTC');
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Slim\App;
-use Slim\Http\Environment;
-use Slim\Http\Headers;
-use Slim\Http\Request;
+use Slim\Psr7\Environment;
+use Slim\Psr7\Headers;
+use Slim\Psr7\Request;
 use Slim\Http\RequestBody;
-use Slim\Http\Response;
-use Slim\Http\Uri;
+use Slim\Psr7\Response;
+use Slim\Psr7\Uri;
+use Slim\Psr7\Factory\StreamFactory;
 
 abstract class AbstractDbTest extends \PHPUnit\DbUnit\TestCase
 {
@@ -158,6 +161,9 @@ abstract class AbstractDbTest extends \PHPUnit\DbUnit\TestCase
 
     protected function setUp(): void
     {
+        \ORM::configure([ 'connection_string' => 'sqlite::memory:' ]);
+        self::$conn = $this->createDefaultDBConnection(\ORM::get_db(), ':memory:');
+
         $this->dbFacade = new \Braindump\Api\Lib\DatabaseFacade(
             \ORM::get_db(),
             (require( __DIR__ . '/../migrations/migration-config.php')));
@@ -171,62 +177,86 @@ abstract class AbstractDbTest extends \PHPUnit\DbUnit\TestCase
      */
     public function getConnection()
     {
-        if (self::$conn === null) {
-            \ORM::configure([ 'connection_string' => 'sqlite::memory:' ]);
-            self::$conn = $this->createDefaultDBConnection(\ORM::get_db(), ':memory:');
-        }
+        // echo "getConnection()" . PHP_EOL;
+        // if (self::$conn === null) {
+        //     echo "new connection needed" . PHP_EOL;
+            
+        // }
         
         return self::$conn;
     }
 }
 
-
 //https://akrabat.com/testing-slim-framework-actions/
 abstract class Slim_Framework_TestCase extends AbstractDbTest
 {
+    
     // Run for each unit test to setup our slim app environment
     protected function setUp(): void
     {
-        // Initialize our own copy of the slim application
-        $app = new \Slim\App([
-            'version'        => '0.0.0',
-            'debug'          => false,
-            'mode'           => 'testing',
+        //session_start();
+
+        // Setup DI
+        $builder = new \DI\ContainerBuilder();
+        $builder->addDefinitions([
+            'settings' => [
+                'file_upload_config' => [
+                    'upload_directory' => __DIR__ . '/../data/uploads/',
+                    'mime_types' => [
+                        'application/msword'                                                        => 'attachment',
+                        'application/pdf'                                                           => 'inline',
+                        'application/vnd.ms-excel'                                                  => 'attachment',
+                        'application/vnd.ms-powerpointtd'                                           => 'attachment',
+                        'application/vnd.openxmlformats-officedocument.presentationml.presentation' => 'attachment',
+                        'application/vnd.openxmlformats-officedocument.presentationml.slideshow'    => 'attachment',
+                        'application/vnd.openxmlformats-officedocument.presentationml.template'     => 'attachment',
+                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'         => 'attachment',
+                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'   => 'attachment',
+                        'application/vnd.openxmlformats-officedocument.wordprocessingml.template'   => 'attachment',
+                        'application/zip'                                                           => 'attachment',
+                        'image/gif'                                                                 => 'inline',
+                        'image/jpg'                                                                 => 'inline',
+                        'image/png'                                                                 => 'inline',
+                        'text/html'                                                                 => 'attachment',
+                        'text/plain'                                                                => 'attachment'
+                    ]            
+                ]
+            ],
+            'migrations' => (require  __DIR__ . '/../migrations/migration-config.php'),
+            'renderer' => new \Slim\Views\PhpRenderer(__DIR__ . '/../templates/', []),
+            'flash' => new \Slim\Flash\Messages(),
         ]);
         
-        $this->container = $app->getContainer();
-        $this->container['renderer'] = new \Slim\Views\PhpRenderer(__DIR__ . '/../templates/');
-        $this->container['flash'] = function () { return new FlashMessagesMock(); };
-        $this->container['settings'] =  ['braindump' =>     
-        [
-            'file_upload_config' => [
-                'upload_directory' => __DIR__ . '/../data/uploads/',
-                'mime_types' => [
-                    'application/msword'                                                        => 'attachment',
-                    'application/pdf'                                                           => 'inline',
-                    'application/vnd.ms-excel'                                                  => 'attachment',
-                    'application/vnd.ms-powerpointtd'                                           => 'attachment',
-                    'application/vnd.openxmlformats-officedocument.presentationml.presentation' => 'attachment',
-                    'application/vnd.openxmlformats-officedocument.presentationml.slideshow'    => 'attachment',
-                    'application/vnd.openxmlformats-officedocument.presentationml.template'     => 'attachment',
-                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'         => 'attachment',
-                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'   => 'attachment',
-                    'application/vnd.openxmlformats-officedocument.wordprocessingml.template'   => 'attachment',
-                    'application/zip'                                                           => 'attachment',
-                    'image/gif'                                                                 => 'inline',
-                    'image/jpg'                                                                 => 'inline',
-                    'image/png'                                                                 => 'inline',
-                    'text/html'                                                                 => 'attachment',
-                    'text/plain'                                                                => 'attachment'
-                ]
-             ]]];
+        $this->container = $builder->build();
+        \Slim\Factory\AppFactory::setContainer($this->container);
+        
+        // Initialize our own copy of the slim application
+        $app = \Slim\Factory\AppFactory::create();
+    }
 
-        parent::setUp();
+    protected function createRequest(
+        string $method,
+        string $path,
+        array $headers = ['HTTP_ACCEPT' => 'application/json'],
+        array $cookies = [],
+        array $serverParams = []
+    ): Request {
+        $uri = new Uri('', '', 80, $path);
+        $handle = fopen('php://temp', 'w+');
+        $stream = (new StreamFactory())->createStreamFromResource($handle);
+
+        $h = new Headers();
+        foreach ($headers as $name => $value) {
+            $h->addHeader($name, $value);
+        }
+
+        return new Request($method, $uri, $h, $cookies, $serverParams, $stream);
     }
 
     protected function getRequestMock($headers = []) {
-        $environment = \Slim\Http\Environment::mock($headers);
-        $body = new RequestBody();
-        return Request::createFromEnvironment($environment)->withBody($body);
+        //$environment = Environment::mock($headers);
+        //$body = new RequestBody();
+        //return Request::createFromEnvironment($environment)->withBody($body);
+        return $this->createRequest("GET", "", $headers);
     }
 }

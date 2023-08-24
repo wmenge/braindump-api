@@ -117,7 +117,7 @@ class AdminDataController extends \Braindump\Api\Controller\HtmlBaseController {
     public function __construct(\Psr\Container\ContainerInterface $ci) {
         $this->fileFacade = new \Braindump\Api\Model\FileFacade();
         $this->settings = $ci->get('settings');
-        File::$config = $this->settings['braindump']['file_upload_config'];
+        File::$config = $this->settings['file_upload_config'];
 
         parent::__construct($ci);
     }
@@ -126,7 +126,7 @@ class AdminDataController extends \Braindump\Api\Controller\HtmlBaseController {
 
         // ooh boy this smells! slim uses PSR 7 Stream objects, while the JSON writer expects a stream resource
         // The body object has a stream propertye, but it is protected
-        $reflectionClass = new \ReflectionClass('Slim\Http\Stream');
+        $reflectionClass = new \ReflectionClass('Slim\Psr7\Stream');
         $reflectionProperty = $reflectionClass->getProperty('stream');
         $reflectionProperty->setAccessible(true);
         $resource = $reflectionProperty->getValue($response->getBody());
@@ -471,7 +471,7 @@ class AdminDataController extends \Braindump\Api\Controller\HtmlBaseController {
 
             // Create a default user
             $user = Sentry::createUser([
-                'login'      => $this->settings['braindump']['initial_admin_user'],
+                'login'      => $this->settings['initial_admin_user'],
                 'name' => 'Braindump Administrator',
                 'password'   => 'welcome',
                 'activated'  => true,

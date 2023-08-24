@@ -21,7 +21,15 @@ class BaseController {
         // JSON_NUMERIC_CHECK is needed as PDO will return strings
         // as default (even if DB schema defines numeric types).
         // http://stackoverflow.com/questions/11128823/how-to-properly-format-pdo-results-numeric-results-returned-as-string
-        return $response->withJson($data, null, JSON_PRETTY_PRINT | JSON_NUMERIC_CHECK);
+
+        $payload = json_encode($data, JSON_PRETTY_PRINT | JSON_NUMERIC_CHECK);
+
+        $response->getBody()->write($payload);
+        return $response
+                  ->withHeader('Content-Type', 'application/json');
+
+
+        //return $response->withJson($data, null, JSON_PRETTY_PRINT | JSON_NUMERIC_CHECK);
     }
 
 }

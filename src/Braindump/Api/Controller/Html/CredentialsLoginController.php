@@ -6,7 +6,7 @@ class CredentialsLoginController extends \Braindump\Api\Controller\HtmlBaseContr
    
    public function getLogin($request, $response, $args) {
         $referer = !empty($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '/';
-        $this->renderer->render($response, 'admin-page.php', [
+        return $this->renderer->render($response, 'admin-page.php', [
             'content' => $this->renderer->fetch('login-fragment.php', [ 'referer' => $referer])
         ]);
    }
@@ -27,7 +27,7 @@ class CredentialsLoginController extends \Braindump\Api\Controller\HtmlBaseContr
                 'content' => $this->renderer->fetch('login-fragment.php')
             ]);
 
-            return;
+            return $response->withStatus(302)->withHeader('Location', '/');
         }
 
         return $response->withStatus(302)->withHeader('Location', $referer);

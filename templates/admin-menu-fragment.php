@@ -6,7 +6,7 @@
     <li><a href="#">Notebooks <span class="badge"><?= @$notebookCount ?></span></a></li>
     <li><a href="#">Notes <span class="badge"><?= @$noteCount ?></span></a></li>
     <li><a href="#">Files <span class="badge"><?= @$fileCount ?></span></a></li>
-    <?php if($canAccessClient): ?>
+    <?php if(isset($canAccessClient) && $canAccessClient): ?>
       <li><a href="<?= @$clientUrl ?>/client" target="_blank">Braindump Client</a></li>
     <?php endif; ?>
   </ul>

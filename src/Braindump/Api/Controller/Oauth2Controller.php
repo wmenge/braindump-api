@@ -10,7 +10,7 @@ class Oauth2Controller extends \Braindump\Api\Controller\BaseController {
     private $configurations;
 
     public function __construct(\Psr\Container\ContainerInterface $ci) {
-        $this->configurations = $ci->get('settings')['braindump']['oauth2'];
+        $this->configurations = $ci->get('settings')['oauth2'];
         parent::__construct($ci);
     }
 
@@ -38,9 +38,10 @@ class Oauth2Controller extends \Braindump\Api\Controller\BaseController {
 
     public function login($request, $response, $args) {
         $providerName = $args['provider'];
-        $referer = $request->getParam('referer');
-        if (empty($referer)) $referer = '/';
-        
+
+        $queryParams = $request->getQueryParams();
+        $referer = isset($queryParams['referer']) ? $queryParams['referer'] : '/';
+
         // TODO: If logging in with different provider, first log out
         if (isset($_SESSION['access_token'])) {
             $token = unserialize($_SESSION['access_token']);

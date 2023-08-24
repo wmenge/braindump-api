@@ -68,7 +68,7 @@ class LargeExport extends Slim_Framework_TestCase
             }
         }
 
-        $response = $this->controller->getExport($this->getRequestMock(), new \Slim\Http\Response());
+        $response = $this->controller->getExport($this->getRequestMock(), new \Slim\Psr7\Response());
 
         // assert response object is about 1 Gb
         $this->assertEquals(1203071373, $response->getBody()->getSize());
@@ -100,7 +100,7 @@ class LargeExport extends Slim_Framework_TestCase
             }
         }
 
-        $testResponse = $this->controller->getExport($this->getRequestMock(), new \Slim\Http\Response());
+        $testResponse = $this->controller->getExport($this->getRequestMock(), new \Slim\Psr7\Response());
         
         $this->assertEquals(1203071373, $testResponse->getBody()->getSize());
 
@@ -117,10 +117,10 @@ class LargeExport extends Slim_Framework_TestCase
         $reflectionProperty->setValue($newRequest->getBody(), $jsonStreamResource);
 
         // Execute the request
-        $response = $this->controller->postImport($newRequest, new \Slim\Http\Response());
+        $response = $this->controller->postImport($newRequest, new \Slim\Psr7\Response());
 
         // New export...
-        $responseAfterImport = $this->controller->getExport($this->getRequestMock(), new \Slim\Http\Response());
+        $responseAfterImport = $this->controller->getExport($this->getRequestMock(), new \Slim\Psr7\Response());
         
         // assert response object is about 1 Gb
         $this->assertEquals(1203071373, $responseAfterImport->getBody()->getSize());
@@ -149,7 +149,7 @@ class ExportTest extends Slim_Framework_TestCase
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/export-expected-1.json');
 
-        $response = $this->controller->getExport($this->getRequestMock(), new \Slim\Http\Response());
+        $response = $this->controller->getExport($this->getRequestMock(), new \Slim\Psr7\Response());
 
         $this->assertEquals([ 'application/json;charset=utf-8' ], $response->getHeader('Content-Type'));
         $this->assertEquals([ 'attachment; filename=export-localhost-0.json' ], $response->getHeader('Content-Disposition'));
@@ -179,7 +179,7 @@ class ExportWithFilesTest extends Slim_Framework_TestCase
     {
         $expected = file_get_contents(dirname(__FILE__).'/files/export-expected-2.json');
         
-        $response = $this->controller->getExport($this->getRequestMock(), new \Slim\Http\Response());
+        $response = $this->controller->getExport($this->getRequestMock(), new \Slim\Psr7\Response());
 
         // Mock HTTP Host (empty during unit test)
         $this->assertEquals([ 'application/json;charset=utf-8' ], $response->getHeader('Content-Type'));
@@ -217,7 +217,7 @@ class ImportTest extends Slim_Framework_TestCase
         $request->getBody()->write($importData);
         $request->getBody()->rewind();
 
-        $response = $this->controller->postImport($request, new \Slim\Http\Response());
+        $response = $this->controller->postImport($request, new \Slim\Psr7\Response());
         
         // Assert db content
         $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/notes-seed.xml');
@@ -252,7 +252,7 @@ class ImportTest extends Slim_Framework_TestCase
         $request->getBody()->write($importData);
         $request->getBody()->rewind();
 
-        $response = $this->controller->postImport($request, new \Slim\Http\Response());
+        $response = $this->controller->postImport($request, new \Slim\Psr7\Response());
         
         // Assert db content
         $dataset = $this->createFlatXmlDataSet(dirname(__FILE__).'/files/notes-with-files-seed.xml');
