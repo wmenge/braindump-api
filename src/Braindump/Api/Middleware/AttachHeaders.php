@@ -15,8 +15,6 @@ class AttachHeaders
 
     public function __invoke(Request $request, RequestHandler $handler): Response
     {
-        //echo "AttachHeaders";
-        //echo "header middleware (SHOULD RUN FIRST)";
         return $handler->handle($request)
             ->withHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
             ->withHeader('Access-Control-Allow-Origin', $this->ci->get('settings')['client_cors_domain'])
