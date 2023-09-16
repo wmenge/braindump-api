@@ -7,6 +7,7 @@ class Note extends \Model
 {
     const TYPE_TEXT = 'Text';
     const TYPE_HTML = 'HTML';
+    const TYPE_MARKDOWN = 'Markdown';
 
     protected static $_table = 'note';
 
@@ -62,7 +63,7 @@ class Note extends \Model
             is_scalar($data->title) &&
             !empty($data->title) &&
             property_exists($data, 'type') &&
-            in_array($data->type, [Note::TYPE_TEXT, Note::TYPE_HTML]);
+            in_array($data->type, [Note::TYPE_TEXT, Note::TYPE_HTML, Note::TYPE_MARKDOWN]);
 
         // if url is supplied, check content
     //      ($inpuxtData->content_url == null || !(filter_var($inputData->content_url, FILTER_VALIDATE_URL) === false);
@@ -90,6 +91,8 @@ class Note extends \Model
             }
 
             if (property_exists($data, 'content')) {
+
+                // TODO: Retire HTML Type?
                 if ($this->type == Note::TYPE_HTML) {
                     // check http://dev.evernote.com/doc/articles/enml.php for evenrote html format
                     // TODO Check which tags to allow/disallow
@@ -128,7 +131,7 @@ class Note extends \Model
 
                     // Bad hack: remove alt tag
                     $this->content = str_replace(' alt="remove-me" /', '', $this->content);
-                } elseif ($this->type == Note::TYPE_TEXT) {
+                } elseif ($this->type == Note::TYPE_TEXT || $this->type == Note::TYPE_MARKDOWN) {
                     $this->content = htmlentities($data->content, ENT_QUOTES, 'UTF-8');
                 } else {
                     // Shouldn't happen
