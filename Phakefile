@@ -34,6 +34,40 @@ task('setup', function() {
     echo 'Setup task has been performed' . PHP_EOL;
 });
 
+desc('Migrate Braindump Database');
+task('migrate', function() {
+        
+    // Setup DB connection
+    $braindumpConfig = (require __DIR__ . '/config/braindump-config.php');
+    ORM::configure($braindumpConfig['database_config']);
+
+    $dbFacade = new \Braindump\Api\Lib\DatabaseFacade(
+        \ORM::get_db(),
+        (require( __DIR__ . '/migrations/migration-config.php')));
+
+    if ($dbFacade->isMigrationNeeded()) {
+        echo 'Database schema is not up to date and should be updated' . PHP_EOL;
+        echo sprintf('Current version: %d, available version: %d' . PHP_EOL, $dbFacade->getCurrentVersion(), $dbFacade->getHighestVersion());
+    } else {
+        echo 'Database schema is up to date, no action needed' . PHP_EOL;
+        echo sprintf('Current version: %d' . PHP_EOL, $dbFacade->getCurrentVersion());
+        return;
+    };
+
+    try {
+        echo 'Updating database schema...' . PHP_EOL;
+        \ORM::get_db()->beginTransaction();
+        $dbFacade->migrateDatabase();
+        \ORM::get_db()->commit();
+    
+        echo sprintf('Migrated database schema to %s' . PHP_EOL, $dbFacade->getCurrentVersion());
+
+    } catch (\Exception $e) {    
+        \ORM::get_db()->rollback();
+        echo $e->getMessage() . PHP_EOL;
+    }
+});
+
 desc('Reset Administrator user');
 task('reset_admin', function() {
 
