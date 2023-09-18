@@ -12,6 +12,7 @@ class BaseController {
         $this->ci = $ci;
         $this->renderer = $this->ci->get('renderer');
         
+        // TODO: DI
         $this->dbFacade = new \Braindump\Api\Lib\DatabaseFacade(
             \ORM::get_db(),
             (require( __DIR__ . '/../../../../migrations/migration-config.php')));

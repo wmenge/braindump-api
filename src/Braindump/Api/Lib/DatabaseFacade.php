@@ -10,7 +10,6 @@ class DatabaseFacade
 
     public function __construct($db, $config)
     {
-        //print_r($config);
         $this->db = $db;
         $this->config = $config;
     }

@@ -1,9 +1,14 @@
 <?php
 include './vendor/autoload.php';
 
+use Braindump\Api\Lib\HTMLToMarkdown\HtmlConverterFacade;
 use Braindump\Api\Lib\Sentry\Facade\SentryFacade as Sentry;
+
 use AFM\Rsync\Rsync;
 use Braindump\Api\model\Sentry\Paris\Group;
+use Braindump\Api\Model\Note as Note;
+use League\HTMLToMarkdown\HtmlConverter;
+
 
 desc('Setup Braindump API');
 task('setup', function() {
@@ -87,21 +92,25 @@ task('reset_admin', function() {
 
 });
 
-/*desc('Sync Braindump API');
-task('sync', function() {
-    //rsync -avz -e 'ssh' --exclude-from 'rsync_exclude.txt' '/www/braindump/' 'wmenge@10.0.0.2:/mnt/sdb2/www/vhosts/braindump'
-    // pakeRSync::sync_to_server(__DIR__, '10.0.0.2', '/mnt/sdb2/www/vhosts/braindump-api', 'wmenge');
+desc('Convert HTML to Markdown');
+task('convert-to-markdown', function() {
 
-    $origin = __DIR__ . '/';
-    $target = "/www/braindump-test/";
-//echo $origin;
+    echo 'Converting notes from HTML to Markdown...' . PHP_EOL;
 
-    $rsync = new Rsync;
-    //$rsync->setDryRun(true);
-    $rsync->setVerbose(true);
-    $rsync->setDeleteFromTarget(true);
-    $rsync->setExcludeFrom('rsync_exclude.txt');
-    //$rsync->setOptionalParameters(['Wilco'=>'test']);
-    echo $rsync->getCommand($origin, $target) . PHP_EOL;
-    $rsync->sync($origin, $target);
-});*/
+    $converterFacade = new HtmlConverterFacade();
+
+    // Setup DB connection
+    $braindumpConfig = (require __DIR__ . '/config/braindump-config.php');
+    ORM::configure($braindumpConfig['database_config']);
+
+    $notes = Note::select_many('id', 'title', 'created', 'updated', 'url', 'type', 'content')
+                    ->find_result_set();
+
+    foreach ($notes as &$note) {
+        $note->content = $converterFacade->convert($note->content);
+        $note->type = 'Markdown';
+        $note->save();
+    }
+
+    echo 'Notes have been converted' . PHP_EOL;
+});

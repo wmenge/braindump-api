@@ -25,7 +25,8 @@
         "bcncommerce/json-stream": "^0.4.0",
         "league/oauth2-github": "^3.1",
         "league/oauth2-google": "^4.0",
-        "xemlock/htmlpurifier-html5": "^0.1.11"
+        "xemlock/htmlpurifier-html5": "^0.1.11",
+        "league/html-to-markdown": "^5.1"
     },
     "autoload": {
         "psr-4": {
