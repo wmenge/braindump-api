@@ -97,37 +97,41 @@ class Note extends \Model
                     // check http://dev.evernote.com/doc/articles/enml.php for evenrote html format
                     // TODO Check which tags to allow/disallow
 
-                    $config = \HTMLPurifier_Config::createDefault();
+                    // $config = \HTMLPurifier_Config::createDefault();
                     
-                    // Allow base64 image data
-                    $config->set('URI.AllowedSchemes', ['http' => true, 'https' => true, 'data' => true]);
+                    // // Allow base64 image data
+                    // $config->set('URI.AllowedSchemes', ['http' => true, 'https' => true, 'data' => true]);
 
-                    // Allow image tags without alt (should really be fixed on trix level)
-                    $config->set('Attr.DefaultImageAlt', 'remove-me');
+                    // // Allow image tags without alt (should really be fixed on trix level)
+                    // $config->set('Attr.DefaultImageAlt', 'remove-me');
 
-                    $def = $config->getHTMLDefinition(true);
+                    // $def = $config->getHTMLDefinition(true);
 
-                    // Allow flow(block)-level children in anchor
-                    $def->addElement(
-                        'a', // element name
-                        'Inline', // the type of element: 'Block','Inline', or false, if it's a special case
-                        'Flow', // what type of child elements are permitted: 'Empty', 'Inline', or 'Flow', which includes block elements like div
-                        'Common' // permitted attributes
-                    );
+                    // // Allow flow(block)-level children in anchor
+                    // $def->addElement(
+                    //     'a', // element name
+                    //     'Inline', // the type of element: 'Block','Inline', or false, if it's a special case
+                    //     'Flow', // what type of child elements are permitted: 'Empty', 'Inline', or 'Flow', which includes block elements like div
+                    //     'Common' // permitted attributes
+                    // );
 
+                    
+                    // $def->addAttribute('figure', 'data-trix-attachment', 'Text');
+                    // $def->addAttribute('figure', 'data-trix-content-type', 'Text');
+                    
                     // Allow some additional trix attributes
-                    $anon = $def->getAnonymousModule();
-                    $anon->attr_collections = 
-                        [ 'Core' => [
-                          'data-trix-attachment' => 'CDATA',
-                          'data-trix-content-type' => 'CDATA' ]];
+                    // $anon = $def->getAnonymousModule();
+                    // $anon->attr_collections = 
+                    //     [ 'Core' => [
+                    //       'data-trix-attachment' => 'Text',
+                    //       'data-trix-content-type' => 'Text' ]];
 
-                    $config = \HTMLPurifier_HTML5Config::create($config); 
+                    // $config = \HTMLPurifier_HTML5Config::create($config); 
  
-                    $purifier = new \HTMLPurifier($config);
+                    // $purifier = new \HTMLPurifier($config);
 
-                    $this->content = $purifier->purify($data->content);
-                    //$this->content = $data->content;
+                    //$this->content = $purifier->purify($data->content);
+                    $this->content = $data->content;
 
                     // Bad hack: remove alt tag
                     $this->content = str_replace(' alt="remove-me" /', '', $this->content);
