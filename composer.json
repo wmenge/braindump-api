@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "php": ">=7.4",
+        "php": ">=8.2",
         "slim/slim": "4.*",
         "slim/psr7": "^1.3",
         "slim/php-view": "^3.2.0",
@@ -21,7 +21,7 @@
         "ezyang/htmlpurifier": "@stable",
         "cartalyst/sentry": "2.1.*",
         "tedivm/fetch": "@stable",
-        "jaz303/phake": "^0.6.0",
+        "consolidation/robo": "^4.0",
         "bcncommerce/json-stream": "^0.4.0",
         "league/oauth2-github": "^3.1",
         "league/oauth2-google": "^4.0",
@@ -35,7 +35,6 @@
     },
     "require-dev": {
         "mockery/mockery": "^1.3",
-        "phpunit/phpunit": "^7.5",
-        "phpunit/dbunit": "^4.0"
+        "phpunit/phpunit": "^10.5"
     }
 }
