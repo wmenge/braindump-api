@@ -78,19 +78,19 @@ class Note extends \Model
             if (!empty($notebook)) {
                 $this->notebook_id = $notebook->id;
             }
-            if (property_exists($data, 'title')) {
+            if (property_exists($data, 'title') && isset($data->title)) {
                 $this->title = htmlentities($data->title, ENT_QUOTES, 'UTF-8');
             }
 
-            if (property_exists($data, 'url')) {
+            if (property_exists($data, 'url') && isset($data->url)) {
                 $this->url = htmlentities($data->url, ENT_QUOTES, 'UTF-8');
             }
 
-            if (property_exists($data, 'type')) {
+            if (property_exists($data, 'type') && isset($data->type)) {
                 $this->type = htmlentities($data->type, ENT_QUOTES, 'UTF-8');
             }
 
-            if (property_exists($data, 'content')) {
+            if (property_exists($data, 'content') && isset($data->content)) {
 
                 // TODO: Retire HTML Type?
                 if ($this->type == Note::TYPE_HTML) {
